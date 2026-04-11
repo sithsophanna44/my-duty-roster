@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Ultimate Edition</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងយាម - Fix Version</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -15,50 +15,27 @@
         :root { --primary: #004d40; --accent: #ff6f00; --bg: #eceff1; }
         body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
         .container { background: white; max-width: 1000px; margin: auto; padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: none; }
-        
         .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .calendar-header h2 { font-size: 1.2rem; margin: 0; font-weight: 700; }
-
         .manage-box { background: #f1f8e9; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #c8e6c9; text-align: center; }
-        #displayBox { font-size: 2rem; font-weight: 800; color: var(--primary); min-height: 60px; margin: 10px 0; background: #fff; padding: 10px; border-radius: 8px; border: 3px dashed var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
-
-        /* Pointer & Table Layout */
+        #displayBox { font-size: 2rem; font-weight: 800; color: var(--primary); min-height: 60px; margin: 10px 0; background: #fff; padding: 10px; border-radius: 8px; border: 3px dashed var(--primary); display: flex; align-items: center; justify-content: center; }
         .table-container { position: relative; width: 100%; overflow: hidden; }
-        #pointer { 
-            position: absolute; left: 0; width: 0; height: 0; 
-            border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 20px solid var(--accent);
-            display: none; z-index: 20; transition: top 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
+        #pointer { position: absolute; left: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 20px solid var(--accent); display: none; z-index: 20; transition: top 0.1s ease-out; }
         .table-responsive { width: 100%; overflow-x: auto; background: #fff; box-sizing: border-box; }
         .capture-padding { padding: 45px !important; }
-
-        table { width: 100%; border-collapse: collapse; min-width: 600px; position: relative; }
-        th, td { border: 1.2px solid #000; padding: 12px; text-align: center; font-size: 15px; font-weight: 600; position: relative; z-index: 5; }
-        th { background: #37474f; color: white; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { border: 1.2px solid #000; padding: 12px; text-align: center; font-size: 15px; font-weight: 600; }
+        th { background: #37474f; color: white; }
         .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 15px; font-weight: 700; }
-        
-        /* បន្ទាត់ Highlight ពណ៌ទឹកក្រូចដែលរត់ដេញតាមឈ្មោះ */
-        .row-highlight { 
-            background: rgba(255, 111, 0, 0.25) !important; 
-            transition: all 0.1s ease-in-out;
-        }
-        
+        .row-highlight { background: rgba(255, 111, 0, 0.25) !important; }
         .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: 800; }
-
-        /* Buttons */
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; justify-content: center; }
-        .btn { padding: 12px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 13px; text-transform: uppercase; width: 100%; transition: 0.2s; }
-        .btn:active { transform: scale(0.95); }
+        .btn { padding: 12px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 13px; text-transform: uppercase; width: 100%; }
         .btn-img { background: #f39c12; color: white; }
         .btn-excel { background: #2e7d32; color: white; }
         .btn-logout { background: #455a64; color: white; }
         .btn-start { background: var(--primary); color: white; margin-top: 10px; }
-
-        @media (min-width: 600px) { .btn { width: auto; } .calendar-header h2 { font-size: 1.5rem; } }
-
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .login-box { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
     </style>
 </head>
@@ -66,22 +43,22 @@
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="color:var(--primary); margin-bottom: 20px;">ប្រព័ន្ធគ្រប់គ្រងយាម</h2>
-        <input type="text" id="username" placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
-        <input type="password" id="password" placeholder="លេខសម្ងាត់">
-        <button class="btn btn-start" onclick="checkLogin()">ចូលប្រើប្រាស់</button>
+        <h2 style="color:var(--primary)">ប្រព័ន្ធគ្រប់គ្រងយាម</h2>
+        <input type="text" id="username" placeholder="ឈ្មោះអ្នកប្រើប្រាស់ (admin/user)">
+        <input type="password" id="password" placeholder="លេខសម្ងាត់ (123)">
+        <button class="btn btn-start" onclick="checkLogin()">ចូលប្រើប្រាស់ (LOGIN)</button>
     </div>
 </div>
 
 <div class="container" id="mainApp">
     <div class="calendar-header">
-        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px 12px; border-radius:6px; cursor:pointer;">◀</button>
+        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px; border-radius:6px; cursor:pointer;">◀</button>
         <h2 id="monthTitle">---</h2>
-        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px 12px; border-radius:6px; cursor:pointer;">▶</button>
+        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px; border-radius:6px; cursor:pointer;">▶</button>
     </div>
 
     <div id="adminPanel" class="manage-box" style="display:none;">
-        <div id="displayBox">DEPLOYMENT READY</div>
+        <div id="displayBox">READY</div>
         <button id="startBtn" class="btn btn-start" onclick="startExcitingAuto()">🎲 ចាប់ផ្ដើមរៀបចំ (START)</button>
         <button class="btn" style="background:#78909c; color:white; margin-top:5px;" onclick="resetData()">♻️ Reset Data</button>
     </div>
@@ -111,30 +88,46 @@
 </div>
 
 <script>
-    // --- Firebase Config ---
+    // --- បញ្ជាក់៖ ដាក់ Config របស់អ្នកឱ្យត្រឹមត្រូវនៅទីនេះ ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYEk9HCOL8ClUffxKsA1M2WEKCBSc4zlU",
+        authDomain: "my-duty-system.firebaseapp.com",
         databaseURL: "https://my-duty-system-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "my-duty-system",
-        appId: "1:430122553040:web:897c088b3d6a0b46f458d5"
+        storageBucket: "my-duty-system.firebasestorage.app",
+        messagingSenderId: "430122553040",
+        appId: "1:430122553040:web:897c088b3d6a0b46f458d5",
+        measurementId: "G-SBTR1R7Q6Z"
     };
+
+    // បញ្ជូន Config ទៅ Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
     let currentDate = new Date();
 
+    // ពិនិត្យសិទ្ធិពេលបើក Browser
     window.onload = () => {
         const role = sessionStorage.getItem('userRole');
-        if (role) showApp(role);
+        if (role) { showApp(role); }
     };
 
     function checkLogin() {
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
-        let role = (u === 'admin' && p === '123') ? 'ADMIN' : (u === 'user' && p === '123' ? 'USER' : null);
-        if (role) { sessionStorage.setItem('userRole', role); showApp(role); }
-        else { alert("Login មិនត្រឹមត្រូវ!"); }
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value.trim();
+        
+        console.log("Attempting login..."); // ដើម្បីឆែកក្នុង Console
+
+        if (u === 'admin' && p === '123') {
+            sessionStorage.setItem('userRole', 'ADMIN');
+            showApp('ADMIN');
+        } else if (u === 'user' && p === '123') {
+            sessionStorage.setItem('userRole', 'USER');
+            showApp('USER');
+        } else {
+            alert("ឈ្មោះ ឬ លេខសម្ងាត់មិនត្រឹមត្រូវ! (admin / 123)");
+        }
     }
 
     function showApp(role) {
@@ -149,18 +142,19 @@
 
     function logout() { sessionStorage.clear(); location.reload(); }
 
+    function getMonthKey() { return "duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth(); }
+
     function loadData() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
-        db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).on('value', snap => renderTable(snap.val() || {}));
+        db.ref(getMonthKey()).on('value', snap => renderTable(snap.val() || {}));
     }
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        const titles = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
         for(let gi=0; gi<3; gi++) {
-            tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1} (${titles[gi]})</td></tr>`;
+            tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1}</td></tr>`;
             for(let ni=0; ni<5; ni++) {
                 const name = members[gi*5 + ni];
                 const days = data[name] || ["","","","","","",""];
@@ -179,28 +173,22 @@
         for(let gi=0; gi<3; gi++) for(let ni=0; ni<5; ni++) flatList.push({name: members[gi*5+ni], gi, ni});
         
         let spinList = [...flatList].sort(() => Math.random() - 0.5);
-        let results = {};
         let groupUsed = {g0:[], g1:[], g2:[]};
 
         for(let item of spinList) {
-            // ១. វិលឈ្មោះ និងបន្ទាត់ Highlight រត់ដេញតាម
             let timer = 0;
-            while(timer < 450) {
-                let tempIdx = Math.floor(Math.random()*flatList.length);
-                let tempItem = flatList[tempIdx];
+            while(timer < 400) {
+                let tempItem = flatList[Math.floor(Math.random()*flatList.length)];
                 document.getElementById('displayBox').innerText = tempItem.name;
-                movePointerAndHighlight(tempItem); // រត់បន្ទាត់ពណ៌ទឹកក្រូច
-                await new Promise(r => setTimeout(r, 60);
+                movePointerAndHighlight(tempItem);
+                await new Promise(r => setTimeout(r, 60));
                 timer += 60;
             }
-
-            // ២. បង្ហាញឈ្មោះពិត និងឈប់ឱ្យស្ងៀម
             document.getElementById('displayBox').innerText = item.name;
             movePointerAndHighlight(item);
             const row = document.getElementById(`row-${item.gi}-${item.ni}`);
-            row.style.background = "rgba(255, 111, 0, 0.4)"; // បន្ទាត់ដិតពេលជាប់
+            row.style.backgroundColor = "rgba(255, 111, 0, 0.4)";
 
-            // ៣. គណនាថ្ងៃយាម
             let sDay = Math.floor(Math.random()*5)+1;
             while(groupUsed['g'+item.gi].includes(sDay)) sDay = (sDay%5)+1;
             groupUsed['g'+item.gi].push(sDay);
@@ -208,11 +196,10 @@
             let days = ["","","","","","",""];
             const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
             for(let d=sDay, c=0; d<=total && c<7; d+=5, c++) days[c] = d.toString().padStart(2, '0');
-            results[item.name] = days;
-
+            
+            db.ref(getMonthKey()).update({[item.name]: days});
             await new Promise(r => setTimeout(r, 600));
-            db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).update({[item.name]: days});
-            row.style.background = ""; // លុប highlight វិញ
+            row.style.backgroundColor = "";
         }
         pointer.style.display = 'none';
         document.getElementById('displayBox').innerText = "រួចរាល់ ✨";
@@ -222,36 +209,24 @@
     function movePointerAndHighlight(item) {
         const row = document.getElementById(`row-${item.gi}-${item.ni}`);
         const pointer = document.getElementById('pointer');
-        
-        // លុប Highlight ចាស់ៗចេញទាំងអស់
         document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('row-highlight'));
-        
         if(row) {
-            // រំកិលព្រួញ
             pointer.style.top = (row.offsetTop + 14) + "px";
-            // បន្ថែមបន្ទាត់ពណ៌ទឹកក្រូចឱ្យរត់តាម
             row.classList.add('row-highlight');
         }
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
-    function resetData() { if(confirm("តើអ្នកចង់ Reset ទិន្នន័យមែនទេ?")) db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).remove(); }
-    
-    function exportToExcel() { 
-        XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_List_${document.getElementById('monthTitle').innerText}.xlsx`); 
-    }
+    function resetData() { if(confirm("តើអ្នកចង់ Reset ទិន្នន័យមែនទេ?")) db.ref(getMonthKey()).remove(); }
+    function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty_Excel.xlsx"); }
 
     function exportToImage() {
         const area = document.getElementById("captureArea");
         area.classList.add('capture-padding');
-        html2canvas(area, { 
-            scale: 2.5, 
-            backgroundColor: "#ffffff",
-            useCORS: true 
-        }).then(canvas => {
+        html2canvas(area, { scale: 2.5, backgroundColor: "#ffffff", useCORS: true }).then(canvas => {
             area.classList.remove('capture-padding');
             const link = document.createElement('a');
-            link.download = `Duty_Roster_${document.getElementById('monthTitle').innerText}.png`;
+            link.download = "Duty_Roster.png";
             link.href = canvas.toDataURL();
             link.click();
         });
