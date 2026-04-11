@@ -3,42 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - ជំនាន់សុក្រឹតភាព</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - ជំនាន់ស្ថេរភាព</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Leelawadee UI', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
-        .container { background: white; max-width: 1000px; margin: auto; padding: 20px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #003366; color: white; padding: 15px; border-radius: 8px; }
-        .spin-box { text-align: center; border: 2px dashed #1a73e8; padding: 20px; border-radius: 10px; background: #fcfcfc; margin-bottom: 20px; }
-        #displayBox { font-size: 38px; font-weight: bold; color: #1a73e8; min-height: 55px; display: flex; align-items: center; justify-content: center; }
-        .duty-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        .duty-table th, .duty-table td { border: 1px solid #000; padding: 10px; text-align: center; }
-        .group-header { background: #003366 !important; color: white; text-align: left !important; padding-left: 15px; font-weight: bold; }
+        body { font-family: 'Leelawadee UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .container { background: white; max-width: 1000px; margin: auto; padding: 25px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #003366; color: white; padding: 15px; border-radius: 10px; }
+        .spin-box { text-align: center; border: 3px dashed #1a73e8; padding: 25px; border-radius: 12px; background: #fff; margin-bottom: 25px; }
+        #displayBox { font-size: 42px; font-weight: bold; color: #1a73e8; min-height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .duty-table { width: 100%; border-collapse: collapse; background: white; }
+        .duty-table th, .duty-table td { border: 1px solid #000; padding: 12px; text-align: center; }
+        .group-header { background: #003366 !important; color: white; text-align: left !important; padding-left: 20px; font-weight: bold; }
         .filled { background: #fffde7; font-weight: bold; color: #d32f2f; }
-        .action-btns { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; color: white; }
+        .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 12px 28px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.2s; }
         .btn-start { background: #28a745; }
         .btn-stop { background: #dc3545; }
         .btn-excel { background: #1d6f42; }
-        .btn-reset { background: #6c757d; font-size: 12px; }
+        .btn-reset { background: #6c757d; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .status-msg { margin-top: 10px; font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="calendar-header">
-        <button onclick="changeMonth(-1)" style="cursor:pointer">◀ ខែមុន</button>
+        <button onclick="changeMonth(-1)" style="cursor:pointer; color:white; background:none; border:1px solid white; padding:5px 10px; border-radius:5px;">◀ ខែមុន</button>
         <h2 id="monthTitle">---</h2>
-        <button onclick="changeMonth(1)" style="cursor:pointer">ខែបន្ទាប់ ▶</button>
+        <button onclick="changeMonth(1)" style="cursor:pointer; color:white; background:none; border:1px solid white; padding:5px 10px; border-radius:5px;">ខែបន្ទាប់ ▶</button>
     </div>
 
     <div class="spin-box">
         <div id="displayBox">---</div>
-        <div class="action-btns">
-            <button id="startBtn" class="btn btn-start" onclick="startSpinning()">▶ ចាប់ផ្តើមវិល</button>
-            <button id="stopBtn" class="btn btn-stop" onclick="stopSpinning()" disabled>🛑 បញ្ឈប់ម្ដងម្នាក់</button>
-            <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
-            <button class="btn btn-reset" onclick="resetMemory()">♻️ Reset Memory</button>
+        <div id="statusMsg" class="status-msg">សូមចុច "ចាប់ផ្ដើមវិល"</div>
+        <div class="btn-group">
+            <button id="startBtn" class="btn btn-start" onclick="startSpinning()">▶ ចាប់ផ្ដើមវិល</button>
+            <button id="stopBtn" class="btn btn-stop" onclick="stopOne()" disabled>🛑 បញ្ឈប់ម្តងម្នាក់</button>
+            <button class="btn btn-excel" onclick="exportToExcel()">📊 Excel</button>
+            <button class="btn btn-reset" onclick="resetAll()">♻️ Reset</button>
         </div>
     </div>
 
@@ -46,7 +49,7 @@
         <thead>
             <tr>
                 <th>ល.រ</th>
-                <th width="30%">នាម និង គោត្តនាម</th>
+                <th width="35%">នាម និង គោត្តនាម</th>
                 <th colspan="6">កាលបរិច្ឆេទយាម (រំលង ៤ថ្ងៃ)</th>
             </tr>
         </thead>
@@ -63,100 +66,111 @@
 
     let currentDate = new Date();
     let spinList = [];
-    let interval;
-    let groupUsedOffsets = { g1: [], g2: [], g3: [] };
+    let interval = null;
+    let usedOffsets = { g1: [], g2: [], g3: [] };
 
-    function updateHeader() {
+    function init() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
-        renderTable();
-    }
-
-    function changeMonth(step) {
-        currentDate.setMonth(currentDate.getMonth() + step);
-        updateHeader();
-    }
-
-    function renderTable() {
+        
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         const groups = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
-        groups.forEach((g, gIdx) => {
+        groups.forEach((g, idx) => {
             tbody.innerHTML += `<tr><td colspan="8" class="group-header">${g}</td></tr>`;
             for (let i = 0; i < 5; i++) {
-                const name = members[gIdx * 5 + i];
-                tbody.innerHTML += `<tr id="row-${name}"><td>${(i+1).toString().padStart(2, '0')}</td><td style="text-align:left;padding-left:15px;">${name}</td><td class="d1"></td><td class="d2"></td><td class="d3"></td><td class="d4"></td><td class="d5"></td><td class="d6"></td></tr>`;
+                const name = members[idx * 5 + i];
+                tbody.innerHTML += `<tr id="row-${name}"><td>${(i+1).toString().padStart(2, '0')}</td><td style="text-align:left;padding-left:15px;">${name}</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
             }
         });
     }
 
-    function startSpinning() {
-        spinList = [...members].sort(() => Math.random() - 0.5);
-        groupUsedOffsets = { g1: [], g2: [], g3: [] };
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-        interval = setInterval(() => {
-            const randomName = spinList[Math.floor(Math.random() * spinList.length)];
-            document.getElementById('displayBox').innerText = randomName;
-        }, 50);
+    function changeMonth(step) {
+        currentDate.setMonth(currentDate.getMonth() + step);
+        init();
     }
 
-    function stopSpinning() {
+    function startSpinning() {
+        if (interval) return;
+        spinList = [...members].filter(n => {
+            const row = document.getElementById(`row-${n}`);
+            return row && row.cells[2].innerText === "";
+        });
+
+        if (spinList.length === 0) {
+            alert("ឈ្មោះទាំងអស់ត្រូវបានបំពេញរួចរាល់!");
+            return;
+        }
+
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('statusMsg').innerText = "កំពុងវិល... សូមចុចប៊ូតុងក្រហមដើម្បីបញ្ឈប់";
+
+        interval = setInterval(() => {
+            const pick = spinList[Math.floor(Math.random() * spinList.length)];
+            document.getElementById('displayBox').innerText = pick;
+        }, 60);
+    }
+
+    function stopOne() {
         clearInterval(interval);
+        interval = null;
+        
         const name = document.getElementById('displayBox').innerText;
         const nameIdx = members.indexOf(name);
         const gKey = nameIdx < 5 ? 'g1' : (nameIdx < 10 ? 'g2' : 'g3');
 
-        // ១. គណនាថ្ងៃចាប់ផ្ដើមដែលមិនឱ្យជាន់គ្នា (Unique Offset per Group)
-        let lastDayKey = "lastDay_" + name;
-        let lastDay = parseInt(localStorage.getItem(lastDayKey)) || 0;
+        // Logic គណនាថ្ងៃបន្តវេន
+        let lastDay = parseInt(localStorage.getItem("lastDay_" + name)) || 0;
         const prevMonthDays = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
-        
         let startDay = (lastDay + 5) - prevMonthDays;
         while (startDay <= 0) startDay += 5;
 
-        // បើគណនាមកឃើញជាន់នឹងអ្នកដែលបានឈប់មុនក្នុងក្រុមជាមួយគ្នា យើងរំកិលវា
-        while (groupUsedOffsets[gKey].includes(startDay)) {
+        // បង្ការការជាន់ថ្ងៃក្នុងក្រុម
+        while (usedOffsets[gKey].includes(startDay)) {
             startDay = (startDay % 5) + 1;
         }
-        groupUsedOffsets[gKey].push(startDay);
+        usedOffsets[gKey].push(startDay);
 
-        // ២. បំពេញតារាង
+        // បំពេញថ្ងៃ
         const maxDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-        let dutyDates = [];
-        for (let d = startDay; d <= maxDays; d += 5) dutyDates.push(d.toString().padStart(2, '0'));
-
         const row = document.getElementById(`row-${name}`);
-        dutyDates.forEach((day, i) => {
-            const cell = row.querySelectorAll('td')[i + 2];
-            if (cell) { cell.innerText = day; cell.classList.add('filled'); }
-        });
+        let cellIdx = 2;
+        for (let d = startDay; d <= maxDays; d += 5) {
+            if (cellIdx < 8) {
+                row.cells[cellIdx].innerText = d.toString().padStart(2, '0');
+                row.cells[cellIdx].classList.add('filled');
+                cellIdx++;
+            }
+        }
 
-        localStorage.setItem(lastDayKey, dutyDates[dutyDays.length - 1]);
-        spinList = spinList.filter(n => n !== name);
+        localStorage.setItem("lastDay_" + name, startDay + (Math.floor((maxDays - startDay) / 5) * 5));
 
-        if (spinList.length > 0) {
-            setTimeout(startSpinning, 400); // រត់បន្តដោយស្វ័យប្រវត្តិល្បឿនលឿន
-        } else {
-            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-            document.getElementById('stopBtn').disabled = true;
-            document.getElementById('startBtn').disabled = false;
+        document.getElementById('stopBtn').disabled = true;
+        document.getElementById('startBtn').disabled = false;
+        document.getElementById('statusMsg').innerText = "បានរក្សាទុក " + name + "។ សូមចុច 'ចាប់ផ្ដើមវិល' បន្តទៀត។";
+        
+        if (spinList.length <= 1) {
+            document.getElementById('displayBox').innerText = "ចប់សព្វគ្រប់! ✨";
+            document.getElementById('statusMsg').innerText = "សមាជិកទាំងអស់ត្រូវបានរៀបចំរួចរាល់។";
         }
     }
 
-    function resetMemory() {
-        if(confirm("តើអ្នកចង់លុបការចងចាំចាស់ៗចោលមែនទេ? (ប្រើពេលមាន Error ជាន់ថ្ងៃ)")) {
+    function resetAll() {
+        if(confirm("តើអ្នកចង់សម្អាតទិន្នន័យទាំងអស់ដើម្បីរៀបចំឡើងវិញមែនទេ?")) {
             localStorage.clear();
-            location.reload();
+            usedOffsets = { g1: [], g2: [], g3: [] };
+            init();
+            document.getElementById('displayBox').innerText = "---";
         }
     }
 
     function exportToExcel() {
         const wb = XLSX.utils.table_to_book(document.getElementById("dutyTable"));
-        XLSX.writeFile(wb, `Duty_${document.getElementById('monthTitle').innerText}.xlsx`);
+        XLSX.writeFile(wb, `Torang_Duty_${document.getElementById('monthTitle').innerText}.xlsx`);
     }
 
-    window.onload = updateHeader;
+    window.onload = init;
 </script>
 </body>
 </html>
