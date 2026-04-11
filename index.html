@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្មវិធីចាប់ឈ្មោះអ្នកប្រចាំការ</title>
+    <style>
+        body { font-family: 'Leelawadee UI', 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #003366; }
+        .input-group { display: flex; margin-bottom: 15px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px 0 0 5px; font-size: 16px; }
+        .btn-add { padding: 10px 15px; background: #2196f3; color: white; border: none; border-radius: 0 5px 5px 0; cursor: pointer; }
+        .member-list { margin-bottom: 20px; max-height: 150px; overflow-y: auto; border: 1px solid #eee; padding: 10px; }
+        .spin-box { font-size: 32px; font-weight: bold; text-align: center; padding: 20px; background: #e3f2fd; color: #1976d2; border-radius: 10px; margin-bottom: 15px; min-height: 50px; border: 2px dashed #2196f3; }
+        button.main-btn { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; margin-bottom: 10px; border: none; border-radius: 8px; cursor: pointer; color: white; }
+        .btn-start { background: #4caf50; }
+        .btn-stop { background: #f44336; }
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .result-table td { padding: 8px; border-bottom: 1px solid #eee; }
+        .day-name { font-weight: bold; width: 40%; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📅 ចាប់ឈ្មោះអ្នកប្រចាំការ</h2>
+    
+    <div class="input-group">
+        <input type="text" id="nameInput" placeholder="បញ្ចូលឈ្មោះសមាជិក...">
+        <button class="btn-add" onclick="addMember()">បន្ថែម</button>
+    </div>
+
+    <div class="member-list" id="memberList">
+        </div>
+
+    <div class="spin-box" id="displayBox">---</div>
+
+    <button id="startBtn" class="main-btn btn-start" onclick="startSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
+    <button id="stopBtn" class="main-btn btn-stop" onclick="stopOneByOne()" disabled>🛑 បញ្ឈប់ម្តង១ៗ</button>
+
+    <table class="result-table">
+        <tbody id="resultBody">
+            </tbody>
+    </table>
+</div>
+
+<script>
+    let members = ["សុខា", "តារា", "បុប្ផា", "វិបុល", "ស្រីនាថ"];
+    let days = ["ច័ន្ទ", "អង្គារ", "ពុធ", "ព្រហស្បតិ៍", "សុក្រ", "សៅរ៍", "អាទិត្យ"];
+    let currentDayIndex = 0;
+    let spinning = false;
+    let spinInterval;
+
+    function renderMembers() {
+        const list = document.getElementById('memberList');
+        list.innerHTML = members.map((m, i) => `<div><input type="checkbox" checked value="${m}"> ${m}</div>`).join('');
+    }
+
+    function addMember() {
+        const input = document.getElementById('nameInput');
+        if (input.value.trim()) {
+            members.push(input.value.trim());
+            input.value = '';
+            renderMembers();
+        }
+    }
+
+    function startSpin() {
+        const checkedMembers = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+        if (checkedMembers.length === 0) return alert("សូមរើសសមាជិក!");
+
+        spinning = true;
+        currentDayIndex = 0;
+        document.getElementById('resultBody').innerHTML = '';
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+
+        spinInterval = setInterval(() => {
+            const randomName = checkedMembers[Math.floor(Math.random() * checkedMembers.length)];
+            document.getElementById('displayBox').innerText = randomName;
+        }, 50);
+    }
+
+    function stopOneByOne() {
+        if (!spinning || currentDayIndex >= 7) return;
+
+        const finalName = document.getElementById('displayBox').innerText;
+        const resultBody = document.getElementById('resultBody');
+        
+        resultBody.innerHTML += `<tr><td class="day-name">ថ្ងៃ${days[currentDayIndex]}:</td><td>${finalName}</td></tr>`;
+        currentDayIndex++;
+
+        if (currentDayIndex >= 7) {
+            clearInterval(spinInterval);
+            spinning = false;
+            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+    }
+
+    renderMembers();
+</script>
+
+</body>
+</html>
