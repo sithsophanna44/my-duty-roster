@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Excel Fixed</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - ជំនាន់កែសម្រួលរួចរាល់</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -78,7 +78,7 @@
 </div>
 
 <script>
-    const members = ["បុគ្គល-ក", "បុគ្គល-ខ", "បុគ្គល-គ", "បុគ្គល-ឃ", "បុគ្គល-ង", "បុគ្គល-ច", "វិបុគ្គល-ឆ", "បុគ្គល-ជ", "បុគ្គល-ឈ", "បុគ្គល-ញ", "បុគ្គល-ដ", "បុគ្គល-ថ", "បុគ្គល-ឌ", "បុគ្គល-ធ", "បុគ្គល-ន"];
+    const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
     let currentDate = new Date();
     let groupUsedOffsets = { g1: [], g2: [], g3: [] };
 
@@ -91,6 +91,7 @@
         tbody.innerHTML = '';
         const savedData = JSON.parse(localStorage.getItem(getMonthKey(currentDate))) || {};
         const groups = ["ក្រុមទី ១ (ប្រចាំបញ្ជា)", "ក្រុមទី ២ (ប្រចាំការ)", "ក្រុមទី ៣ (ប្រចាំថ្ងៃ)"];
+        
         groups.forEach((g, idx) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">${g}</td></tr>`;
             for (let i = 0; i < 5; i++) {
@@ -107,12 +108,19 @@
         groupUsedOffsets = { g1: [], g2: [], g3: [] };
         let spinList = [...members].sort(() => Math.random() - 0.5);
         let monthData = {};
+
         for (let i = 0; i < members.length; i++) {
             const name = await new Promise(res => {
                 let t = 0;
                 let itv = setInterval(() => {
-                    document.getElementById('displayBox').innerText = spinList[Math.floor(Math.random()*spinList.length)];
-                    if((t+=50)>400){ clearInterval(itv); let fn = document.getElementById('displayBox').innerText; spinList=spinList.filter(n=>n!==fn); setTimeout(()=>res(fn),50); }
+                    const tempPick = spinList[Math.floor(Math.random() * spinList.length)];
+                    document.getElementById('displayBox').innerText = tempPick;
+                    if ((t += 50) > 400) { 
+                        clearInterval(itv); 
+                        const fn = document.getElementById('displayBox').innerText; 
+                        spinList = spinList.filter(n => n !== fn); 
+                        setTimeout(() => res(fn), 50); 
+                    }
                 }, 50);
             });
             monthData[name] = fillData(name);
@@ -127,6 +135,7 @@
         let startDay = Math.floor(Math.random() * 5) + 1;
         while (groupUsedOffsets[gKey].includes(startDay)) startDay = (startDay % 5) + 1;
         groupUsedOffsets[gKey].push(startDay);
+
         const total = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
         let days = ["", "", "", "", "", "", ""];
         for (let d = startDay, c = 0; d <= total && c < 7; d += 5, c++) days[c] = d.toString().padStart(2, '0');
@@ -134,21 +143,19 @@
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth() + s); init(); }
-    function resetAll() { if(confirm("Reset Memory?")) { localStorage.removeItem(getMonthKey(currentDate)); init(); } }
+    
+    function resetAll() { 
+        if(confirm("តើអ្នកចង់សម្អាតការចងចាំដើម្បីរៀបចំសារជាថ្មី?")) { 
+            localStorage.removeItem(getMonthKey(currentDate)); 
+            init(); 
+        } 
+    }
 
-    // --- មុខងារ Export Excel ដែលបានកែសម្រួលឱ្យស្អាត ---
     function exportToExcel() {
         const table = document.getElementById("dutyTable");
         const wb = XLSX.utils.table_to_book(table, { sheet: "កាលវិភាគយាម" });
         const ws = wb.Sheets["កាលវិភាគយាម"];
-
-        // កំណត់ទំហំ Column (Width) ឱ្យធំល្មមមើលឃើញអក្សរ
-        ws['!cols'] = [
-            { wch: 6 },  // ល.រ
-            { wch: 25 }, // នាម និង គោត្តនាម
-            { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 } // ថ្ងៃទី
-        ];
-
+        ws['!cols'] = [{ wch: 6 }, { wch: 25 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }];
         const fileName = `Schedule_${document.getElementById('monthTitle').innerText.replace(/\s/g, '_')}.xlsx`;
         XLSX.writeFile(wb, fileName);
     }
