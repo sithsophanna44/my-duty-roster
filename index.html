@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>កម្មវិធីចាប់ឈ្មោះប្រចាំការ - បញ្ឈប់ម្ដងម្នាក់</title>
+    <title>កម្មវិធីចាប់ឈ្មោះប្រចាំការ - Logic ត្រឹមត្រូវ</title>
     <style>
         body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .container { background: white; width: 100%; max-width: 950px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #003366; margin-bottom: 20px; }
         
         .setup-section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         textarea { width: 100%; height: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 5px; resize: none; box-sizing: border-box; }
         
         .spin-area { background: #e8f0fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #1a73e8; }
-        #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; margin-bottom: 15px; }
+        #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; margin-bottom: 10px; }
         
         .btn-group { display: flex; gap: 10px; }
         .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; }
@@ -25,13 +25,13 @@
         .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; font-size: 14px; }
         .duty-table th { background: #f2f2f2; }
         .group-header { background: #e8f0fe !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
-        .highlight-name { font-weight: bold; color: #1a73e8; }
+        .filled { background: #fffde7; font-weight: bold; color: #d32f2f; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📅 តារាងបែងចែកអ្នកប្រចាំការ</h2>
+    <h2>📅 តារាងបែងចែកអ្នកប្រចាំការ (ម្នាក់ម្ដង រំលង ៤ថ្ងៃ)</h2>
     
     <div class="setup-section">
         <div><label>១. ក្រុមប្រចាំបញ្ជា</label><textarea id="g1">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច</textarea></div>
@@ -40,7 +40,7 @@
     </div>
 
     <div class="spin-area">
-        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">ត្រៀមខ្លួន...</div>
+        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">សូមបញ្ចូលឈ្មោះ រួចចុចវិល...</div>
         <div id="displayBox">---</div>
         <div class="btn-group">
             <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
@@ -52,8 +52,8 @@
         <thead>
             <tr>
                 <th>ល.រ</th>
-                <th width="30%">នាម និង គោត្តនាម</th>
-                <th colspan="6">ថ្ងៃអនុវត្តការងារ (កាលបរិច្ឆេទ)</th>
+                <th width="25%">នាម និង គោត្តនាម</th>
+                <th colspan="6">កាលបរិច្ឆេទយាម (រំលង ៤ថ្ងៃ)</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -62,59 +62,51 @@
 
 <script>
     let masterList = [];
-    let currentProcessIndex = 0;
     let spinInterval;
-    let groupsData = [];
+    let stopCounter = 0; // ប្រើដើម្បីកំណត់ "វេនថ្ងៃ" ឱ្យអ្នកដែលត្រូវបានបញ្ឈប់
 
     function prepareSpin() {
         const getNames = (id) => document.getElementById(id).value.trim().split(/\s+/).filter(n => n);
-        
-        groupsData = [
-            { title: "ប្រចាំបញ្ជា", members: getNames('g1') },
-            { title: "ប្រចាំការ", members: getNames('g2') },
-            { title: "ប្រចាំថ្ងៃ", members: getNames('g3') }
+        const g1 = getNames('g1'), g2 = getNames('g2'), g3 = getNames('g3');
+
+        if (g1.length !== 5 || g2.length !== 5 || g3.length !== 5) {
+            alert("ដើម្បីឱ្យកាលវិភាគរំលង ៤ថ្ងៃដើរបានល្អ សូមបញ្ចូលឈ្មោះឱ្យបាន ៥នាក់ ក្នុងមួយក្រុម!");
+        }
+
+        masterList = [
+            ...g1.map(n => ({name: n, group: 'g1'})),
+            ...g2.map(n => ({name: n, group: 'g2'})),
+            ...g3.map(n => ({name: n, group: 'g3'}))
         ];
 
-        // បង្កើតបញ្ជីឈ្មោះសរុបដើម្បីវិល
-        masterList = [];
-        groupsData.forEach(g => {
-            g.members.forEach(m => masterList.push({ name: m, groupTitle: g.title }));
-        });
-
-        if (masterList.length === 0) return alert("សូមបញ្ចូលឈ្មោះសមាជិក!");
-
-        // រៀបចំតារាងឱ្យនៅទទេ
+        // រៀបចំតារាង
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
-        groupsData.forEach(g => {
+        const groups = [{id:'g1', title:'ប្រចាំបញ្ជា'}, {id:'g2', title:'ប្រចាំការ'}, {id:'g3', title:'ប្រចាំថ្ងៃ'}];
+        
+        groups.forEach(g => {
             tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${g.title}</td></tr>`;
-            g.members.forEach((m, i) => {
+            const members = g.id === 'g1' ? g1 : (g.id === 'g2' ? g2 : g3);
+            members.forEach((m, i) => {
                 tableBody.innerHTML += `
-                    <tr id="row-${g.title}-${m}">
+                    <tr id="row-${g.id}-${m}">
                         <td>${(i+1).toString().padStart(2, '0')}</td>
-                        <td class="name-label" style="text-align:left; padding-left:10px;">${m}</td>
+                        <td style="text-align:left; padding-left:10px;">${m}</td>
                         <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
                         <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
                     </tr>`;
             });
         });
 
-        currentProcessIndex = 0;
+        stopCounter = 0;
         startSpinning();
     }
 
     function startSpinning() {
-        if (currentProcessIndex >= masterList.length) {
-            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-            document.getElementById('statusLabel').innerText = "បានរៀបចំគ្រប់គ្នាហើយ";
-            return;
-        }
-
+        if (masterList.length === 0) return;
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
-        document.getElementById('statusLabel').innerText = "កំពុងវិលរកវេនសម្រាប់សមាជិកទី " + (currentProcessIndex + 1);
+        document.getElementById('statusLabel').innerText = "កំពុងចាប់រកវេនទី " + (stopCounter + 1);
 
         spinInterval = setInterval(() => {
             const randomPick = masterList[Math.floor(Math.random() * masterList.length)];
@@ -125,41 +117,39 @@
     function stopOneByOne() {
         clearInterval(spinInterval);
         const selectedName = document.getElementById('displayBox').innerText;
-        
-        // រកមើលថាឈ្មោះនឹងស្ថិតក្នុងក្រុមណា
-        const memberInfo = masterList.find(m => m.name === selectedName);
-        const targetRow = document.getElementById(`row-${memberInfo.groupTitle}-${selectedName}`);
-        
-        if (targetRow) {
-            // គណនាថ្ងៃ (ម្នាក់រំលង ៤ ថ្ងៃ = Cycle ៥)
-            // យើងប្រើ currentProcessIndex ដើម្បីកំណត់ថ្ងៃចាប់ផ្តើម (Offset)
-            let dutyDays = [];
-            let startDay = (currentProcessIndex % 5) + 1;
-            for (let d = startDay; d <= 30; d += 5) {
-                dutyDays.push(d.toString().padStart(2, '0'));
-            }
+        const pickedObj = masterList.find(m => m.name === selectedName);
 
-            // បំពេញចូលក្នុងតារាង
-            targetRow.classList.add('highlight-name');
+        // Logic សំខាន់៖ កំណត់ថ្ងៃចាប់ផ្ដើមតាមលំដាប់នៃការចុច (Stop Order)
+        // វេនទី១ ចាប់ផ្ដើមថ្ងៃទី០១, វេនទី២ ថ្ងៃទី០២... វេនទី៥ ថ្ងៃទី០៥
+        // % 5 ព្រោះយើងមានសមាជិក ៥នាក់ក្នុងមួយក្រុម
+        let startDay = (stopCounter % 5) + 1;
+        let dutyDays = [];
+        for (let d = startDay; d <= 30; d += 5) {
+            dutyDays.push(d.toString().padStart(2, '0'));
+        }
+
+        const targetRow = document.getElementById(`row-${pickedObj.group}-${selectedName}`);
+        if (targetRow) {
             dutyDays.forEach((day, i) => {
                 const cell = targetRow.querySelector(`.d-${i+1}`);
-                if (cell) cell.innerText = day;
+                if (cell) {
+                    cell.innerText = day;
+                    cell.classList.add('filled');
+                }
             });
+        }
 
-            // លុបឈ្មោះដែលជាប់ហើយ ចេញពីបញ្ជីវិល ដើម្បីកុំឱ្យជាន់គ្នា
-            masterList = masterList.filter(m => m.name !== selectedName);
-            
-            // បន្តទៅអ្នកបន្ទាប់
-            // currentProcessIndex++; // មិនបាច់បូកទេ ព្រោះយើងលុបចេញពី Array ហើយ
-            
-            if (masterList.length > 0) {
-                setTimeout(startSpinning, 500); // សម្រាក ០.៥ វិនាទី រួចវិលបន្ត
-            } else {
-                document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('stopBtn').disabled = true;
-                document.getElementById('statusLabel').innerText = "បានបញ្ចប់ការចាប់ឈ្មោះ";
-            }
+        // លុបឈ្មោះដែលរើសរួច
+        masterList = masterList.filter(m => m.name !== selectedName);
+        stopCounter++;
+
+        if (masterList.length > 0) {
+            setTimeout(startSpinning, 600);
+        } else {
+            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('statusLabel').innerText = "រៀបចំកាលវិភាគចប់សព្វគ្រប់";
         }
     }
 </script>
