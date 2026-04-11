@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Exciting Version</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Ultimate Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -14,73 +14,81 @@
     <style>
         :root { --primary: #004d40; --accent: #ff6f00; --bg: #eceff1; }
         body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
-        .container { background: white; max-width: 1000px; margin: auto; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: none; }
+        .container { background: white; max-width: 1000px; margin: auto; padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: none; }
         
         .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .calendar-header h2 { font-size: 1.2rem; margin: 0; }
+        .calendar-header h2 { font-size: 1.2rem; margin: 0; font-weight: 700; }
 
-        /* Admin Control Panel */
         .manage-box { background: #f1f8e9; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #c8e6c9; text-align: center; }
-        #displayBox { font-size: 2.2rem; font-weight: 800; color: var(--primary); min-height: 60px; margin: 10px 0; background: #fff; padding: 10px; border-radius: 8px; border: 3px dashed var(--primary); display: flex; align-items: center; justify-content: center; }
+        #displayBox { font-size: 2rem; font-weight: 800; color: var(--primary); min-height: 60px; margin: 10px 0; background: #fff; padding: 10px; border-radius: 8px; border: 3px dashed var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
 
-        /* Table & Pointer Styling */
+        /* Pointer & Table Layout */
         .table-container { position: relative; width: 100%; overflow: hidden; }
         #pointer { 
             position: absolute; left: 0; width: 0; height: 0; 
             border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 20px solid var(--accent);
-            display: none; z-index: 10; transition: top 0.1s ease-out;
+            display: none; z-index: 20; transition: top 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .table-responsive { width: 100%; overflow-x: auto; background: #fff; box-sizing: border-box; }
-        .capture-padding { padding: 40px !important; } /* សម្រាប់គែមពេលថតរូប */
+        .capture-padding { padding: 45px !important; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { border: 1.2px solid #000; padding: 10px; text-align: center; font-size: 15px; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; position: relative; }
+        th, td { border: 1.2px solid #000; padding: 12px; text-align: center; font-size: 15px; font-weight: 600; position: relative; z-index: 5; }
         th { background: #37474f; color: white; font-size: 14px; }
         .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 15px; font-weight: 700; }
-        .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: 700; transition: all 0.3s; }
-        .active-row { background: rgba(255, 111, 0, 0.15) !important; }
+        
+        /* បន្ទាត់ Highlight ពណ៌ទឹកក្រូចដែលរត់ដេញតាមឈ្មោះ */
+        .row-highlight { 
+            background: rgba(255, 111, 0, 0.25) !important; 
+            transition: all 0.1s ease-in-out;
+        }
+        
+        .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: 800; }
 
         /* Buttons */
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; justify-content: center; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 14px; text-transform: uppercase; width: 100%; }
+        .btn { padding: 12px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 13px; text-transform: uppercase; width: 100%; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
         .btn-img { background: #f39c12; color: white; }
-        .btn-logout { background: #555; color: white; }
+        .btn-excel { background: #2e7d32; color: white; }
+        .btn-logout { background: #455a64; color: white; }
         .btn-start { background: var(--primary); color: white; margin-top: 10px; }
 
-        @media (min-width: 600px) { .btn { width: auto; } }
+        @media (min-width: 600px) { .btn { width: auto; } .calendar-header h2 { font-size: 1.5rem; } }
 
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .login-box { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="color:var(--primary)">ចូលគ្រប់គ្រង</h2>
+        <h2 style="color:var(--primary); margin-bottom: 20px;">ប្រព័ន្ធគ្រប់គ្រងយាម</h2>
         <input type="text" id="username" placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
         <input type="password" id="password" placeholder="លេខសម្ងាត់">
-        <button class="btn btn-start" onclick="checkLogin()">LOGIN</button>
+        <button class="btn btn-start" onclick="checkLogin()">ចូលប្រើប្រាស់</button>
     </div>
 </div>
 
 <div class="container" id="mainApp">
     <div class="calendar-header">
-        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">◀</button>
+        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px 12px; border-radius:6px; cursor:pointer;">◀</button>
         <h2 id="monthTitle">---</h2>
-        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">▶</button>
+        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px 12px; border-radius:6px; cursor:pointer;">▶</button>
     </div>
 
     <div id="adminPanel" class="manage-box" style="display:none;">
-        <div id="displayBox">READY</div>
+        <div id="displayBox">DEPLOYMENT READY</div>
         <button id="startBtn" class="btn btn-start" onclick="startExcitingAuto()">🎲 ចាប់ផ្ដើមរៀបចំ (START)</button>
         <button class="btn" style="background:#78909c; color:white; margin-top:5px;" onclick="resetData()">♻️ Reset Data</button>
     </div>
 
     <div class="btn-group">
         <button class="btn btn-img" onclick="exportToImage()">🖼️ Download IMAGE</button>
+        <button id="excelBtn" class="btn btn-excel" style="display:none;" onclick="exportToExcel()">📊 Download EXCEL</button>
         <button class="btn btn-logout" onclick="logout()">🚪 Logout</button>
         <button class="btn" style="background:#444; color:white;" onclick="location.reload()">🔄 Refresh</button>
     </div>
@@ -93,7 +101,7 @@
                     <tr>
                         <th width="10%">ល.រ</th>
                         <th>នាម និង គោត្តនាម</th>
-                        <th colspan="7">ថ្ងៃយាម</th>
+                        <th colspan="7">កាលបរិច្ឆេទយាម</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -103,7 +111,7 @@
 </div>
 
 <script>
-    // --- Firebase Config (Your Config) ---
+    // --- Firebase Config ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYEk9HCOL8ClUffxKsA1M2WEKCBSc4zlU",
         databaseURL: "https://my-duty-system-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -126,13 +134,16 @@
         const p = document.getElementById('password').value;
         let role = (u === 'admin' && p === '123') ? 'ADMIN' : (u === 'user' && p === '123' ? 'USER' : null);
         if (role) { sessionStorage.setItem('userRole', role); showApp(role); }
-        else { alert("Login Failed!"); }
+        else { alert("Login មិនត្រឹមត្រូវ!"); }
     }
 
     function showApp(role) {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        if (role === 'ADMIN') document.getElementById('adminPanel').style.display = 'block';
+        if (role === 'ADMIN') {
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('excelBtn').style.display = 'block';
+        }
         loadData();
     }
 
@@ -172,20 +183,22 @@
         let groupUsed = {g0:[], g1:[], g2:[]};
 
         for(let item of spinList) {
-            // ១. វិលឈ្មោះក្នុងប្រអប់
+            // ១. វិលឈ្មោះ និងបន្ទាត់ Highlight រត់ដេញតាម
             let timer = 0;
-            while(timer < 400) {
-                document.getElementById('displayBox').innerText = flatList[Math.floor(Math.random()*flatList.length)].name;
-                movePointer(flatList[Math.floor(Math.random()*flatList.length)]);
-                await new Promise(r => setTimeout(r, 50));
-                timer += 50;
+            while(timer < 450) {
+                let tempIdx = Math.floor(Math.random()*flatList.length);
+                let tempItem = flatList[tempIdx];
+                document.getElementById('displayBox').innerText = tempItem.name;
+                movePointerAndHighlight(tempItem); // រត់បន្ទាត់ពណ៌ទឹកក្រូច
+                await new Promise(r => setTimeout(r, 60);
+                timer += 60;
             }
 
-            // ២. បង្ហាញឈ្មោះពិតដែលចាប់បាន
+            // ២. បង្ហាញឈ្មោះពិត និងឈប់ឱ្យស្ងៀម
             document.getElementById('displayBox').innerText = item.name;
-            movePointer(item);
+            movePointerAndHighlight(item);
             const row = document.getElementById(`row-${item.gi}-${item.ni}`);
-            row.classList.add('active-row');
+            row.style.background = "rgba(255, 111, 0, 0.4)"; // បន្ទាត់ដិតពេលជាប់
 
             // ៣. គណនាថ្ងៃយាម
             let sDay = Math.floor(Math.random()*5)+1;
@@ -197,31 +210,48 @@
             for(let d=sDay, c=0; d<=total && c<7; d+=5, c++) days[c] = d.toString().padStart(2, '0');
             results[item.name] = days;
 
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 600));
             db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).update({[item.name]: days});
-            row.classList.remove('active-row');
+            row.style.background = ""; // លុប highlight វិញ
         }
         pointer.style.display = 'none';
         document.getElementById('displayBox').innerText = "រួចរាល់ ✨";
         startBtn.disabled = false;
     }
 
-    function movePointer(item) {
+    function movePointerAndHighlight(item) {
         const row = document.getElementById(`row-${item.gi}-${item.ni}`);
         const pointer = document.getElementById('pointer');
-        if(row) pointer.style.top = (row.offsetTop + 12) + "px";
+        
+        // លុប Highlight ចាស់ៗចេញទាំងអស់
+        document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('row-highlight'));
+        
+        if(row) {
+            // រំកិលព្រួញ
+            pointer.style.top = (row.offsetTop + 14) + "px";
+            // បន្ថែមបន្ទាត់ពណ៌ទឹកក្រូចឱ្យរត់តាម
+            row.classList.add('row-highlight');
+        }
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
-    function resetData() { if(confirm("Reset data?")) db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).remove(); }
+    function resetData() { if(confirm("តើអ្នកចង់ Reset ទិន្នន័យមែនទេ?")) db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).remove(); }
     
+    function exportToExcel() { 
+        XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_List_${document.getElementById('monthTitle').innerText}.xlsx`); 
+    }
+
     function exportToImage() {
         const area = document.getElementById("captureArea");
         area.classList.add('capture-padding');
-        html2canvas(area, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+        html2canvas(area, { 
+            scale: 2.5, 
+            backgroundColor: "#ffffff",
+            useCORS: true 
+        }).then(canvas => {
             area.classList.remove('capture-padding');
             const link = document.createElement('a');
-            link.download = `Duty_${document.getElementById('monthTitle').innerText}.png`;
+            link.download = `Duty_Roster_${document.getElementById('monthTitle').innerText}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
