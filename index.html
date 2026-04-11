@@ -6,7 +6,7 @@
     <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ</title>
     <style>
         body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #eef2f3; margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid #003366; }
+        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid #003366; position: relative; }
         h2 { text-align: center; color: #003366; text-transform: uppercase; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
         .setup-section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
@@ -14,8 +14,11 @@
         label { font-weight: bold; margin-bottom: 5px; color: #333; font-size: 14px; }
         textarea { padding: 10px; border: 1px solid #ccc; border-radius: 5px; height: 80px; resize: none; font-family: inherit; }
         
-        .main-btn { grid-column: span 3; padding: 12px; background: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        .main-btn:hover { background: #0055aa; }
+        .button-group { grid-column: span 3; display: flex; gap: 10px; margin-top: 10px; }
+        .main-btn { flex: 1; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; color: white; }
+        .btn-blue { background: #003366; }
+        .btn-orange { background: #f39c12; }
+        .main-btn:hover { opacity: 0.8; }
 
         .duty-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
         .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; }
@@ -37,18 +40,21 @@
     
     <div class="setup-section">
         <div class="input-box">
-            <label>១. ក្រុមប្រចាំបញ្ជា (ឈ្មោះដកឃ្លាគ្នា)</label>
-            <textarea id="group1" placeholder="ឧទាហរណ៍៖ សុខា តារា បុប្ផា..."></textarea>
+            <label>១. ក្រុមប្រចាំបញ្ជា</label>
+            <textarea id="group1" placeholder="ឈ្មោះដកឃ្លាគ្នា..."></textarea>
         </div>
         <div class="input-box">
             <label>២. ក្រុមប្រចាំការ</label>
-            <textarea id="group2" placeholder="ឧទាហរណ៍៖ វិបុល ស្រីនាថ..."></textarea>
+            <textarea id="group2" placeholder="ឈ្មោះដកឃ្លាគ្នា..."></textarea>
         </div>
         <div class="input-box">
             <label>៣. ក្រុមប្រចាំថ្ងៃ</label>
-            <textarea id="group3" placeholder="ឧទាហរណ៍៖ មុន្នី ចិន្តា..."></textarea>
+            <textarea id="group3" placeholder="ឈ្មោះដកឃ្លាគ្នា..."></textarea>
         </div>
-        <button class="main-btn" onclick="generateSchedule()">រៀបចំតារាងប្រចាំការ</button>
+        <div class="button-group">
+            <button class="main-btn btn-blue" onclick="generateSchedule(false)">📅 រៀបតាមលំដាប់ (Normal)</button>
+            <button class="main-btn btn-orange" onclick="generateSchedule(true)">🎲 រៀបបែបចៃដន្យ (Random)</button>
+        </div>
     </div>
 
     <table class="duty-table" id="rosterTable">
@@ -59,66 +65,73 @@
                 <th colspan="6">ថ្ងៃអនុវត្តការងារ (កាលបរិច្ឆេទ)</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
-            </tbody>
+        <tbody id="tableBody"></tbody>
     </table>
     
-    <button class="print-btn" onclick="window.print()">បោះពុម្ព (Print)</button>
+    <button class="print-btn" onclick="window.print()">Print</button>
 </div>
 
 <script>
-    function generateSchedule() {
-        const g1 = document.getElementById('group1').value.trim().split(/\s+/).filter(n => n);
-        const g2 = document.getElementById('group2').value.trim().split(/\s+/).filter(n => n);
-        const g3 = document.getElementById('group3').value.trim().split(/\s+/).filter(n => n);
+    function generateSchedule(isRandom) {
+        const getNames = (id) => document.getElementById(id).value.trim().split(/\s+/).filter(n => n);
+        
+        let g1 = getNames('group1');
+        let g2 = getNames('group2');
+        let g3 = getNames('group3');
         
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
 
-        if(g1.length > 0) addGroupToTable("ប្រចាំបញ្ជា", g1);
-        if(g2.length > 0) addGroupToTable("ប្រចាំការ", g2);
-        if(g3.length > 0) addGroupToTable("ប្រចាំថ្ងៃ", g3);
+        if(g1.length > 0) addGroupToTable("ប្រចាំបញ្ជា", g1, isRandom);
+        if(g2.length > 0) addGroupToTable("ប្រចាំការ", g2, isRandom);
+        if(g3.length > 0) addGroupToTable("ប្រចាំថ្ងៃ", g3, isRandom);
     }
 
-    function addGroupToTable(title, members) {
+    function addGroupToTable(title, members, isRandom) {
         const tableBody = document.getElementById('tableBody');
-        
-        // បន្ថែមចំណងជើងក្រុម (Header)
-        let headerRow = `<tr><td colspan="8" class="group-header">${title}</td></tr>`;
-        tableBody.innerHTML += headerRow;
+        tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${title}</td></tr>`;
 
-        // ចំនួនថ្ងៃក្នុងមួយខែ (ឧទាហរណ៍ ៣០ ថ្ងៃ)
         const totalDays = 30;
+        let dayArray = [];
+        for (let i = 1; i <= totalDays; i++) dayArray.push(i);
 
-        members.forEach((name, index) => {
+        // ប្រសិនបើជ្រើសរើសយក Random យើងនឹងច្របល់លេខថ្ងៃទី ១ ដល់ ៣០ ឱ្យច្របូកច្របល់
+        if (isRandom) {
+            for (let i = dayArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [dayArray[i], dayArray[j]] = [dayArray[j], dayArray[i]];
+            }
+        }
+
+        members.forEach((name, mIndex) => {
             let row = `<tr>`;
-            row += `<td>${(index + 1).toString().padStart(2, '0')}</td>`;
+            row += `<td>${(mIndex + 1).toString().padStart(2, '0')}</td>`;
             row += `<td style="text-align: left; padding-left: 10px;">${name}</td>`;
             
-            // គណនាថ្ងៃប្រចាំការ (បែងចែកថ្ងៃទី ១ ដល់ ៣០ ឱ្យសមាជិកក្នុងក្រុម)
+            // បែងចែកថ្ងៃឱ្យសមាជិកម្នាក់ៗ
             let dutyDays = [];
-            for (let d = 1; d <= totalDays; d++) {
-                if ((d - 1) % members.length === index) {
-                    dutyDays.push(d.toString().padStart(2, '0'));
+            for (let dIndex = 0; dIndex < dayArray.length; dIndex++) {
+                if (dIndex % members.length === mIndex) {
+                    dutyDays.push(dayArray[dIndex].toString().padStart(2, '0'));
                 }
             }
+            
+            // តម្រៀបលេខថ្ងៃពីតូចទៅធំវិញ ដើម្បីឱ្យស្រួលមើលក្នុងតារាង
+            dutyDays.sort((a, b) => a - b);
 
-            // បង្ហាញថ្ងៃប្រចាំការក្នុងប្រអប់តារាង
             for (let i = 0; i < 6; i++) {
                 row += `<td>${dutyDays[i] || ''}</td>`;
             }
-            
             row += `</tr>`;
             tableBody.innerHTML += row;
         });
     }
 
-    // បង្ហាញទិន្នន័យគំរូពេលបើកដំបូង
     window.onload = function() {
         document.getElementById('group1').value = "សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច";
         document.getElementById('group2').value = "ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត";
         document.getElementById('group3').value = "សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា";
-        generateSchedule();
+        generateSchedule(false);
     }
 </script>
 
