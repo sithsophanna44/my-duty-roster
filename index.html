@@ -2,8 +2,8 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duty Roster - Online Sync</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Military Online Sync</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -11,42 +11,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        :root { --primary: #2a3a25; --accent: #f1c40f; --bg-body: #34495e; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); margin: 0; padding: 10px; color: #212121; }
+        :root { --primary: #2a3a25; --accent: #f1c40f; --bg: #34495e; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #212121; }
         .container { background: white; max-width: 1100px; margin: auto; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: none; }
         
-        /* Login */
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: white; padding: 30px; border-radius: 10px; width: 90%; max-width: 350px; text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        
-        /* UI Military */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .spin-box { text-align: center; border: 4px solid var(--primary); padding: 25px; border-radius: 12px; background-color: #3a5035; background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%); background-size: 40px 40px; color: #ccff00; margin-bottom: 20px; }
-        #displayBox { font-size: 2.5rem; font-weight: 700; text-shadow: 0 0 10px rgba(204,255,0,0.8); }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-bottom: 4px solid #1e2a1a; }
+        .spin-box { text-align: center; border: 4px solid var(--primary); padding: 25px; border-radius: 12px; background-color: #3a5035; background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%); background-size: 40px 40px; margin-bottom: 20px; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
+        #displayBox { font-size: 2.2rem; font-weight: 700; color: #ccff00; min-height: 60px; text-shadow: 0 0 15px rgba(204,255,0,0.8); display: flex; align-items: center; justify-content: center; }
+
+        .manage-panel { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #c8e6c9; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        .tag { background: white; padding: 5px 12px; border-radius: 20px; border: 1px solid #ddd; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 5px; margin: 2px; }
 
         .table-responsive { width: 100%; overflow-x: auto; border: 2px solid #000; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; background: white; }
-        th, td { border: 1.5px solid #000; padding: 10px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; min-width: 750px; background: white; }
+        th, td { border: 1px solid #000; padding: 12px; text-align: center; font-weight: 600; }
         th { background: #212121; color: white; }
-        .group-header { background: #dcdcdc !important; text-align: left !important; font-weight: bold; }
-        .filled { background: #a3c19e !important; font-weight: bold; }
-        
-        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-transform: uppercase; color: white; margin: 5px; }
-        .btn-start { background: var(--accent); color: black; }
+        .group-header { background: #dcdcdc !important; text-align: left !important; padding-left: 20px; font-weight: 700; }
+        .filled { background: #a3c19e !important; color: #1a1a1a; font-weight: 700; }
+        .active-row { background: #e0f2f1 !important; border: 2.5px solid var(--accent) !important; }
+
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 700; text-transform: uppercase; transition: 0.3s; color: white; width: 100%; box-sizing: border-box; }
+        .btn-start { background: var(--accent); color: #000; }
         .btn-excel { background: #2e7d32; }
-        .btn-nav { background: none; border: 1px solid white; padding: 5px 10px; }
+        .btn-nav { width: auto; background: none; border: 1px solid white; color: white; padding: 5px 10px; }
+
+        @media (min-width: 768px) { .btn { width: auto; } .input-group { flex-direction: row; } }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2>LOGIN SYSTEM</h2>
+        <h2 style="color:var(--primary)">MILITARY SYSTEM</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
         <button class="btn" style="background:var(--primary); width:100%" onclick="checkLogin()">LOGIN</button>
-        <p style="font-size:12px; color:#777; margin-top:10px;">Admin: admin/123 | User: user/123</p>
+        <p id="errorMsg" style="color:red; display:none; margin-top:10px;">Login Failed!</p>
     </div>
 </div>
 
@@ -57,23 +62,36 @@
         <button class="btn-nav" onclick="changeMonth(1)">NEXT ▶</button>
     </div>
 
-    <div id="adminControls" style="display:none;">
+    <div id="adminPanel" style="display:none;">
+        <div class="manage-panel">
+            <div class="input-group">
+                <input type="text" id="nameIn" placeholder="ឈ្មោះសមាជិក...">
+                <select id="groupIn" style="padding:10px; border-radius:6px; font-family: inherit;">
+                    <option value="0">Unit 1 (ប្រចាំបញ្ជា)</option>
+                    <option value="1">Unit 2 (ប្រចាំការ)</option>
+                    <option value="2">Unit 3 (ប្រចាំថ្ងៃ)</option>
+                </select>
+                <button class="btn" style="background:var(--primary); margin:0;" onclick="addM()">+ ADD</button>
+            </div>
+            <div id="tagBox" style="display: flex; flex-wrap: wrap; margin-top: 10px;"></div>
+        </div>
         <div class="spin-box">
             <div id="displayBox">READY</div>
             <button id="startBtn" class="btn btn-start" onclick="startAuto()">🚀 START DEPLOYMENT</button>
         </div>
     </div>
 
-    <div style="text-align:center; margin-bottom:15px;">
+    <div style="text-align:center; margin-bottom:15px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
         <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
-        <button class="btn" style="background:#555" onclick="location.reload()">🔄 Refresh Data</button>
+        <button id="resetBtn" class="btn" style="background:#555; display:none;" onclick="resetData()">♻️ Reset Data</button>
+        <button class="btn" style="background:#444" onclick="location.reload()">🔄 Refresh</button>
     </div>
 
     <div class="table-responsive">
         <table id="dutyTable">
             <thead>
                 <tr>
-                    <th>ល.រ</th>
+                    <th width="60">ល.រ</th>
                     <th>នាម និង គោត្តនាម</th>
                     <th colspan="7">កាលបរិច្ឆេទយាម</th>
                 </tr>
@@ -84,37 +102,44 @@
 </div>
 
 <script>
-    // --- ចម្លង Firebase Config របស់អ្នកមកដាក់ទីនេះ ---
+    // --- ព័ត៌មាន Config របស់អ្នកត្រូវបានដាក់បញ្ចូលរួចរាល់ ---
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyDYEk9HCOL8ClUffxKsA1M2WEKCBSc4zlU",
+        authDomain: "my-duty-system.firebaseapp.com",
+        databaseURL: "https://my-duty-system-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "my-duty-system",
+        storageBucket: "my-duty-system.firebasestorage.app",
+        messagingSenderId: "430122553040",
+        appId: "1:430122553040:web:897c088b3d6a0b46f458d5",
+        measurementId: "G-SBTR1R7Q6Z"
     };
-    // ---------------------------------------------
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
+    let membersGroups = JSON.parse(localStorage.getItem('m_list_final')) || [
+        ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
+        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
+        ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
+    ];
     let currentDate = new Date();
     let currentUser = null;
 
     function checkLogin() {
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
-        if(u === 'admin' && p === '123') currentUser = 'ADMIN';
-        else if(u === 'user' && p === '123') currentUser = 'USER';
+        if(u==='admin' && p==='123') currentUser='ADMIN';
+        else if(u==='user' && p==='123') currentUser='USER';
         
         if(currentUser) {
             document.getElementById('loginOverlay').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            if(currentUser === 'ADMIN') document.getElementById('adminControls').style.display = 'block';
+            if(currentUser==='ADMIN') {
+                document.getElementById('adminPanel').style.display='block';
+                document.getElementById('resetBtn').style.display='inline-block';
+            }
             loadData();
-        } else { alert("Wrong credentials!"); }
+        } else { document.getElementById('errorMsg').style.display='block'; }
     }
 
     function getMonthKey() { return "duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth(); }
@@ -122,56 +147,74 @@
     function loadData() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
-        
-        // ទាញទិន្នន័យពី Firebase
-        db.ref(getMonthKey()).on('value', (snapshot) => {
-            const savedData = snapshot.val() || {};
-            renderTable(savedData);
+        renderTags();
+        db.ref(getMonthKey()).on('value', snap => renderTable(snap.val() || {}));
+    }
+
+    function renderTags() {
+        const box = document.getElementById('tagBox'); box.innerHTML = '';
+        membersGroups.forEach((g, gi) => g.forEach((n, ni) => {
+            box.innerHTML += `<div class="tag">${n} ${currentUser==='ADMIN' ? `<span onclick="delM(${gi},${ni})" style="color:red;cursor:pointer">×</span>`:''}</div>`;
+        }));
+        localStorage.setItem('m_list_final', JSON.stringify(membersGroups));
+    }
+
+    function addM() {
+        const n = document.getElementById('nameIn').value.trim();
+        const gi = document.getElementById('groupIn').value;
+        if(n && currentUser==='ADMIN') { membersGroups[gi].push(n); document.getElementById('nameIn').value=''; loadData(); }
+    }
+
+    function delM(gi, ni) { if(confirm("Delete?")) { membersGroups[gi].splice(ni, 1); loadData(); } }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tableBody'); tbody.innerHTML = '';
+        const titles = ["UNIT 1 (ប្រចាំបញ្ជា)", "UNIT 2 (ប្រចាំការ)", "UNIT 3 (ប្រចាំថ្ងៃ)"];
+        membersGroups.forEach((g, gi) => {
+            tbody.innerHTML += `<tr><td colspan="9" class="group-header">${titles[gi]}</td></tr>`;
+            g.forEach((n, ni) => {
+                const days = data[n] || ["","","","","","",""];
+                tbody.innerHTML += `<tr><td>${ni+1}</td><td style="text-align:left">${n}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
+            });
         });
     }
 
-    function renderTable(savedData) {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        const titles = ["UNIT 1 (ប្រចាំបញ្ជា)", "UNIT 2 (ប្រចាំការ)", "UNIT 3 (ប្រចាំថ្ងៃ)"];
-        
-        for(let gi=0; gi<3; gi++) {
-            tbody.innerHTML += `<tr><td colspan="9" class="group-header">${titles[gi]}</td></tr>`;
-            for(let ni=0; ni<5; ni++) {
-                const name = members[gi*5 + ni];
-                const days = savedData[name] || ["","","","","","",""];
-                tbody.innerHTML += `<tr><td>${ni+1}</td><td style="text-align:left">${name}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
-            }
-        }
-    }
-
     async function startAuto() {
-        if(currentUser !== 'ADMIN') return;
-        let spinList = [...members].sort(() => Math.random() - 0.5);
+        if(currentUser!=='ADMIN') return;
+        document.getElementById('startBtn').disabled = true;
+        let flat = []; membersGroups.forEach((g, gi) => g.forEach(n => flat.push({n, gi})));
+        let spinList = [...flat].sort(() => Math.random() - 0.5);
         let monthData = {};
         let groupUsed = {g0:[], g1:[], g2:[]};
 
-        for(let name of spinList) {
-            const gi = Math.floor(members.indexOf(name) / 5);
-            document.getElementById('displayBox').innerText = name;
+        for(let i=0; i<flat.length; i++) {
+            const pick = await new Promise(res => {
+                let t=0;
+                let itv = setInterval(() => {
+                    document.getElementById('displayBox').innerText = spinList[Math.floor(Math.random()*spinList.length)].n;
+                    if((t+=50)>400) { clearInterval(itv); res(spinList[Math.floor(Math.random()*spinList.length)]); }
+                }, 50);
+            });
             
             let sDay = Math.floor(Math.random()*5)+1;
-            while(groupUsed['g'+gi].includes(sDay)) sDay = (sDay%5)+1;
-            groupUsed['g'+gi].push(sDay);
+            while(groupUsed['g'+pick.gi].includes(sDay)) sDay = (sDay%5)+1;
+            groupUsed['g'+pick.gi].push(sDay);
 
             let days = ["","","","","","",""];
             const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
             for(let d=sDay, c=0; d<=total && c<7; d+=5, c++) days[c] = d.toString().padStart(2, '0');
             
-            monthData[name] = days;
-            await new Promise(r => setTimeout(r, 400));
+            monthData[pick.n] = days;
+            spinList = spinList.filter(m => m.n !== pick.n);
+            db.ref(getMonthKey()).update({ [pick.n]: days });
+            await new Promise(r => setTimeout(r, 600));
         }
-        // បញ្ជូនទៅ Firebase
-        db.ref(getMonthKey()).set(monthData);
         document.getElementById('displayBox').innerText = "COMPLETE";
+        document.getElementById('startBtn').disabled = false;
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
+    function resetData() { if(confirm("Reset data for this month?")) { db.ref(getMonthKey()).remove(); } }
     function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty.xlsx"); }
 </script>
 </body>
