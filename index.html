@@ -3,128 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Military Online Edition</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Old School Online Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
-            --primary: #2a3a25; /* បៃតងយោធា */
-            --accent: #f1c40f; /* ពណ៌លឿង Hazard */
-            --bg-body: #34495e;
+            --primary: #004d40; /* បៃតងចាស់ ទម្រង់ដើម */
+            --accent: #ff6f00; /* ទឹកក្រូច Hazard */
+            --bg-body: #eceff1;
+            --bg-container: #ffffff;
             --text-main: #212121;
         }
 
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); margin: 0; padding: 10px; color: var(--text-main); }
-        .container { background: white; max-width: 1100px; margin: auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: none; }
-
-        /* Login Screen */
+        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 10px; font-size: 18px; }
+        .container { background: var(--bg-container); max-width: 1200px; margin: auto; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #cfd8dc; display: none; }
+        
+        /* Login Styles */
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 35px; border-radius: 12px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .login-box h2 { color: var(--primary); margin-bottom: 20px; font-weight: 700; border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+        .login-box { background: white; padding: 35px; border-radius: 10px; width: 90%; max-width: 380px; text-align: center; }
+        .login-box h2 { color: var(--primary); margin-bottom: 25px; font-weight: 700; }
         .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1.5px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
 
         /* Header & Nav */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-bottom: 4px solid #1e2a1a; }
-        .calendar-header h2 { margin: 0; font-size: 1.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 20px; border-radius: 6px; margin-bottom: 25px; }
+        .calendar-header h2 { margin: 0; font-size: 26px; font-weight: 700; }
 
-        /* Management Panel */
-        .manage-panel { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1.5px solid #c8e6c9; }
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
-        .member-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-        .tag { background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        /* Management Panel (Add/Edit/Delete) */
+        .manage-box { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9; }
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .input-group input, .input-group select { padding: 12px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 180px; font-family: inherit; }
+        
+        .member-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag { background: white; padding: 6px 15px; border-radius: 20px; border: 1px solid #ddd; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
 
-        /* Military Camo Spin Box */
-        .spin-box { 
-            text-align: center; border: 4px solid var(--primary); padding: 30px; border-radius: 12px; 
-            background-color: #3a5035; 
-            background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.1) 75%), linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.1) 75%);
-            background-size: 45px 45px;
-            margin-bottom: 25px;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.6);
+        /* Old School Spin Box */
+        .spin-box { text-align: center; border: 3px solid var(--primary); padding: 30px; border-radius: 10px; background: #f1f8e9; margin-bottom: 30px; }
+        #displayBox { font-size: 55px; font-weight: 700; color: var(--primary); min-height: 80px; margin-bottom: 10px; }
+        #statusMsg { font-size: 18px; color: #555; font-weight: 600; margin-bottom: 20px; }
+
+        /* Table Style - ច្បាស់ៗ */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 2px solid #000; border-radius: 4px; }
+        .duty-table { width: 100%; border-collapse: collapse; background: white; min-width: 850px; }
+        .duty-table th, .duty-table td { border: 1.5px solid #000; padding: 15px; text-align: center; font-size: 18px; font-weight: 600; }
+        .duty-table th { background: #37474f; color: white; font-size: 19px; }
+        .group-header { background: #cfd8dc !important; color: #000 !important; text-align: left !important; padding-left: 20px; font-size: 20px; font-weight: 700; }
+        .name-cell { text-align: left !important; padding-left: 20px; color: var(--primary); font-size: 20px; }
+        .filled { background: #fff9c4 !important; color: #b71c1c; font-size: 22px; font-weight: 700; }
+        .active-row { background: #e0f2f1 !important; border: 2.5px solid var(--accent) !important; }
+
+        /* Buttons Control */
+        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 25px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: 700; transition: 0.2s; font-family: inherit; }
+        .btn-start { background: var(--primary); color: white; }
+        .btn-excel { background: #2e7d32; color: white; }
+        .btn-image { background: #f39c12; color: white; } /* ប៊ូតុងរូបភាព */
+        .btn-logout { background: #555; color: white; padding: 8px 15px; font-size: 14px; width: auto; }
+        .btn-reset { background: #78909c; color: white; }
+        .btn-nav { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            body { padding: 5px; }
+            .container { padding: 10px; }
+            #displayBox { font-size: 1.8rem; }
+            .btn { width: 100%; }
         }
-        #displayBox { font-size: 2.8rem; font-weight: 700; color: #ccff00; min-height: 70px; text-shadow: 0 0 15px rgba(204,255,0,0.9); text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
 
-        /* Table Style */
-        .table-responsive { width: 100%; overflow-x: auto; border: 2px solid #000; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; background: white; }
-        th, td { border: 1.5px solid #000; padding: 15px; text-align: center; font-weight: 700; font-size: 16px; }
-        th { background: #212121; color: white; text-transform: uppercase; }
-        .group-header { background: #dcdcdc !important; text-align: left !important; padding-left: 20px; font-weight: 800; text-transform: uppercase; }
-        .name-cell { text-align: left !important; padding-left: 20px; color: #1a1a1a; font-size: 18px; }
-        .filled { background: #a3c19e !important; color: #1a1a1a; font-size: 20px; border: 2px solid #1e2a1a !important; }
-        .active-row { background: #e0f2f1 !important; border: 3px solid var(--accent) !important; }
-
-        /* Buttons */
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .btn { padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 700; text-transform: uppercase; transition: 0.3s; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.2); width: 100%; box-sizing: border-box; }
-        .btn-start { background: var(--accent); color: #000; }
-        .btn-excel { background: #2e7d32; }
-        .btn-reset { background: #c0392b; }
-        .btn-logout { background: #5a6e75; font-size: 12px; padding: 8px 15px; width: auto; }
-        .btn-nav { width: auto; background: none; border: 1px solid white; color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
-        @media (min-width: 768px) {
-            .btn-group { flex-direction: row; justify-content: center; }
-            .btn { width: auto; }
-            .input-group { flex-direction: row; }
-            #displayBox { font-size: 4rem; }
-        }
+        @media print { .manage-box, .spin-box, .btn-group, .calendar-header button { display: none; } }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2>ចូលប្រព័ន្ធយោធា</h2>
-        <input type="text" id="username" placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
-        <input type="password" id="password" placeholder="លេខសម្ងាត់">
-        <button class="btn" style="background:var(--primary); width:100%" onclick="checkLogin()">ចូល (LOGIN)</button>
-        <p id="loginError" style="color:red; display:none; margin-top:10px; font-weight:bold;">ឈ្មោះ ឬលេខសម្ងាត់មិនត្រឹមត្រូវ!</p>
+        <h2>ເຂົ້າລະບົບ</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button class="btn" style="background:var(--primary); width:100%" onclick="checkLogin()">LOGIN</button>
+        <p id="loginError" style="color:red; display:none; margin-top:10px; font-weight:bold;">Username or Password incorrect!</p>
     </div>
 </div>
 
 <div class="container" id="mainApp">
     <div class="calendar-header">
-        <button class="btn-nav" onclick="changeMonth(-1)">◀ PREV</button>
+        <button class="btn-nav" onclick="changeMonth(-1)">◀ ខែមុន</button>
         <h2 id="monthTitle">---</h2>
         <div>
-            <button class="btn btn-logout" onclick="logout()">ចាកចេញ (LOGOUT)</button>
+            <button class="btn btn-logout" onclick="logout()">LOGOUT</button>
         </div>
-        <button class="btn-nav" onclick="changeMonth(1)">NEXT ▶</button>
+        <button class="btn-nav" onclick="changeMonth(1)">ខែបន្ទាប់ ▶</button>
     </div>
 
     <div id="adminArea" style="display:none;">
-        <div class="manage-panel">
+        <div class="manage-box">
             <div class="input-group">
-                <input type="text" id="nameInput" placeholder="ឈ្មោះសមាជិកថ្មី..." style="flex:2; padding:12px; border-radius:6px; border:1px solid #ccc;">
-                <select id="groupSelect" style="flex:1; padding:12px; border-radius:6px; font-family: inherit;">
-                    <option value="0">Unit 1 (ប្រចាំបញ្ជា)</option>
-                    <option value="1">Unit 2 (ប្រចាំការ)</option>
-                    <option value="2">Unit 3 (ប្រចាំថ្ងៃ)</option>
+                <input type="text" id="nameInput" placeholder="ឈ្មោះសមាជិកថ្មី...">
+                <select id="groupSelect" style="padding:10px; border-radius:4px; font-family: inherit;">
+                    <option value="0">ក្រុមទី ១ (ប្រចាំបញ្ជា)</option>
+                    <option value="1">ក្រុមទី ២ (ប្រចាំការ)</option>
+                    <option value="2">ក្រុមទី ៣ (ប្រចាំថ្ងៃ)</option>
                 </select>
-                <button class="btn" style="background:var(--primary); margin:0;" onclick="addMember()">+ បន្ថែម</button>
+                <button class="btn" style="background:var(--accent); color: white; margin:0;" onclick="addMember()">+ បន្ថែមឈ្មោះ</button>
             </div>
-            <div id="tagBox" class="member-list"></div>
+            <div id="memberTags" class="member-tags"></div>
         </div>
         <div class="spin-box">
-            <div id="displayBox">READY</div>
-            <div id="statusMsg" style="color:white; font-size:14px; margin-top:10px; font-weight:bold; letter-spacing:1px;">OPERATIONAL STATUS: READY</div>
-            <button id="startBtn" class="btn btn-start" style="margin-top:15px;" onclick="startAutoDeployment()">🚀 ចាប់ផ្ដើមរៀបចំ (START)</button>
+            <div id="displayBox">DEPLOYMENT</div>
+            <div id="statusMsg">ត្រៀមខ្លួន...</div>
+            <button id="startBtn" class="btn btn-start" onclick="startStepByStep()">🎲 ចាប់ផ្ដើមរៀបចំ (Admin Only)</button>
         </div>
     </div>
 
     <div class="btn-group">
-        <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
+        <button class="btn btn-image" onclick="exportToImage()">🖼️ Download IMAGE</button>
+        
+        <button id="excelBtn" class="btn btn-excel" style="display:none;" onclick="exportToExcel()">📊 Download Excel</button>
         <button id="resetBtn" class="btn btn-reset" style="display:none;" onclick="resetCurrentMonth()">♻️ Reset ទិន្នន័យខែនេះ</button>
-        <button class="btn" style="background:#555" onclick="location.reload()">🔄 Refresh</button>
+        <button class="btn" style="background:#444" onclick="location.reload()">🔄 Refresh</button>
     </div>
 
     <div class="table-responsive">
-        <table id="dutyTable">
+        <table class="duty-table" id="dutyTable">
             <thead>
                 <tr>
                     <th width="70">ល.រ</th>
@@ -153,7 +157,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let membersGroups = JSON.parse(localStorage.getItem('m_list_v4')) || [
+    let membersGroups = JSON.parse(localStorage.getItem('m_list_simple_v1')) || [
         ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
         ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
@@ -172,7 +176,13 @@
             document.getElementById('mainApp').style.display = 'block';
             if(currentUser === 'ADMIN') {
                 document.getElementById('adminArea').style.display = 'block';
+                document.getElementById('excelBtn').style.display = 'inline-block';
                 document.getElementById('resetBtn').style.display = 'inline-block';
+            } else {
+                // USER ឃើញត្រឹម IMAGE, EXCEL ក៏លាក់
+                document.getElementById('adminArea').style.display = 'none';
+                document.getElementById('excelBtn').style.display = 'none';
+                document.getElementById('resetBtn').style.display = 'none';
             }
             loadData();
         } else {
@@ -193,12 +203,12 @@
     }
 
     function renderTags() {
-        const box = document.getElementById('tagBox');
+        const box = document.getElementById('memberTags');
         box.innerHTML = '';
         membersGroups.forEach((g, gi) => g.forEach((n, ni) => {
             box.innerHTML += `<div class="tag">${n} ${currentUser==='ADMIN' ? `<span onclick="delMember(${gi},${ni})" style="color:red;cursor:pointer;font-weight:bold;">×</span>`:''}</div>`;
         }));
-        localStorage.setItem('m_list_v4', JSON.stringify(membersGroups));
+        localStorage.setItem('m_list_simple_v1', JSON.stringify(membersGroups));
     }
 
     function addMember() {
@@ -212,7 +222,7 @@
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        const titles = ["UNIT 1 (ប្រចាំបញ្ជា)", "UNIT 2 (ប្រចាំការ)", "UNIT 3 (ប្រចាំថ្ងៃ)"];
+        const titles = ["ក្រុមទី ១ (ប្រចាំបញ្ជា)", "ក្រុមទី ២ (ប្រចាំការ)", "ក្រុមទី ៣ (ប្រចាំថ្ងៃ)"];
         membersGroups.forEach((g, gi) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">${titles[gi]}</td></tr>`;
             g.forEach((n, ni) => {
@@ -222,7 +232,7 @@
         });
     }
 
-    async function startAutoDeployment() {
+    async function startStepByStep() {
         if(currentUser !== 'ADMIN') return;
         document.getElementById('startBtn').disabled = true;
         let flatList = []; membersGroups.forEach((g, gi) => g.forEach(n => flatList.push({name: n, gIdx: gi})));
@@ -254,15 +264,36 @@
             db.ref(getMonthKey()).update({ [picked.name]: daysArray });
             await new Promise(r => setTimeout(r, 800));
         }
-        document.getElementById('displayBox').innerText = "MISSION COMPLETE";
+        document.getElementById('displayBox').innerText = "រួចរាល់ ✨";
         document.getElementById('startBtn').disabled = false;
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
     function resetCurrentMonth() { if(confirm("Reset data ខែនេះ?")) { db.ref(getMonthKey()).remove(); } }
+    
+    // មុខងារ Download Excel
     function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty_List.xlsx"); }
 
-    window.onload = () => { /* រង់ចាំ Login */ };
+    // មុខងារចម្បង៖ Download Image (សន្លឹកឆ្នោត)
+    function exportToImage() {
+        const element = document.getElementById("dutyTable");
+        
+        // កែសម្រួលស្ទាយបន្តិចមុននឹងថត ដើម្បីកុំឱ្យបាត់បន្ទាត់ ឬឈ្មោះ
+        element.style.transform = "scale(1)"; 
+        
+        html2canvas(element, {
+            scale: 2, // បង្កើនកម្រិតច្បាស់ (High Quality)
+            useCORS: true, // អនុញ្ញាតឱ្យប្រើរូបភាពពីក្រៅ (បើមាន)
+            backgroundColor: "#ffffff" // background ពណ៌ស
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Duty_Roster_${document.getElementById('monthTitle').innerText.replace(/\s/g,'_')}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+
+    window.onload = () => { /* wait login */ };
 </script>
 </body>
 </html>
