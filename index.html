@@ -3,64 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Monthly Offset</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - បន្តវេនពីខែចាស់</title>
     <style>
         body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
         .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; margin-bottom: 10px; }
+        h2 { text-align: center; color: #003366; margin-bottom: 20px; }
         
-        .month-selector { text-align: center; margin-bottom: 20px; background: #fff3e0; padding: 10px; border-radius: 8px; border: 1px solid #ffe0b2; }
-        .month-selector select { padding: 8px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+        .continuity-panel { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #bbdefb; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .continuity-panel label { font-weight: bold; font-size: 14px; }
+        .continuity-panel select { padding: 5px 10px; border-radius: 5px; }
 
         .management-section { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ddd; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
         input[type="text"], select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; }
-        .btn-add { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-add { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
 
-        .member-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-        .tag { background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .tag { background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; margin: 5px; font-size: 13px; }
         
-        .spin-area { background: #e8f0fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #1a73e8; }
-        #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; margin-bottom: 10px; }
+        .spin-area { background: #fffde7; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #fbc02d; }
+        #displayBox { font-size: 35px; font-weight: bold; color: #f57f17; min-height: 50px; margin-bottom: 10px; }
         .btn-group { display: flex; gap: 10px; }
         .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; }
         .btn-start { background: #34a853; }
         .btn-stop { background: #ea4335; }
 
         .duty-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; font-size: 14px; }
+        .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; }
         .duty-table th { background: #f2f2f2; }
-        .group-header { background: #e8f0fe !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
-        .filled { background: #e3f2fd; font-weight: bold; color: #1565c0; }
+        .group-header { background: #f5f5f5 !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
+        .filled { background: #fff9c4; font-weight: bold; color: #e65100; border: 2px solid #fbc02d !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📅 តារាងបែងចែកកាលវិភាគយាមប្រចាំខែ</h2>
+    <h2>📅 តារាងប្រចាំការបន្តវេន (Rotate)</h2>
     
-    <div class="month-selector">
-        <label>សូមជ្រើសរើសខែសម្រាប់រៀបចំ៖ </label>
-        <select id="monthPicker" onchange="renderManagement()">
-            <option value="1">មករា</option>
-            <option value="2">កុម្ភៈ</option>
-            <option value="3">មីនា</option>
-            <option value="4" selected>មេសា</option>
-            <option value="5">ឧសភា</option>
-            <option value="6">មិថុនា</option>
-            <option value="7">កក្កដា</option>
-            <option value="8">សីហា</option>
-            <option value="9">កញ្ញា</option>
-            <option value="10">តុលា</option>
-            <option value="11">វិច្ឆិកា</option>
-            <option value="12">ធ្នូ</option>
+    <div class="continuity-panel">
+        <label>🔄 បន្តវេនពីខែចាស់៖ </label>
+        <span>នៅថ្ងៃទី ០១ ខែថ្មីនេះ ឱ្យសមាជិកទី </span>
+        <select id="startOffset">
+            <option value="0">០១ (វេនទី១)</option>
+            <option value="1">០២ (វេនទី២)</option>
+            <option value="2">០៣ (វេនទី៣)</option>
+            <option value="3">០៤ (វេនទី៤)</option>
+            <option value="4">០៥ (វេនទី៥)</option>
         </select>
-        <span style="font-size: 12px; color: #e65100; margin-left: 10px;">*ការជ្រើសរើសខែខុសគ្នា នឹងធ្វើឱ្យថ្ងៃយាមដូរដោយស្វ័យប្រវត្តិ</span>
+        <span> ជាអ្នកចាប់ផ្ដើមមុនគេ។</span>
     </div>
 
     <div class="management-section">
         <div class="input-group">
-            <input type="text" id="newName" placeholder="បញ្ចូលឈ្មោះថ្មី...">
+            <input type="text" id="newName" placeholder="ឈ្មោះថ្មី...">
             <select id="groupSelect">
                 <option value="g1">ក្រុមប្រចាំបញ្ជា</option>
                 <option value="g2">ក្រុមប្រចាំការ</option>
@@ -72,10 +66,9 @@
     </div>
 
     <div class="spin-area">
-        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">ចុចវិលឈ្មោះ ដើម្បីចាប់ផ្ដើម...</div>
         <div id="displayBox">---</div>
         <div class="btn-group">
-            <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
+            <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ វិលឈ្មោះ</button>
             <button id="stopBtn" class="btn btn-stop" onclick="stopOneByOne()" disabled>🛑 បញ្ឈប់ម្ដងម្នាក់</button>
         </div>
     </div>
@@ -94,9 +87,9 @@
 
 <script>
     let groups = {
-        g1: ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
-        g2: ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
-        g3: ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
+        g1: ["សោម-ទិ", "អ៊ុយ-សុពល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
+        g2: ["ជូ-ច័ន្ទថុល", "វិរៈ-អរុណ", "គឹម-សែនសារី", "យឹម-លុច", "អ៊ុន-ដារ៉េត"],
+        g3: ["ស្ងួន-ពៅ", "ហែម-ហែន", "នឿន-វណ្ណេត", "អ៊ុំ-រិទ្ធី", "អ៊ុន-មករា"]
     };
 
     let masterList = [];
@@ -106,17 +99,10 @@
     function renderManagement() {
         const container = document.getElementById('membersDisplay');
         container.innerHTML = '';
-        const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
         for (let gId in groups) {
-            let groupDiv = document.createElement('div');
-            groupDiv.innerHTML = `<strong style="font-size:13px;">${titles[gId]}: </strong>`;
-            let tagsWrapper = document.createElement('div');
-            tagsWrapper.className = 'member-tags';
             groups[gId].forEach((name, index) => {
-                tagsWrapper.innerHTML += `<div class="tag">${name} <button style="color:red;border:none;background:none;cursor:pointer" onclick="deleteMember('${gId}', ${index})">✖</button></div>`;
+                container.innerHTML += `<div class="tag">${name} <button style="color:red;border:none;background:none;cursor:pointer" onclick="deleteMember('${gId}', ${index})">✖</button></div>`;
             });
-            groupDiv.appendChild(tagsWrapper);
-            container.appendChild(groupDiv);
         }
     }
 
@@ -140,8 +126,7 @@
         for (let gId in groups) {
             groups[gId].forEach(name => masterList.push({ name: name, groupId: gId }));
         }
-        if (masterList.length === 0) return alert("សូមបន្ថែមសមាជិក!");
-
+        
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
         const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
@@ -168,11 +153,11 @@
         clearInterval(spinInterval);
         const selectedName = document.getElementById('displayBox').innerText;
         const pickedObj = masterList.find(m => m.name === selectedName);
-        const monthOffset = parseInt(document.getElementById('monthPicker').value);
-
-        // Logic Offset: ថ្ងៃចាប់ផ្ដើម = (លំដាប់ក្នុងក្រុម + លេខខែ) % ៥
-        // វិធីនេះធ្វើឱ្យរាល់ពេលប្តូរខែ ថ្ងៃចាប់ផ្ដើមរបស់ម្នាក់ៗនឹងរំកិលទៅមុខជានិច្ច
-        let startDay = ((groupCounters[pickedObj.groupId] + monthOffset) % 5) + 1;
+        
+        // --- គន្លឹះបន្តវេន (The Rotation Secret) ---
+        // យក "វេនចាប់ផ្ដើមដែលបានរើស" បូកជាមួយ "លំដាប់ដែលចាប់បានក្នុងក្រុម"
+        const offset = parseInt(document.getElementById('startOffset').value);
+        let startDay = ((groupCounters[pickedObj.groupId] + offset) % 5) + 1;
         
         let dutyDays = [];
         for (let d = startDay; d <= 30; d += 5) dutyDays.push(d.toString().padStart(2, '0'));
