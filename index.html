@@ -3,176 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Mobile Optimized</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Military Mobile Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #004d40; --accent: #ff6f00; --bg: #eceff1; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 10px; -webkit-tap-highlight-color: transparent; }
-        .container { background: #fff; max-width: 100%; margin: auto; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
-        
+        :root {
+            --primary: #2a3a25;
+            --accent: #f1c40f;
+            --bg-body: #34495e;
+            --text-main: #212121;
+        }
+
+        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); margin: 0; padding: 10px; color: var(--text-main); }
+        .container { background: white; max-width: 1100px; margin: auto; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
         /* Header */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .calendar-header h2 { margin: 0; font-size: 1rem; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-bottom: 4px solid #1e2a1a; }
+        .calendar-header h2 { margin: 0; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
 
-        /* Manage Panel */
-        .manage-panel { background: #f1f8e9; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+        /* Manage Section */
+        .manage-panel { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #c8e6c9; }
         .input-group { display: flex; flex-direction: column; gap: 8px; }
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; width: 100%; box-sizing: border-box; }
-        
-        .member-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
-        .member-tag { background: #fff; padding: 5px 10px; border-radius: 15px; border: 1px solid #ddd; font-size: 13px; display: flex; align-items: center; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; width: 100%; box-sizing: border-box; font-family: inherit; }
+        .member-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .member-tag { background: white; padding: 5px 12px; border-radius: 20px; border: 1px solid #ddd; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+        .btn-del { color: #d32f2f; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
 
-        /* Spin Box */
-        .spin-box { text-align: center; border: 2px solid var(--primary); padding: 20px; border-radius: 10px; margin-bottom: 15px; }
-        #displayBox { font-size: 1.8rem; font-weight: 700; color: var(--primary); min-height: 50px; line-height: 50px; }
-        
-        /* Table */
-        .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; border: 1px solid #000; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 13px; }
-        th { background: #37474f; color: #fff; }
-        .group-header { background: #cfd8dc !important; text-align: left !important; font-weight: bold; }
-        .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: bold; }
+        /* Camo Spin Box */
+        .spin-box { 
+            text-align: center; border: 4px solid var(--primary); padding: 25px; border-radius: 12px; 
+            background-color: #3a5035; 
+            background-image: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.1) 75%), linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.1) 75%);
+            background-size: 40px 40px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+        #displayBox { font-size: 2.2rem; font-weight: 700; color: #ccff00; min-height: 60px; text-shadow: 0 0 15px rgba(204,255,0,0.8); text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+
+        /* Table Mobile */
+        .table-responsive { width: 100%; overflow-x: auto; border: 2px solid #000; border-radius: 4px; }
+        .duty-table { width: 100%; border-collapse: collapse; min-width: 700px; background: white; }
+        .duty-table th, .duty-table td { border: 1.5px solid #000; padding: 12px; text-align: center; font-weight: 600; font-size: 15px; }
+        .duty-table th { background: #212121; color: white; text-transform: uppercase; }
+        .group-header { background: #dcdcdc !important; text-align: left !important; padding-left: 15px; font-weight: 700; text-transform: uppercase; }
+        .name-cell { text-align: left !important; padding-left: 15px; color: #1a1a1a; font-size: 16px; }
+        .filled { background: #a3c19e !important; color: #1a1a1a; font-weight: 700; font-size: 18px; border: 2px solid #1e2a1a !important; }
 
         /* Buttons */
-        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 15px; }
-        .btn-start { background: var(--primary); color: #fff; }
-        .btn-add { background: var(--accent); color: #fff; }
-        .btn-excel { background: #2e7d32; color: #fff; }
-        .btn-reset { background: #78909c; color: #fff; }
-        .btn-nav { width: auto; background: none; color: white; border: 1px solid white; padding: 5px 10px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 700; text-transform: uppercase; transition: 0.3s; color: white; width: 100%; }
+        .btn-start { background: var(--accent); color: #000; }
+        .btn-excel { background: #2e7d32; }
+        .btn-reset { background: #5a6e75; }
+        .btn-add { background: var(--primary); margin-top: 5px; }
+        .btn-nav { width: auto; background: none; border: 1px solid white; color: white; padding: 5px 10px; border-radius: 4px; }
+
+        @media (min-width: 768px) {
+            .btn-group { flex-direction: row; }
+            .input-group { flex-direction: row; }
+            .calendar-header h2 { font-size: 1.5rem; }
+            #displayBox { font-size: 3.5rem; }
+        }
+
+        @media print { .manage-panel, .spin-box, .btn-group, .calendar-header button { display: none; } body { background: white; padding: 0; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="calendar-header">
-        <button class="btn-nav" onclick="changeMonth(-1)">◀</button>
-        <h2 id="monthTitle">---</h2>
-        <button class="btn-nav" onclick="changeMonth(1)">▶</button>
-    </div>
-
-    <div class="manage-panel">
-        <div class="input-group">
-            <input type="text" id="nameInput" placeholder="ឈ្មោះសមាជិក...">
-            <select id="groupSelect">
-                <option value="0">ប្រចាំបញ្ជា</option>
-                <option value="1">ប្រចាំការ</option>
-                <option value="2">ប្រចាំថ្ងៃ</option>
-            </select>
-            <button class="btn btn-add" onclick="addMember()">+ បន្ថែមសមាជិក</button>
-        </div>
-        <div id="memberTags" class="member-list"></div>
-    </div>
-
-    <div class="spin-box">
-        <div id="displayBox">READY</div>
-        <button id="startBtn" class="btn btn-start" onclick="startAuto()">🚀 ចាប់ផ្ដើមរៀបចំអូតូ</button>
-        <button class="btn btn-excel" onclick="exportToExcel()">📊 ទាញយក Excel</button>
-        <button class="btn btn-reset" onclick="resetAll()">♻️ Reset ទាំងអស់</button>
-    </div>
-
-    <div class="table-responsive">
-        <table id="dutyTable">
-            <thead>
-                <tr>
-                    <th>ល.រ</th>
-                    <th>ឈ្មោះ</th>
-                    <th colspan="7">ថ្ងៃយាម</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
-</div>
-
-<script>
-    let membersGroups = JSON.parse(localStorage.getItem('m_list')) || [["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]];
-    let currentDate = new Date();
-
-    function init() {
-        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
-        document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
-        renderMembers();
-        renderTable();
-    }
-
-    function renderMembers() {
-        const tagBox = document.getElementById('memberTags');
-        tagBox.innerHTML = '';
-        membersGroups.forEach((g, gi) => {
-            g.forEach((n, ni) => {
-                const span = document.createElement('span');
-                span.className = 'member-tag';
-                span.innerHTML = `${n} <b onclick="delM(${gi},${ni})" style="color:red;margin-left:5px">×</b>`;
-                tagBox.appendChild(span);
-            });
-        });
-        localStorage.setItem('m_list', JSON.stringify(membersGroups));
-    }
-
-    function addMember() {
-        const n = document.getElementById('nameInput').value.trim();
-        const gi = document.getElementById('groupSelect').value;
-        if(n) { membersGroups[gi].push(n); document.getElementById('nameInput').value=''; init(); }
-    }
-
-    function delM(gi, ni) { membersGroups[gi].splice(ni, 1); init(); }
-
-    function renderTable() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        const saved = JSON.parse(localStorage.getItem("d_"+currentDate.getFullYear()+"_"+currentDate.getMonth())) || {};
-        ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"].forEach((title, gi) => {
-            tbody.innerHTML += `<tr><td colspan="9" class="group-header">${title}</td></tr>`;
-            membersGroups[gi].forEach((name, ni) => {
-                const days = saved[name] || ["","","","","","",""];
-                tbody.innerHTML += `<tr><td>${ni+1}</td><td style="text-align:left">${name}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
-            });
-        });
-    }
-
-    async function startAuto() {
-        const startBtn = document.getElementById('startBtn');
-        startBtn.disabled = true;
-        let all = [];
-        membersGroups.forEach((g, gi) => g.forEach(n => all.push({n, gi})));
-        let spinList = [...all].sort(() => Math.random() - 0.5);
-        let monthData = {};
-        let groupUsed = {g0:[], g1:[], g2:[]};
-
-        for(let i=0; i<all.length; i++) {
-            const pick = await new Promise(res => {
-                let t=0;
-                let itv = setInterval(() => {
-                    document.getElementById('displayBox').innerText = spinList[Math.floor(Math.random()*spinList.length)].n;
-                    if((t+=50)>500){ clearInterval(itv); res(spinList[Math.floor(Math.random()*spinList.length)]); }
-                }, 50);
-            });
-            
-            let sDay = Math.floor(Math.random()*5)+1;
-            while(groupUsed['g'+pick.gi].includes(sDay)) sDay = (sDay%5)+1;
-            groupUsed['g'+pick.gi].push(sDay);
-
-            let days = ["","","","","","",""];
-            const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
-            for(let d=sDay, c=0; d<=total && c<7; d+=5, c++) days[c] = d.toString().padStart(2, '0');
-            
-            monthData[pick.n] = days;
-            spinList = spinList.filter(m => m.n !== pick.n);
-            document.getElementById('displayBox').innerText = pick.n;
-            await new Promise(r => setTimeout(r, 400));
-        }
-        localStorage.setItem("d_"+currentDate.getFullYear()+"_"+currentDate.getMonth(), JSON.stringify(monthData));
-        startBtn.disabled = false;
-        init();
-    }
-
-    function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); init(); }
-    function resetAll() { localStorage.clear(); location.reload(); }
-    function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty.xlsx"); }
-    window.onload = init;
-</script>
-</body>
-</html>
