@@ -3,48 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>តារាងយាម ៥នាក់ - រំលង ៤ថ្ងៃ</title>
+    <title>កម្មវិធីចាប់ឈ្មោះប្រចាំការ - បញ្ឈប់ម្ដងម្នាក់</title>
     <style>
-        body { font-family: 'Leelawadee UI', sans-serif; background: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 850px; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; }
-        .info-panel { background: #e8f0fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+        body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #003366; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
-        .input-group { margin-bottom: 20px; }
-        textarea { width: 100%; height: 60px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-family: inherit; }
+        .setup-section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        textarea { width: 100%; height: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 5px; resize: none; box-sizing: border-box; }
         
-        .btn-random { width: 100%; padding: 12px; background: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        .btn-random:hover { background: #e67e22; }
+        .spin-area { background: #e8f0fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #1a73e8; }
+        #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; margin-bottom: 15px; }
+        
+        .btn-group { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-start { background: #34a853; }
+        .btn-stop { background: #ea4335; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .duty-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .duty-table th, .duty-table td { border: 1px solid #333; padding: 12px; text-align: center; }
+        .duty-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; font-size: 14px; }
         .duty-table th { background: #f2f2f2; }
-        .name-cell { text-align: left !important; font-weight: bold; background: #fafafa; }
+        .group-header { background: #e8f0fe !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
+        .highlight-name { font-weight: bold; color: #1a73e8; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>តារាងយាមប្រចាំការប្រចាំខែ (Cycle ៥ ថ្ងៃ)</h2>
+    <h2>📅 តារាងបែងចែកអ្នកប្រចាំការ</h2>
     
-    <div class="info-panel">
-        <strong>លក្ខខណ្ឌ៖</strong> សមាជិក ៥ នាក់ ប្តូរវេនគ្នាម្នាក់ ១ ថ្ងៃ។ <br>
-        <strong>លទ្ធផល៖</strong> ម្នាក់ៗនឹងធ្វើការ ១ ថ្ងៃ និង <strong>សម្រាករំលង ៤ ថ្ងៃ</strong> ទើបដល់វេនម្តងទៀត។
+    <div class="setup-section">
+        <div><label>១. ក្រុមប្រចាំបញ្ជា</label><textarea id="g1">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច</textarea></div>
+        <div><label>២. ក្រុមប្រចាំការ</label><textarea id="g2">ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត</textarea></div>
+        <div><label>៣. ក្រុមប្រចាំថ្ងៃ</label><textarea id="g3">សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា</textarea></div>
     </div>
 
-    <div class="input-group">
-        <label>បញ្ចូលឈ្មោះទាំង ៥ នាក់ (ដកឃ្លាគ្នា)៖</label>
-        <textarea id="namesInput">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច</textarea>
+    <div class="spin-area">
+        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">ត្រៀមខ្លួន...</div>
+        <div id="displayBox">---</div>
+        <div class="btn-group">
+            <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
+            <button id="stopBtn" class="btn btn-stop" onclick="stopOneByOne()" disabled>🛑 បញ្ឈប់ម្ដងម្នាក់</button>
+        </div>
     </div>
-
-    <button class="btn-random" onclick="generateCycle()">🎲 ចាប់ឈ្មោះចៃដន្យ និងរៀបតារាង</button>
 
     <table class="duty-table">
         <thead>
             <tr>
                 <th>ល.រ</th>
-                <th>នាម និង គោត្តនាម</th>
-                <th colspan="6">កាលបរិច្ឆេទយាម (រំលង ៤ ថ្ងៃម្តង)</th>
+                <th width="30%">នាម និង គោត្តនាម</th>
+                <th colspan="6">ថ្ងៃអនុវត្តការងារ (កាលបរិច្ឆេទ)</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -52,51 +61,107 @@
 </div>
 
 <script>
-    function generateCycle() {
-        let names = document.getElementById('namesInput').value.trim().split(/\s+/).filter(n => n);
+    let masterList = [];
+    let currentProcessIndex = 0;
+    let spinInterval;
+    let groupsData = [];
+
+    function prepareSpin() {
+        const getNames = (id) => document.getElementById(id).value.trim().split(/\s+/).filter(n => n);
         
-        if (names.length !== 5) {
-            alert("សូមបញ្ចូលឈ្មោះឱ្យបានចំចំនួន ៥ នាក់ ដើម្បីឱ្យត្រូវនឹង Cycle រំលង ៤ ថ្ងៃ!");
+        groupsData = [
+            { title: "ប្រចាំបញ្ជា", members: getNames('g1') },
+            { title: "ប្រចាំការ", members: getNames('g2') },
+            { title: "ប្រចាំថ្ងៃ", members: getNames('g3') }
+        ];
+
+        // បង្កើតបញ្ជីឈ្មោះសរុបដើម្បីវិល
+        masterList = [];
+        groupsData.forEach(g => {
+            g.members.forEach(m => masterList.push({ name: m, groupTitle: g.title }));
+        });
+
+        if (masterList.length === 0) return alert("សូមបញ្ចូលឈ្មោះសមាជិក!");
+
+        // រៀបចំតារាងឱ្យនៅទទេ
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+        groupsData.forEach(g => {
+            tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${g.title}</td></tr>`;
+            g.members.forEach((m, i) => {
+                tableBody.innerHTML += `
+                    <tr id="row-${g.title}-${m}">
+                        <td>${(i+1).toString().padStart(2, '0')}</td>
+                        <td class="name-label" style="text-align:left; padding-left:10px;">${m}</td>
+                        <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
+                        <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
+                    </tr>`;
+            });
+        });
+
+        currentProcessIndex = 0;
+        startSpinning();
+    }
+
+    function startSpinning() {
+        if (currentProcessIndex >= masterList.length) {
+            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('statusLabel').innerText = "បានរៀបចំគ្រប់គ្នាហើយ";
             return;
         }
 
-        // ១. ច្របល់ឈ្មោះ (Randomize Names)
-        for (let i = names.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [names[i], names[j]] = [names[j], names[i]];
-        }
+        document.getElementById('startBtn').disabled = true;
+        document.getElementById('stopBtn').disabled = false;
+        document.getElementById('statusLabel').innerText = "កំពុងវិលរកវេនសម្រាប់សមាជិកទី " + (currentProcessIndex + 1);
 
-        const tableBody = document.getElementById('tableBody');
-        tableBody.innerHTML = '';
-        const totalDays = 30; // គិតក្នុងរយៈពេល ៣០ ថ្ងៃ
-
-        // ២. រៀបឈ្មោះចូលតារាងតាមលំដាប់ដែលបាន Random
-        names.forEach((name, index) => {
-            let row = `<tr>`;
-            row += `<td>${(index + 1).toString().padStart(2, '0')}</td>`;
-            row += `<td class="name-cell">${name}</td>`;
-
-            let dutyDays = [];
-            // មនុស្សទី១ ចាប់ផ្តើមថ្ងៃទី១, ទី២ ថ្ងៃទី២...
-            // ម្នាក់ៗបូកម្តង ៥ ថ្ងៃ (ធ្វើ ១ សម្រាក ៤)
-            let day = index + 1; 
-            while (day <= totalDays) {
-                dutyDays.push(day.toString().padStart(2, '0'));
-                day += 5; 
-            }
-
-            // បង្ហាញក្នុងតារាង ៦ ក្រឡា
-            for (let i = 0; i < 6; i++) {
-                row += `<td>${dutyDays[i] || ''}</td>`;
-            }
-            
-            row += `</tr>`;
-            tableBody.innerHTML += row;
-        });
+        spinInterval = setInterval(() => {
+            const randomPick = masterList[Math.floor(Math.random() * masterList.length)];
+            document.getElementById('displayBox').innerText = randomPick.name;
+        }, 50);
     }
 
-    // Run ដំបូង
-    window.onload = generateCycle;
+    function stopOneByOne() {
+        clearInterval(spinInterval);
+        const selectedName = document.getElementById('displayBox').innerText;
+        
+        // រកមើលថាឈ្មោះនឹងស្ថិតក្នុងក្រុមណា
+        const memberInfo = masterList.find(m => m.name === selectedName);
+        const targetRow = document.getElementById(`row-${memberInfo.groupTitle}-${selectedName}`);
+        
+        if (targetRow) {
+            // គណនាថ្ងៃ (ម្នាក់រំលង ៤ ថ្ងៃ = Cycle ៥)
+            // យើងប្រើ currentProcessIndex ដើម្បីកំណត់ថ្ងៃចាប់ផ្តើម (Offset)
+            let dutyDays = [];
+            let startDay = (currentProcessIndex % 5) + 1;
+            for (let d = startDay; d <= 30; d += 5) {
+                dutyDays.push(d.toString().padStart(2, '0'));
+            }
+
+            // បំពេញចូលក្នុងតារាង
+            targetRow.classList.add('highlight-name');
+            dutyDays.forEach((day, i) => {
+                const cell = targetRow.querySelector(`.d-${i+1}`);
+                if (cell) cell.innerText = day;
+            });
+
+            // លុបឈ្មោះដែលជាប់ហើយ ចេញពីបញ្ជីវិល ដើម្បីកុំឱ្យជាន់គ្នា
+            masterList = masterList.filter(m => m.name !== selectedName);
+            
+            // បន្តទៅអ្នកបន្ទាប់
+            // currentProcessIndex++; // មិនបាច់បូកទេ ព្រោះយើងលុបចេញពី Array ហើយ
+            
+            if (masterList.length > 0) {
+                setTimeout(startSpinning, 500); // សម្រាក ០.៥ វិនាទី រួចវិលបន្ត
+            } else {
+                document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('statusLabel').innerText = "បានបញ្ចប់ការចាប់ឈ្មោះ";
+            }
+        }
+    }
 </script>
 
 </body>
