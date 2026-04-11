@@ -2,138 +2,127 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Old School Online Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Mobile Optimized</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
-            --primary: #004d40; /* បៃតងចាស់ ទម្រង់ដើម */
-            --accent: #ff6f00; /* ទឹកក្រូច Hazard */
+            --primary: #004d40;
+            --accent: #ff6f00;
             --bg-body: #eceff1;
-            --bg-container: #ffffff;
-            --text-main: #212121;
         }
 
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 10px; font-size: 18px; }
-        .container { background: var(--bg-container); max-width: 1200px; margin: auto; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #cfd8dc; display: none; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); margin: 0; padding: 10px; }
         
-        /* Login Styles */
+        /* Container ឱ្យរត់ស្មើអេក្រង់ជានិច្ច */
+        .container { 
+            background: white; 
+            max-width: 1200px; 
+            margin: auto; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box; 
+            display: none; 
+        }
+        
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; gap: 5px; }
+        .calendar-header h2 { margin: 0; font-size: 1.2rem; text-align: center; flex: 1; }
+
+        .spin-box { text-align: center; border: 2px solid var(--primary); padding: 20px; border-radius: 10px; background: #f1f8e9; margin-bottom: 20px; }
+        #displayBox { font-size: 2.5rem; font-weight: 700; color: var(--primary); min-height: 60px; word-break: break-all; }
+
+        /* --- កែសម្រួលតារាងឱ្យសមនឹងទូរស័ព្ទ --- */
+        .table-responsive { 
+            width: 100%; 
+            overflow-x: auto; /* អនុញ្ញាតឱ្យ Slide បើអេក្រង់តូចខ្លាំង */
+            border: 1.5px solid #000; 
+            border-radius: 4px;
+        }
+        
+        .duty-table { 
+            width: 100%; /* តារាងត្រូវរត់ពេញកុងទីន័រ */
+            border-collapse: collapse; 
+            background: white;
+            table-layout: auto; /* ឱ្យវាលៃទំហំក្រឡាអូតូ */
+        }
+
+        .duty-table th, .duty-table td { 
+            border: 1px solid #000; 
+            padding: 8px 4px; /* បន្ថយ padding ឱ្យសល់កន្លែងច្រើន */
+            text-align: center; 
+            font-size: 0.85rem; /* អក្សរតូចល្មមលើទូរស័ព្ទ */
+            font-weight: 600; 
+        }
+
+        .duty-table th { background: #37474f; color: white; font-size: 0.8rem; }
+        .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 10px; font-weight: 700; font-size: 0.9rem; }
+        .name-cell { text-align: left !important; padding-left: 8px; color: var(--primary); min-width: 100px; }
+        .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: 700; }
+
+        /* ប៊ូតុងរៀបជួរគ្នាស្អាតលើទូរស័ព្ទ */
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 700; font-family: inherit; width: 100%; box-sizing: border-box; }
+        
+        /* បើលើកុំព្យូទ័រ ឱ្យប៊ូតុងរៀបជួរដេកវិញ */
+        @media (min-width: 768px) {
+            .btn-group { flex-direction: row; justify-content: center; }
+            .btn { width: auto; padding: 12px 25px; }
+            .duty-table th, .duty-table td { font-size: 1rem; padding: 12px; }
+            .calendar-header h2 { font-size: 1.6rem; }
+        }
+
+        /* ស្ទីល Login */
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 35px; border-radius: 10px; width: 90%; max-width: 380px; text-align: center; }
-        .login-box h2 { color: var(--primary); margin-bottom: 25px; font-weight: 700; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1.5px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; font-family: inherit; }
-
-        /* Header & Nav */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 20px; border-radius: 6px; margin-bottom: 25px; }
-        .calendar-header h2 { margin: 0; font-size: 26px; font-weight: 700; }
-
-        /* Management Panel (Add/Edit/Delete) */
-        .manage-box { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9; }
-        .input-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-        .input-group input, .input-group select { padding: 12px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 180px; font-family: inherit; }
-        
-        .member-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: white; padding: 6px 15px; border-radius: 20px; border: 1px solid #ddd; display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
-
-        /* Old School Spin Box */
-        .spin-box { text-align: center; border: 3px solid var(--primary); padding: 30px; border-radius: 10px; background: #f1f8e9; margin-bottom: 30px; }
-        #displayBox { font-size: 55px; font-weight: 700; color: var(--primary); min-height: 80px; margin-bottom: 10px; }
-        #statusMsg { font-size: 18px; color: #555; font-weight: 600; margin-bottom: 20px; }
-
-        /* Table Style - ច្បាស់ៗ */
-        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 2px solid #000; border-radius: 4px; }
-        .duty-table { width: 100%; border-collapse: collapse; background: white; min-width: 850px; }
-        .duty-table th, .duty-table td { border: 1.5px solid #000; padding: 15px; text-align: center; font-size: 18px; font-weight: 600; }
-        .duty-table th { background: #37474f; color: white; font-size: 19px; }
-        .group-header { background: #cfd8dc !important; color: #000 !important; text-align: left !important; padding-left: 20px; font-size: 20px; font-weight: 700; }
-        .name-cell { text-align: left !important; padding-left: 20px; color: var(--primary); font-size: 20px; }
-        .filled { background: #fff9c4 !important; color: #b71c1c; font-size: 22px; font-weight: 700; }
-        .active-row { background: #e0f2f1 !important; border: 2.5px solid var(--accent) !important; }
-
-        /* Buttons Control */
-        .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 25px; }
-        .btn { padding: 15px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: 700; transition: 0.2s; font-family: inherit; }
-        .btn-start { background: var(--primary); color: white; }
-        .btn-excel { background: #2e7d32; color: white; }
-        .btn-image { background: #f39c12; color: white; } /* ប៊ូតុងរូបភាព */
-        .btn-logout { background: #555; color: white; padding: 8px 15px; font-size: 14px; width: auto; }
-        .btn-reset { background: #78909c; color: white; }
-        .btn-nav { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-
-        @media (max-width: 600px) {
-            body { padding: 5px; }
-            .container { padding: 10px; }
-            #displayBox { font-size: 1.8rem; }
-            .btn { width: 100%; }
-        }
-
-        @media print { .manage-box, .spin-box, .btn-group, .calendar-header button { display: none; } }
+        .login-box { background: white; padding: 30px; border-radius: 10px; width: 85%; max-width: 350px; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2>ເຂົ້າລະບົບ</h2>
+        <h2>ចូលប្រព័ន្ធ</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button class="btn" style="background:var(--primary); width:100%" onclick="checkLogin()">LOGIN</button>
-        <p id="loginError" style="color:red; display:none; margin-top:10px; font-weight:bold;">Username or Password incorrect!</p>
+        <button class="btn" style="background:var(--primary); color:white" onclick="checkLogin()">LOGIN</button>
     </div>
 </div>
 
 <div class="container" id="mainApp">
     <div class="calendar-header">
-        <button class="btn-nav" onclick="changeMonth(-1)">◀ ខែមុន</button>
+        <button class="btn-nav" onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">◀</button>
         <h2 id="monthTitle">---</h2>
-        <div>
-            <button class="btn btn-logout" onclick="logout()">LOGOUT</button>
-        </div>
-        <button class="btn-nav" onclick="changeMonth(1)">ខែបន្ទាប់ ▶</button>
+        <button class="btn-nav" onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">▶</button>
     </div>
 
     <div id="adminArea" style="display:none;">
-        <div class="manage-box">
-            <div class="input-group">
-                <input type="text" id="nameInput" placeholder="ឈ្មោះសមាជិកថ្មី...">
-                <select id="groupSelect" style="padding:10px; border-radius:4px; font-family: inherit;">
-                    <option value="0">ក្រុមទី ១ (ប្រចាំបញ្ជា)</option>
-                    <option value="1">ក្រុមទី ២ (ប្រចាំការ)</option>
-                    <option value="2">ក្រុមទី ៣ (ប្រចាំថ្ងៃ)</option>
-                </select>
-                <button class="btn" style="background:var(--accent); color: white; margin:0;" onclick="addMember()">+ បន្ថែមឈ្មោះ</button>
-            </div>
-            <div id="memberTags" class="member-tags"></div>
-        </div>
         <div class="spin-box">
-            <div id="displayBox">DEPLOYMENT</div>
-            <div id="statusMsg">ត្រៀមខ្លួន...</div>
-            <button id="startBtn" class="btn btn-start" onclick="startStepByStep()">🎲 ចាប់ផ្ដើមរៀបចំ (Admin Only)</button>
+            <div id="displayBox">READY</div>
+            <button id="startBtn" class="btn" style="background:var(--primary); color:white; margin-top:10px;" onclick="startStepByStep()">🎲 ចាប់ផ្ដើមរៀបចំ</button>
         </div>
     </div>
 
     <div class="btn-group">
-        <button class="btn btn-image" onclick="exportToImage()">🖼️ Download IMAGE</button>
-        
-        <button id="excelBtn" class="btn btn-excel" style="display:none;" onclick="exportToExcel()">📊 Download Excel</button>
-        <button id="resetBtn" class="btn btn-reset" style="display:none;" onclick="resetCurrentMonth()">♻️ Reset ទិន្នន័យខែនេះ</button>
-        <button class="btn" style="background:#444" onclick="location.reload()">🔄 Refresh</button>
+        <button class="btn" style="background:#f39c12; color:white" onclick="exportToImage()">🖼️ Download IMAGE</button>
+        <button id="excelBtn" class="btn" style="background:#2e7d32; color:white; display:none;" onclick="exportToExcel()">📊 Download Excel</button>
+        <button class="btn" style="background:#555; color:white" onclick="location.reload()">🔄 Refresh</button>
+        <button class="btn" style="background:#78909c; color:white" onclick="location.reload()">🚪 Logout</button>
     </div>
 
     <div class="table-responsive">
         <table class="duty-table" id="dutyTable">
             <thead>
                 <tr>
-                    <th width="70">ល.រ</th>
-                    <th>នាម និង គោត្តនាម</th>
-                    <th colspan="7">កាលបរិច្ឆេទយាម (រំលង ៤ ថ្ងៃ)</th>
+                    <th width="10%">ល.រ</th>
+                    <th width="35%">ឈ្មោះ</th>
+                    <th colspan="7">ថ្ងៃយាម</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -142,7 +131,7 @@
 </div>
 
 <script>
-    // --- Config Firebase របស់អ្នក ---
+    // --- ដាក់ Config Firebase របស់អ្នកនៅទីនេះ ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYEk9HCOL8ClUffxKsA1M2WEKCBSc4zlU",
         authDomain: "my-duty-system.firebaseapp.com",
@@ -157,11 +146,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let membersGroups = JSON.parse(localStorage.getItem('m_list_simple_v1')) || [
-        ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
-        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
-        ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
-    ];
+    const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
     let currentDate = new Date();
     let currentUser = null;
 
@@ -176,124 +161,75 @@
             document.getElementById('mainApp').style.display = 'block';
             if(currentUser === 'ADMIN') {
                 document.getElementById('adminArea').style.display = 'block';
-                document.getElementById('excelBtn').style.display = 'inline-block';
-                document.getElementById('resetBtn').style.display = 'inline-block';
-            } else {
-                // USER ឃើញត្រឹម IMAGE, EXCEL ក៏លាក់
-                document.getElementById('adminArea').style.display = 'none';
-                document.getElementById('excelBtn').style.display = 'none';
-                document.getElementById('resetBtn').style.display = 'none';
+                document.getElementById('excelBtn').style.display = 'block';
             }
             loadData();
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-        }
+        } else { alert("Login មិនត្រឹមត្រូវ!"); }
     }
-
-    function logout() { location.reload(); }
 
     function getMonthKey() { return "duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth(); }
 
     function loadData() {
-        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្ខដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
-        renderTags();
-        // Sync ជាមួយ Firebase Realtime
         db.ref(getMonthKey()).on('value', snap => renderTable(snap.val() || {}));
     }
-
-    function renderTags() {
-        const box = document.getElementById('memberTags');
-        box.innerHTML = '';
-        membersGroups.forEach((g, gi) => g.forEach((n, ni) => {
-            box.innerHTML += `<div class="tag">${n} ${currentUser==='ADMIN' ? `<span onclick="delMember(${gi},${ni})" style="color:red;cursor:pointer;font-weight:bold;">×</span>`:''}</div>`;
-        }));
-        localStorage.setItem('m_list_simple_v1', JSON.stringify(membersGroups));
-    }
-
-    function addMember() {
-        const n = document.getElementById('nameInput').value.trim();
-        const gi = document.getElementById('groupSelect').value;
-        if(n && currentUser==='ADMIN') { membersGroups[gi].push(n); document.getElementById('nameInput').value=''; loadData(); }
-    }
-
-    function delMember(gi, ni) { if(confirm("លុបឈ្មោះនេះចេញ?")) { membersGroups[gi].splice(ni, 1); loadData(); } }
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        const titles = ["ក្រុមទី ១ (ប្រចាំបញ្ជា)", "ក្រុមទី ២ (ប្រចាំការ)", "ក្រុមទី ៣ (ប្រចាំថ្ងៃ)"];
-        membersGroups.forEach((g, gi) => {
-            tbody.innerHTML += `<tr><td colspan="9" class="group-header">${titles[gi]}</td></tr>`;
-            g.forEach((n, ni) => {
-                const days = data[n] || ["","","","","","",""];
-                tbody.innerHTML += `<tr id="row-${n.replace(/\s+/g,'-')}"><td>${(ni+1).toString().padStart(2,'0')}</td><td class="name-cell">${n}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
-            });
-        });
+        const titles = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
+        for(let gi=0; gi<3; gi++) {
+            tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1} (${titles[gi]})</td></tr>`;
+            for(let ni=0; ni<5; ni++) {
+                const name = members[gi*5 + ni];
+                const days = data[name] || ["","","","","","",""];
+                tbody.innerHTML += `<tr><td>${ni+1}</td><td class="name-cell">${name}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
+            }
+        }
     }
 
     async function startStepByStep() {
         if(currentUser !== 'ADMIN') return;
         document.getElementById('startBtn').disabled = true;
-        let flatList = []; membersGroups.forEach((g, gi) => g.forEach(n => flatList.push({name: n, gIdx: gi})));
-        let spinList = [...flatList].sort(() => Math.random() - 0.5);
-        let usedOffsets = {g0:[], g1:[], g2:[]};
-        let monthResults = {};
+        let spinList = [...members].sort(() => Math.random() - 0.5);
+        let monthData = {};
+        let groupUsed = {g0:[], g1:[], g2:[]};
 
-        for(let i=0; i<flatList.length; i++) {
-            const picked = await new Promise(res => {
-                let timer = 0;
-                let itv = setInterval(() => {
-                    document.getElementById('displayBox').innerText = spinList[Math.floor(Math.random()*spinList.length)].name;
-                    if((timer += 50) > 600) { clearInterval(itv); res(spinList[Math.floor(Math.random()*spinList.length)]); }
-                }, 50);
-            });
+        for(let name of spinList) {
+            const gi = Math.floor(members.indexOf(name) / 5);
+            document.getElementById('displayBox').innerText = name;
             
-            let startDay = Math.floor(Math.random()*5)+1;
-            while(usedOffsets['g'+picked.gIdx].includes(startDay)) startDay = (startDay % 5) + 1;
-            usedOffsets['g'+picked.gIdx].push(startDay);
+            let sDay = Math.floor(Math.random()*5)+1;
+            while(groupUsed['g'+gi].includes(sDay)) sDay = (sDay%5)+1;
+            groupUsed['g'+gi].push(sDay);
 
-            let daysArray = ["","","","","","",""];
-            const totalInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
-            for(let d=startDay, c=0; d<=totalInMonth && c<7; d+=5, c++) daysArray[c] = d.toString().padStart(2, '0');
+            let days = ["","","","","","",""];
+            const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
+            for(let d=sDay, c=0; d<=total && c<7; d+=5, c++) days[c] = d.toString().padStart(2, '0');
             
-            monthResults[picked.name] = daysArray;
-            spinList = spinList.filter(m => m.name !== picked.name);
-            
-            // Sync ទៅ Firebase ម្នាក់ម្ដងៗ
-            db.ref(getMonthKey()).update({ [picked.name]: daysArray });
-            await new Promise(r => setTimeout(r, 800));
+            monthData[name] = days;
+            db.ref(getMonthKey()).update({ [name]: days });
+            await new Promise(r => setTimeout(r, 600));
         }
         document.getElementById('displayBox').innerText = "រួចរាល់ ✨";
         document.getElementById('startBtn').disabled = false;
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
-    function resetCurrentMonth() { if(confirm("Reset data ខែនេះ?")) { db.ref(getMonthKey()).remove(); } }
-    
-    // មុខងារ Download Excel
-    function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty_List.xlsx"); }
+    function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty.xlsx"); }
 
-    // មុខងារចម្បង៖ Download Image (សន្លឹកឆ្នោត)
     function exportToImage() {
         const element = document.getElementById("dutyTable");
-        
-        // កែសម្រួលស្ទាយបន្តិចមុននឹងថត ដើម្បីកុំឱ្យបាត់បន្ទាត់ ឬឈ្មោះ
-        element.style.transform = "scale(1)"; 
-        
-        html2canvas(element, {
-            scale: 2, // បង្កើនកម្រិតច្បាស់ (High Quality)
-            useCORS: true, // អនុញ្ញាតឱ្យប្រើរូបភាពពីក្រៅ (បើមាន)
-            backgroundColor: "#ffffff" // background ពណ៌ស
-        }).then(canvas => {
+        html2canvas(element, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `Duty_Roster_${document.getElementById('monthTitle').innerText.replace(/\s/g,'_')}.png`;
-            link.href = canvas.toDataURL("image/png");
+            link.download = `Duty_${document.getElementById('monthTitle').innerText}.png`;
+            link.href = canvas.toDataURL();
             link.click();
         });
     }
 
-    window.onload = () => { /* wait login */ };
+    window.onload = () => {};
 </script>
 </body>
 </html>
