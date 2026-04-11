@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - ជំនាន់ដោះស្រាយថ្ងៃទី ៣១</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Random ថ្មីរាល់ខែ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Leelawadee UI', 'Kantumruy Pro', sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
@@ -14,15 +14,14 @@
         #displayBox { font-size: 45px; font-weight: bold; color: #1a73e8; min-height: 65px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
         #statusMsg { font-size: 15px; color: #28a745; font-weight: bold; margin-bottom: 15px; height: 20px; }
         .duty-table { width: 100%; border-collapse: collapse; background: white; }
-        .duty-table th, .duty-table td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 14px; }
+        .duty-table th, .duty-table td { border: 1px solid #000; padding: 12px; text-align: center; font-size: 14px; }
         .group-header { background: #003366 !important; color: white; text-align: left !important; padding-left: 20px; font-weight: bold; }
         .filled { background: #fffde7; font-weight: bold; color: #d32f2f; }
         .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; color: white; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; color: white; transition: 0.3s; }
         .btn-start { background: #28a745; }
         .btn-excel { background: #1d6f42; }
         .btn-reset { background: #6c757d; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
         @media print { .spin-box, .btn-group, .calendar-header button { display: none; } }
     </style>
 </head>
@@ -39,7 +38,7 @@
         <div id="displayBox">---</div>
         <div id="statusMsg"></div>
         <div class="btn-group">
-            <button id="startBtn" class="btn btn-start" onclick="startFullAuto()">🚀 រៀបចំអូតូសម្រាប់ខែនេះ</button>
+            <button id="startBtn" class="btn btn-start" onclick="startFreshRandom()">🎲 ចាប់ផ្ដើម Random ថ្មីសម្រាប់ខែនេះ</button>
             <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
             <button class="btn btn-reset" onclick="resetAll()">♻️ សម្អាតចោល</button>
         </div>
@@ -61,7 +60,7 @@
     const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
     let currentDate = new Date();
     let spinList = [];
-    let usedOffsets = { g1: [], g2: [], g3: [] };
+    let groupUsedOffsets = { g1: [], g2: [], g3: [] };
 
     function getMonthKey(date) { return "duty_" + date.getFullYear() + "_" + date.getMonth(); }
 
@@ -90,15 +89,17 @@
         });
 
         document.getElementById('startBtn').disabled = Object.keys(savedData).length > 0;
-        document.getElementById('statusMsg').innerText = Object.keys(savedData).length > 0 ? "ទិន្នន័យត្រូវបានរក្សាទុក" : "សូមចុចប៊ូតុងពណ៌បៃតង";
+        document.getElementById('statusMsg').innerText = Object.keys(savedData).length > 0 ? "ទិន្នន័យត្រូវបានរក្សាទុក" : "ខែថ្មី៖ សូមចុចប៊ូតុងពណ៌បៃតងដើម្បី Random ឈ្មោះ";
     }
 
-    async function startFullAuto() {
+    async function startFreshRandom() {
         document.getElementById('startBtn').disabled = true;
-        usedOffsets = { g1: [], g2: [], g3: [] };
+        groupUsedOffsets = { g1: [], g2: [], g3: [] };
+        
+        // ច្របល់ឈ្មោះទាំង ១៥ នាក់ថ្មីស្រឡាង (មិនខ្វល់ពីលំដាប់ចាស់)
         spinList = [...members].sort(() => Math.random() - 0.5);
+        
         let monthData = {};
-
         for (let i = 0; i < members.length; i++) {
             const finalName = await runOnePerson();
             monthData[finalName] = fillData(finalName);
@@ -106,7 +107,7 @@
 
         localStorage.setItem(getMonthKey(currentDate), JSON.stringify(monthData));
         document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-        document.getElementById('statusMsg').innerText = "បានរក្សាទុកទិន្នន័យរួចរាល់។";
+        document.getElementById('statusMsg').innerText = "រៀបចំកាលវិភាគថ្មីស្រឡាងរួចរាល់។";
     }
 
     function runOnePerson() {
@@ -130,22 +131,12 @@
         const nameIdx = members.indexOf(name);
         const gKey = nameIdx < 5 ? 'g1' : (nameIdx < 10 ? 'g2' : 'g3');
 
-        const lastMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
-        const prevMonthData = JSON.parse(localStorage.getItem(getMonthKey(lastMonthDate))) || {};
-        
-        const prevDays = prevMonthData[name] || [];
-        let lastDayVal = 0;
-        if (prevDays.length > 0) {
-            const validDays = prevDays.filter(d => d !== "");
-            lastDayVal = parseInt(validDays[validDays.length - 1]);
+        // រកថ្ងៃចាប់ផ្ដើមថ្មី (១ ដល់ ៥) ដែលមិនទាន់មានអ្នកយកក្នុងក្រុមជាមួយគ្នា
+        let startDay = Math.floor(Math.random() * 5) + 1;
+        while (groupUsedOffsets[gKey].includes(startDay)) {
+            startDay = (startDay % 5) + 1;
         }
-
-        const prevMonthTotalDays = lastMonthDate.getDate(); 
-        let startDay = (lastDayVal + 5) - prevMonthTotalDays;
-        while (startDay <= 0) startDay += 5;
-
-        while (usedOffsets[gKey].includes(startDay)) { startDay = (startDay % 5) + 1; }
-        usedOffsets[gKey].push(startDay);
+        groupUsedOffsets[gKey].push(startDay);
 
         const currentMonthTotalDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
         const row = document.getElementById(`row-${name}`);
