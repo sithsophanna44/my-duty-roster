@@ -5,20 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>កម្មវិធីចាប់ឈ្មោះអ្នកប្រចាំការ</title>
     <style>
-        body { font-family: 'Leelawadee UI', 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; }
-        .input-group { display: flex; margin-bottom: 15px; }
-        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px 0 0 5px; font-size: 16px; }
-        .btn-add { padding: 10px 15px; background: #2196f3; color: white; border: none; border-radius: 0 5px 5px 0; cursor: pointer; }
-        .member-list { margin-bottom: 20px; max-height: 150px; overflow-y: auto; border: 1px solid #eee; padding: 10px; }
-        .spin-box { font-size: 32px; font-weight: bold; text-align: center; padding: 20px; background: #e3f2fd; color: #1976d2; border-radius: 10px; margin-bottom: 15px; min-height: 50px; border: 2px dashed #2196f3; }
-        button.main-btn { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; margin-bottom: 10px; border: none; border-radius: 8px; cursor: pointer; color: white; }
-        .btn-start { background: #4caf50; }
-        .btn-stop { background: #f44336; }
-        .result-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .result-table td { padding: 8px; border-bottom: 1px solid #eee; }
-        .day-name { font-weight: bold; width: 40%; }
+        body { font-family: 'Leelawadee UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1a73e8; margin-top: 0; }
+        .input-group { display: flex; gap: 5px; margin-bottom: 15px; }
+        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .btn-add { background: #1a73e8; color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; }
+        
+        .member-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
+        .member-actions button { margin-left: 5px; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+        .btn-edit { background: #ffc107; color: black; }
+        .btn-delete { background: #f44336; color: white; }
+
+        .spin-box { font-size: 32px; font-weight: bold; text-align: center; padding: 25px; background: #e8f0fe; color: #1967d2; border-radius: 12px; margin: 20px 0; border: 2px dashed #1a73e8; min-height: 40px; }
+        
+        .main-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; color: white; margin-bottom: 10px; transition: 0.3s; }
+        .btn-start { background: #34a853; }
+        .btn-stop { background: #ea4335; }
+        .main-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .result-table td { padding: 12px 5px; border-bottom: 1px solid #eee; }
+        .day-label { font-weight: bold; color: #555; width: 100px; }
+        .name-label { color: #1a73e8; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -27,12 +36,11 @@
     <h2>📅 ចាប់ឈ្មោះអ្នកប្រចាំការ</h2>
     
     <div class="input-group">
-        <input type="text" id="nameInput" placeholder="បញ្ចូលឈ្មោះសមាជិក...">
+        <input type="text" id="nameInput" placeholder="បញ្ចូលឈ្មោះថ្មី...">
         <button class="btn-add" onclick="addMember()">បន្ថែម</button>
     </div>
 
-    <div class="member-list" id="memberList">
-        </div>
+    <div id="memberList" style="margin-bottom: 20px; max-height: 200px; overflow-y: auto;"></div>
 
     <div class="spin-box" id="displayBox">---</div>
 
@@ -40,60 +48,99 @@
     <button id="stopBtn" class="main-btn btn-stop" onclick="stopOneByOne()" disabled>🛑 បញ្ឈប់ម្តង១ៗ</button>
 
     <table class="result-table">
-        <tbody id="resultBody">
-            </tbody>
+        <tbody id="resultBody"></tbody>
     </table>
 </div>
 
 <script>
-    let members = ["សុខា", "តារា", "បុប្ផា", "វិបុល", "ស្រីនាថ"];
+    let allMembers = ["សុខា", "តារា", "បុប្ផា", "វិបុល", "ស្រីនាថ", "មុន្នី", "ចិន្តា"];
+    let remainingMembers = [];
     let days = ["ច័ន្ទ", "អង្គារ", "ពុធ", "ព្រហស្បតិ៍", "សុក្រ", "សៅរ៍", "អាទិត្យ"];
     let currentDayIndex = 0;
-    let spinning = false;
     let spinInterval;
 
     function renderMembers() {
         const list = document.getElementById('memberList');
-        list.innerHTML = members.map((m, i) => `<div><input type="checkbox" checked value="${m}"> ${m}</div>`).join('');
+        list.innerHTML = allMembers.map((m, i) => `
+            <div class="member-item">
+                <span><input type="checkbox" checked class="m-check" value="${m}"> ${m}</span>
+                <div class="member-actions">
+                    <button class="btn-edit" onclick="editMember(${i})">កែ</button>
+                    <button class="btn-delete" onclick="deleteMember(${i})">លុប</button>
+                </div>
+            </div>
+        `).join('');
     }
 
     function addMember() {
         const input = document.getElementById('nameInput');
         if (input.value.trim()) {
-            members.push(input.value.trim());
+            allMembers.push(input.value.trim());
             input.value = '';
             renderMembers();
         }
     }
 
-    function startSpin() {
-        const checkedMembers = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-        if (checkedMembers.length === 0) return alert("សូមរើសសមាជិក!");
+    function editMember(index) {
+        let newName = prompt("កែប្រែឈ្មោះ:", allMembers[index]);
+        if (newName && newName.trim()) {
+            allMembers[index] = newName.trim();
+            renderMembers();
+        }
+    }
 
-        spinning = true;
+    function deleteMember(index) {
+        if (confirm("តើអ្នកចង់លុបឈ្មោះនេះមែនទេ?")) {
+            allMembers.splice(index, 1);
+            renderMembers();
+        }
+    }
+
+    function startSpin() {
+        // យកតែឈ្មោះណាដែលបាន Tick
+        remainingMembers = Array.from(document.querySelectorAll('.m-check:checked')).map(cb => cb.value);
+        
+        if (remainingMembers.length < 1) return alert("សូមរើសសមាជិកយ៉ាងហោចម្នាក់!");
+        
         currentDayIndex = 0;
         document.getElementById('resultBody').innerHTML = '';
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
+        
+        runSpinLogic();
+    }
+
+    function runSpinLogic() {
+        if (remainingMembers.length === 0) {
+            // បើអស់ឈ្មោះ តែមិនទាន់គ្រប់ថ្ងៃ ឱ្យប្រើបញ្ជីដើមឡើងវិញ
+            remainingMembers = Array.from(document.querySelectorAll('.m-check:checked')).map(cb => cb.value);
+        }
 
         spinInterval = setInterval(() => {
-            const randomName = checkedMembers[Math.floor(Math.random() * checkedMembers.length)];
-            document.getElementById('displayBox').innerText = randomName;
+            const tempName = remainingMembers[Math.floor(Math.random() * remainingMembers.length)];
+            document.getElementById('displayBox').innerText = tempName;
         }, 50);
     }
 
     function stopOneByOne() {
-        if (!spinning || currentDayIndex >= 7) return;
-
-        const finalName = document.getElementById('displayBox').innerText;
-        const resultBody = document.getElementById('resultBody');
+        clearInterval(spinInterval);
+        const selectedName = document.getElementById('displayBox').innerText;
         
-        resultBody.innerHTML += `<tr><td class="day-name">ថ្ងៃ${days[currentDayIndex]}:</td><td>${finalName}</td></tr>`;
+        // បង្ហាញលទ្ធផល
+        const resultBody = document.getElementById('resultBody');
+        resultBody.innerHTML += `<tr><td class="day-label">ថ្ងៃ${days[currentDayIndex]}:</td><td class="name-label">${selectedName}</td></tr>`;
+        
+        // លុបឈ្មោះដែលជាប់ហើយ ចេញពីបញ្ជីដែលត្រូវវិលបន្ត (ដើម្បីកុំឱ្យជាន់គ្នា)
+        const index = remainingMembers.indexOf(selectedName);
+        if (index > -1) {
+            remainingMembers.splice(index, 1);
+        }
+
         currentDayIndex++;
 
-        if (currentDayIndex >= 7) {
-            clearInterval(spinInterval);
-            spinning = false;
+        if (currentDayIndex < 7) {
+            runSpinLogic(); // វិលបន្តសម្រាប់ថ្ងៃបន្ទាប់
+        } else {
             document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
             document.getElementById('startBtn').disabled = false;
             document.getElementById('stopBtn').disabled = true;
