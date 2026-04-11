@@ -3,38 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Excel Export</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - ជំនាន់កែសម្រួលលេខ</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Leelawadee UI', sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
         .container { background: white; max-width: 1100px; margin: auto; padding: 20px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        
-        /* ផ្នែកគ្រប់គ្រងប្រតិទិន */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #003366; color: white; padding: 15px; border-radius: 8px; }
         .calendar-header h2 { margin: 0; }
-        .btn-nav { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 15px; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .btn-nav:hover { background: rgba(255,255,255,0.4); }
-
-        .setup-section { background: #e8f0fe; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #1a73e8; }
-        
-        /* ផ្នែកវិលឈ្មោះ */
-        .spin-box { text-align: center; border: 2px dashed #1a73e8; padding: 15px; border-radius: 10px; background: white; margin-bottom: 20px; }
-        #displayBox { font-size: 32px; font-weight: bold; color: #1a73e8; min-height: 45px; }
-
-        /* តារាងលទ្ធផល */
+        .btn-nav { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 15px; cursor: pointer; border-radius: 5px; }
+        .spin-box { text-align: center; border: 2px dashed #1a73e8; padding: 20px; border-radius: 10px; background: white; margin-bottom: 20px; }
+        #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; }
         .duty-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .duty-table th, .duty-table td { border: 1px solid #000; padding: 12px; text-align: center; }
         .duty-table th { background: #f2f2f2; }
         .group-header { background: #003366 !important; color: white; text-align: left !important; padding-left: 15px; font-weight: bold; }
-        .filled { background: #fffde7; font-weight: bold; color: #d32f2f; border: 2px solid #fbc02d !important; }
-
+        .filled { background: #fffde7; font-weight: bold; color: #d32f2f; }
         .action-btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
-        .btn-success { background: #28a745; }
-        .btn-excel { background: #1d6f42; }
+        .btn { padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; }
+        .btn-start { background: #28a745; }
         .btn-stop { background: #dc3545; }
-
-        @media print { .setup-section, .spin-box, .action-btns, .btn-nav { display: none; } }
+        .btn-excel { background: #1d6f42; }
+        @media print { .spin-box, .action-btns, .btn-nav { display: none; } }
     </style>
 </head>
 <body>
@@ -42,20 +31,16 @@
 <div class="container">
     <div class="calendar-header">
         <button class="btn-nav" onclick="changeMonth(-1)">◀ ខែមុន</button>
-        <h2 id="monthTitle">ខែមេសា ២០២៦</h2>
+        <h2 id="monthTitle">---</h2>
         <button class="btn-nav" onclick="changeMonth(1)">ខែបន្ទាប់ ▶</button>
-    </div>
-
-    <div class="setup-section">
-        <strong>💡 របៀបប្រើ៖</strong> កម្មវិធីនឹងចងចាំថ្ងៃយាមចុងក្រោយរបស់អ្នកម្នាក់ៗ។ បើខែថ្មីមកដល់ អ្នកគ្រាន់តែចុច <b>"វិលឈ្មោះ"</b> វានឹងរាប់បន្ត ៤ ថ្ងៃពីខែចាស់ឱ្យភ្លាម!
     </div>
 
     <div class="spin-box">
         <div id="displayBox">---</div>
         <div class="action-btns">
-            <button id="startBtn" class="btn btn-success" onclick="startRolling()">▶ វិលឈ្មោះខែថ្មី</button>
+            <button id="startBtn" class="btn btn-start" onclick="startRolling()">▶ វិលឈ្មោះខែថ្មី</button>
             <button id="stopBtn" class="btn btn-stop" onclick="stopRolling()" disabled>🛑 បញ្ឈប់ម្ដងម្នាក់</button>
-            <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
+            <button class="btn btn-excel" onclick="exportToExcel()">📊 ទាញយក Excel</button>
         </div>
     </div>
 
@@ -72,7 +57,6 @@
 </div>
 
 <script>
-    // បញ្ជីឈ្មោះ និងការចងចាំថ្ងៃចុងក្រោយ (ទុកក្នុង LocalStorage)
     let defaultMembers = [
         "សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច",
         "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត",
@@ -82,11 +66,15 @@
     let currentDate = new Date();
     let masterList = [];
     let spinInterval;
-    let stopCount = 0;
+    let groupCounters = { g1: 0, g2: 0, g3: 0 };
 
     function getMonthName(date) {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         return months[date.getMonth()] + " " + date.getFullYear();
+    }
+
+    function daysInMonth(month, year) {
+        return new Date(year, month + 1, 0).getDate();
     }
 
     function changeMonth(step) {
@@ -103,7 +91,6 @@
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
         const groups = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
-        
         groups.forEach((g, gIdx) => {
             tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${g}</td></tr>`;
             for (let i = 0; i < 5; i++) {
@@ -115,66 +102,3 @@
                         <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
                         <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
                     </tr>`;
-            }
-        });
-    }
-
-    function startRolling() {
-        masterList = [...defaultMembers].sort(() => Math.random() - 0.5);
-        stopCount = 0;
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-        
-        spinInterval = setInterval(() => {
-            const pick = masterList[Math.floor(Math.random() * masterList.length)];
-            document.getElementById('displayBox').innerText = pick;
-        }, 50);
-    }
-
-    function stopRolling() {
-        clearInterval(spinInterval);
-        const name = document.getElementById('displayBox').innerText;
-        
-        // --- LOGIC បន្តវេនឆ្លងខែ ---
-        // យកថ្ងៃយាមចុងក្រោយដែលបានរក្សាទុកក្នុង Browser
-        let lastDay = parseInt(localStorage.getItem('lastDay_' + name)) || 0;
-        
-        // បើខែមុនគាត់យាមថ្ងៃទី ៣០ នោះថ្ងៃដំបូងខែថ្មីគឺ (៣០+៥)-៣០ = ថ្ងៃទី ០៥
-        let startDay = (lastDay + 5) - 30; 
-        if (startDay <= 0) startDay = (Math.random() * 5 + 1); // ករណីថ្មីថ្មោង
-
-        let dutyDays = [];
-        for (let d = startDay; d <= 30; d += 5) {
-            if (d > 0) dutyDays.push(d.toString().padStart(2, '0'));
-        }
-
-        const row = document.getElementById(`row-${name}`);
-        dutyDays.forEach((day, i) => {
-            const cell = row.querySelector(`.d-${i+1}`);
-            if (cell) { cell.innerText = day; cell.classList.add('filled'); }
-        });
-
-        // រក្សាទុកថ្ងៃចុងក្រោយបំផុតសម្រាប់ប្រើខែក្រោយ
-        localStorage.setItem('lastDay_' + name, dutyDays[dutyDays.length - 1]);
-
-        masterList = masterList.filter(n => n !== name);
-        if (masterList.length > 0) {
-            setTimeout(startRolling, 600);
-        } else {
-            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-            document.getElementById('stopBtn').disabled = true;
-            document.getElementById('startBtn').disabled = false;
-        }
-    }
-
-    function exportToExcel() {
-        const table = document.getElementById("dutyTable");
-        const wb = XLSX.utils.table_to_book(table, {sheet: "តារាងប្រចាំការ"});
-        XLSX.writeFile(wb, `Duty_Schedule_${getMonthName(currentDate)}.xlsx`);
-    }
-
-    window.onload = updateUI;
-</script>
-
-</body>
-</html>
