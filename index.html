@@ -3,178 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - បន្តវេនពីខែចាស់</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Monthly Random & Print</title>
     <style>
-        body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        /* --- ការកំណត់សម្រាប់មើលលើអេក្រង់ --- */
+        body { font-family: 'Leelawadee UI', 'Kantumruy Pro', sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
         .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; margin-bottom: 20px; }
+        h2 { text-align: center; color: #003366; margin-bottom: 5px; }
+        .sub-title { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
         
-        .continuity-panel { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #bbdefb; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .continuity-panel label { font-weight: bold; font-size: 14px; }
-        .continuity-panel select { padding: 5px 10px; border-radius: 5px; }
-
-        .management-section { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ddd; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        input[type="text"], select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; }
-        .btn-add { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-
-        .tag { background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px; margin: 5px; font-size: 13px; }
+        .control-panel { background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .input-box label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; }
+        textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: none; box-sizing: border-box; }
         
-        .spin-area { background: #fffde7; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #fbc02d; }
-        #displayBox { font-size: 35px; font-weight: bold; color: #f57f17; min-height: 50px; margin-bottom: 10px; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; }
+        .spin-section { text-align: center; background: #fff; padding: 20px; border-radius: 10px; border: 2px dashed #1a73e8; }
+        #displayBox { font-size: 40px; font-weight: bold; color: #1a73e8; margin-bottom: 15px; min-height: 55px; }
+        
+        .btn-group { display: flex; gap: 10px; justify-content: center; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; }
         .btn-start { background: #34a853; }
         .btn-stop { background: #ea4335; }
+        .btn-print { background: #555; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        .duty-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
-        .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; }
+        .duty-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .duty-table th, .duty-table td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 14px; }
         .duty-table th { background: #f2f2f2; }
-        .group-header { background: #f5f5f5 !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
-        .filled { background: #fff9c4; font-weight: bold; color: #e65100; border: 2px solid #fbc02d !important; }
+        .group-header { background: #e8f0fe !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
+        
+        /* --- ការកំណត់សម្រាប់ពេលបោះពុម្ព (Print) --- */
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; }
+            .control-panel, .spin-section, .btn-print { display: none; }
+            .duty-table { font-size: 12px; }
+            .duty-table th, .duty-table td { padding: 5px; }
+            h2 { font-size: 18px; margin-bottom: 10px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📅 តារាងប្រចាំការបន្តវេន (Rotate)</h2>
+    <h2>តារាងបែងចែក ប្រចាំបញ្ជា ប្រចាំការ និង ប្រចាំថ្ងៃ</h2>
+    <div class="sub-title">លក្ខខណ្ឌ៖ រំលង ៤ ថ្ងៃក្នុងម្នាក់ (ម្នាក់យាម ៦ ថ្ងៃក្នុងមួយខែ)</div>
     
-    <div class="continuity-panel">
-        <label>🔄 បន្តវេនពីខែចាស់៖ </label>
-        <span>នៅថ្ងៃទី ០១ ខែថ្មីនេះ ឱ្យសមាជិកទី </span>
-        <select id="startOffset">
-            <option value="0">០១ (វេនទី១)</option>
-            <option value="1">០២ (វេនទី២)</option>
-            <option value="2">០៣ (វេនទី៣)</option>
-            <option value="3">០៤ (វេនទី៤)</option>
-            <option value="4">០៥ (វេនទី៥)</option>
-        </select>
-        <span> ជាអ្នកចាប់ផ្ដើមមុនគេ។</span>
-    </div>
-
-    <div class="management-section">
-        <div class="input-group">
-            <input type="text" id="newName" placeholder="ឈ្មោះថ្មី...">
-            <select id="groupSelect">
-                <option value="g1">ក្រុមប្រចាំបញ្ជា</option>
-                <option value="g2">ក្រុមប្រចាំការ</option>
-                <option value="g3">ក្រុមប្រចាំថ្ងៃ</option>
-            </select>
-            <button class="btn-add" onclick="addNewMember()">+ បន្ថែម</button>
+    <div class="control-panel">
+        <div class="input-box">
+            <label>ឈ្មោះសមាជិក (ដកឃ្លាគ្នា)៖</label>
+            <textarea id="namesArea" oninput="saveData()">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា</textarea>
         </div>
-        <div id="membersDisplay"></div>
-    </div>
-
-    <div class="spin-area">
-        <div id="displayBox">---</div>
-        <div class="btn-group">
-            <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ វិលឈ្មោះ</button>
-            <button id="stopBtn" class="btn btn-stop" onclick="stopOneByOne()" disabled>🛑 បញ្ឈប់ម្ដងម្នាក់</button>
+        <div class="spin-section">
+            <div id="displayBox">---</div>
+            <div class="btn-group">
+                <button id="startBtn" class="btn btn-start" onclick="prepareAndStart()">▶ វិលឈ្មោះ</button>
+                <button id="stopBtn" class="btn btn-stop" onclick="stopOneBy One()" disabled>🛑 បញ្ឈប់</button>
+                <button class="btn btn-print" onclick="window.print()">🖨 Print</button>
+            </div>
         </div>
     </div>
 
     <table class="duty-table">
         <thead>
             <tr>
-                <th>ល.រ</th>
-                <th width="25%">នាម និង គោត្តនាម</th>
-                <th colspan="6">កាលបរិច្ឆេទយាម (រំលង ៤ថ្ងៃ)</th>
+                <th width="8%">ល.រ</th>
+                <th width="28%">នាម និង គោត្តនាម</th>
+                <th colspan="6">កាលបរិច្ឆេទអនុវត្តការងារ (រំលង ៤ ថ្ងៃ)</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="tableBody">
+            </tbody>
     </table>
 </div>
 
 <script>
-    let groups = {
-        g1: ["សោម-ទិ", "អ៊ុយ-សុពល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
-        g2: ["ជូ-ច័ន្ទថុល", "វិរៈ-អរុណ", "គឹម-សែនសារី", "យឹម-លុច", "អ៊ុន-ដារ៉េត"],
-        g3: ["ស្ងួន-ពៅ", "ហែម-ហែន", "នឿន-វណ្ណេត", "អ៊ុំ-រិទ្ធី", "អ៊ុន-មករា"]
-    };
-
     let masterList = [];
     let spinInterval;
-    let groupCounters = { g1: 0, g2: 0, g3: 0 };
+    let stopCount = 0;
 
-    function renderManagement() {
-        const container = document.getElementById('membersDisplay');
-        container.innerHTML = '';
-        for (let gId in groups) {
-            groups[gId].forEach((name, index) => {
-                container.innerHTML += `<div class="tag">${name} <button style="color:red;border:none;background:none;cursor:pointer" onclick="deleteMember('${gId}', ${index})">✖</button></div>`;
-            });
-        }
+    // ១. រក្សាទុកទិន្នន័យឈ្មោះក្នុង Browser (LocalStorage)
+    function saveData() {
+        const names = document.getElementById('namesArea').value;
+        localStorage.setItem('dutyNames', names);
     }
 
-    function addNewMember() {
-        const nameInput = document.getElementById('newName');
-        const gId = document.getElementById('groupSelect').value;
-        if (nameInput.value.trim()) {
-            groups[gId].push(nameInput.value.trim());
-            nameInput.value = '';
-            renderManagement();
-        }
+    function loadData() {
+        const saved = localStorage.getItem('dutyNames');
+        if (saved) document.getElementById('namesArea').value = saved;
     }
 
-    function deleteMember(gId, index) {
-        groups[gId].splice(index, 1);
-        renderManagement();
-    }
+    // ២. រៀបចំបញ្ជីឈ្មោះ និងតារាង
+    function prepareAndStart() {
+        const rawNames = document.getElementById('namesArea').value.trim().split(/\s+/).filter(n => n);
+        if (rawNames.length < 15) return alert("សូមបញ្ចូលឈ្មោះឱ្យបាន ១៥ នាក់ (៥នាក់ក្នុងមួយក្រុម)!");
 
-    function prepareSpin() {
-        masterList = [];
-        for (let gId in groups) {
-            groups[gId].forEach(name => masterList.push({ name: name, groupId: gId }));
-        }
-        
+        // ច្របល់ឈ្មោះសិន (Random Order)
+        masterList = rawNames.sort(() => Math.random() - 0.5);
+
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
-        const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
-        for (let gId in groups) {
-            tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${titles[gId]}</td></tr>`;
-            groups[gId].forEach((m, i) => {
-                tableBody.innerHTML += `<tr id="row-${gId}-${m}"><td>${(i+1).toString().padStart(2, '0')}</td><td style="text-align:left;padding-left:10px;">${m}</td><td class="d-1"></td><td class="d-2"></td><td class="d-3"></td><td class="d-4"></td><td class="d-5"></td><td class="d-6"></td></tr>`;
-            });
-        }
-        groupCounters = { g1: 0, g2: 0, g3: 0 };
-        startSpinning();
+        
+        const groups = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
+        let nameIdx = 0;
+
+        groups.forEach(groupTitle => {
+            tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${groupTitle}</td></tr>`;
+            for (let i = 1; i <= 5; i++) {
+                tableBody.innerHTML += `
+                    <tr id="row-${stopCount + nameIdx}">
+                        <td>${i.toString().padStart(2, '0')}</td>
+                        <td id="name-${stopCount + nameIdx}" style="text-align:left; padding-left:10px;">......</td>
+                        <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
+                        <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
+                    </tr>`;
+                nameIdx++;
+            }
+        });
+
+        stopCount = 0;
+        startSpin();
     }
 
-    function startSpinning() {
+    function startSpin() {
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
+        
         spinInterval = setInterval(() => {
-            const randomPick = masterList[Math.floor(Math.random() * masterList.length)];
-            document.getElementById('displayBox').innerText = randomPick.name;
+            const randomName = masterList[Math.floor(Math.random() * masterList.length)];
+            document.getElementById('displayBox').innerText = randomName;
         }, 50);
     }
 
+    // ៣. បញ្ឈប់ និងបំពេញក្នុងតារាងតាម Logic រំលង ៤ ថ្ងៃ
     function stopOneByOne() {
         clearInterval(spinInterval);
         const selectedName = document.getElementById('displayBox').innerText;
-        const pickedObj = masterList.find(m => m.name === selectedName);
-        
-        // --- គន្លឹះបន្តវេន (The Rotation Secret) ---
-        // យក "វេនចាប់ផ្ដើមដែលបានរើស" បូកជាមួយ "លំដាប់ដែលចាប់បានក្នុងក្រុម"
-        const offset = parseInt(document.getElementById('startOffset').value);
-        let startDay = ((groupCounters[pickedObj.groupId] + offset) % 5) + 1;
-        
-        let dutyDays = [];
-        for (let d = startDay; d <= 30; d += 5) dutyDays.push(d.toString().padStart(2, '0'));
 
-        const targetRow = document.getElementById(`row-${pickedObj.groupId}-${selectedName}`);
-        if (targetRow) {
-            dutyDays.forEach((day, i) => {
-                const cell = targetRow.querySelector(`.d-${i+1}`);
-                if (cell) { cell.innerText = day; cell.classList.add('filled'); }
-            });
+        // ដាក់ឈ្មោះក្នុងតារាង
+        document.getElementById(`name-${stopCount}`).innerText = selectedName;
+
+        // គណនាថ្ងៃយាម (Cycle ៥ ថ្ងៃ)
+        // ក្នុងមួយក្រុមមាន ៥ នាក់ ដូចនេះម្នាក់ៗត្រូវមាន Offset ខុសគ្នា ១ ថ្ងៃ
+        let offset = stopCount % 5; 
+        let days = [];
+        for (let d = offset + 1; d <= 30; d += 5) {
+            days.push(d.toString().padStart(2, '0'));
         }
 
-        groupCounters[pickedObj.groupId]++;
-        masterList = masterList.filter(m => m.name !== selectedName);
+        // បំពេញថ្ងៃចូលក្នុងក្រឡា
+        const row = document.getElementById(`row-${stopCount}`);
+        days.forEach((day, i) => {
+            row.querySelector(`.d-${i+1}`).innerText = day;
+        });
 
-        if (masterList.length > 0) {
-            setTimeout(startSpinning, 600);
+        // ដកឈ្មោះដែលជាប់ហើយចេញពីបញ្ជីវិល
+        masterList = masterList.filter(n => n !== selectedName);
+        stopCount++;
+
+        if (stopCount < 15) {
+            setTimeout(startSpin, 500);
         } else {
             document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
             document.getElementById('stopBtn').disabled = true;
@@ -182,7 +168,7 @@
         }
     }
 
-    renderManagement();
+    window.onload = loadData;
 </script>
 
 </body>
