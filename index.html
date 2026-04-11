@@ -3,45 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Full Features</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Monthly Offset</title>
     <style>
         body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
         .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; margin-bottom: 20px; }
+        h2 { text-align: center; color: #003366; margin-bottom: 10px; }
+        
+        .month-selector { text-align: center; margin-bottom: 20px; background: #fff3e0; padding: 10px; border-radius: 8px; border: 1px solid #ffe0b2; }
+        .month-selector select { padding: 8px; font-size: 16px; border-radius: 5px; cursor: pointer; }
 
-        /* ផ្នែកគ្រប់គ្រងឈ្មោះ */
         .management-section { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ddd; }
         .input-group { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        input[type="text"], select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; min-width: 150px; }
+        input[type="text"], select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; }
         .btn-add { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
         .member-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .tag { background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
-        .btn-edit-small { color: #f39c12; cursor: pointer; border: none; background: none; font-size: 16px; }
-        .btn-del-small { color: #d32f2f; cursor: pointer; border: none; background: none; font-size: 16px; }
-
-        /* ផ្នែកវិលឈ្មោះ */
+        
         .spin-area { background: #e8f0fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #1a73e8; }
         #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; margin-bottom: 10px; }
         .btn-group { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; }
         .btn-start { background: #34a853; }
         .btn-stop { background: #ea4335; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* តារាង */
         .duty-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
         .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; font-size: 14px; }
         .duty-table th { background: #f2f2f2; }
         .group-header { background: #e8f0fe !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
-        .filled { background: #fffde7; font-weight: bold; color: #d32f2f; }
+        .filled { background: #e3f2fd; font-weight: bold; color: #1565c0; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📅 ប្រព័ន្ធគ្រប់គ្រង និងបែងចែកកាលវិភាគយាម</h2>
+    <h2>📅 តារាងបែងចែកកាលវិភាគយាមប្រចាំខែ</h2>
     
+    <div class="month-selector">
+        <label>សូមជ្រើសរើសខែសម្រាប់រៀបចំ៖ </label>
+        <select id="monthPicker" onchange="renderManagement()">
+            <option value="1">មករា</option>
+            <option value="2">កុម្ភៈ</option>
+            <option value="3">មីនា</option>
+            <option value="4" selected>មេសា</option>
+            <option value="5">ឧសភា</option>
+            <option value="6">មិថុនា</option>
+            <option value="7">កក្កដា</option>
+            <option value="8">សីហា</option>
+            <option value="9">កញ្ញា</option>
+            <option value="10">តុលា</option>
+            <option value="11">វិច្ឆិកា</option>
+            <option value="12">ធ្នូ</option>
+        </select>
+        <span style="font-size: 12px; color: #e65100; margin-left: 10px;">*ការជ្រើសរើសខែខុសគ្នា នឹងធ្វើឱ្យថ្ងៃយាមដូរដោយស្វ័យប្រវត្តិ</span>
+    </div>
+
     <div class="management-section">
         <div class="input-group">
             <input type="text" id="newName" placeholder="បញ្ចូលឈ្មោះថ្មី...">
@@ -50,15 +66,13 @@
                 <option value="g2">ក្រុមប្រចាំការ</option>
                 <option value="g3">ក្រុមប្រចាំថ្ងៃ</option>
             </select>
-            <button class="btn-add" onclick="addNewMember()">+ បន្ថែមសមាជិក</button>
+            <button class="btn-add" onclick="addNewMember()">+ បន្ថែម</button>
         </div>
-        
-        <div id="membersDisplay">
-            </div>
+        <div id="membersDisplay"></div>
     </div>
 
     <div class="spin-area">
-        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">រៀបចំបញ្ជីឈ្មោះ រួចចុចវិល...</div>
+        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">ចុចវិលឈ្មោះ ដើម្បីចាប់ផ្ដើម...</div>
         <div id="displayBox">---</div>
         <div class="btn-group">
             <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
@@ -69,7 +83,7 @@
     <table class="duty-table">
         <thead>
             <tr>
-                <th width="8%">ល.រ</th>
+                <th>ល.រ</th>
                 <th width="25%">នាម និង គោត្តនាម</th>
                 <th colspan="6">កាលបរិច្ឆេទយាម (រំលង ៤ថ្ងៃ)</th>
             </tr>
@@ -79,7 +93,6 @@
 </div>
 
 <script>
-    // ទិន្នន័យលំនាំដើម
     let groups = {
         g1: ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         g2: ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
@@ -90,30 +103,20 @@
     let spinInterval;
     let groupCounters = { g1: 0, g2: 0, g3: 0 };
 
-    // --- មុខងារគ្រប់គ្រងបញ្ជីឈ្មោះ ---
-
     function renderManagement() {
         const container = document.getElementById('membersDisplay');
         container.innerHTML = '';
         const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
-
         for (let gId in groups) {
             let groupDiv = document.createElement('div');
             groupDiv.innerHTML = `<strong style="font-size:13px;">${titles[gId]}: </strong>`;
             let tagsWrapper = document.createElement('div');
             tagsWrapper.className = 'member-tags';
-
             groups[gId].forEach((name, index) => {
-                tagsWrapper.innerHTML += `
-                    <div class="tag">
-                        ${name}
-                        <button class="btn-edit-small" onclick="editMember('${gId}', ${index})">✎</button>
-                        <button class="btn-del-small" onclick="deleteMember('${gId}', ${index})">✖</button>
-                    </div>`;
+                tagsWrapper.innerHTML += `<div class="tag">${name} <button style="color:red;border:none;background:none;cursor:pointer" onclick="deleteMember('${gId}', ${index})">✖</button></div>`;
             });
             groupDiv.appendChild(tagsWrapper);
             container.appendChild(groupDiv);
-            container.appendChild(document.createElement('hr'));
         }
     }
 
@@ -127,63 +130,34 @@
         }
     }
 
-    function editMember(gId, index) {
-        let oldName = groups[gId][index];
-        let newName = prompt("កែប្រែឈ្មោះ:", oldName);
-        if (newName && newName.trim()) {
-            groups[gId][index] = newName.trim();
-            renderManagement();
-        }
-    }
-
     function deleteMember(gId, index) {
-        if (confirm("តើអ្នកប្រាកដថាចង់លុបឈ្មោះនេះ?")) {
-            groups[gId].splice(index, 1);
-            renderManagement();
-        }
+        groups[gId].splice(index, 1);
+        renderManagement();
     }
-
-    // --- មុខងារវិលឈ្មោះ និងបំពេញតារាង ---
 
     function prepareSpin() {
-        // បង្កើតបញ្ជីមេសម្រាប់វិល
         masterList = [];
         for (let gId in groups) {
-            groups[gId].forEach(name => {
-                masterList.push({ name: name, groupId: gId });
-            });
+            groups[gId].forEach(name => masterList.push({ name: name, groupId: gId }));
         }
+        if (masterList.length === 0) return alert("សូមបន្ថែមសមាជិក!");
 
-        if (masterList.length === 0) return alert("សូមបន្ថែមសមាជិកជាមុនសិន!");
-
-        // រៀបចំតារាងស្អាត
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
         const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
-
         for (let gId in groups) {
             tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${titles[gId]}</td></tr>`;
             groups[gId].forEach((m, i) => {
-                tableBody.innerHTML += `
-                    <tr id="row-${gId}-${m}">
-                        <td>${(i+1).toString().padStart(2, '0')}</td>
-                        <td style="text-align:left; padding-left:10px;">${m}</td>
-                        <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
-                        <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
-                    </tr>`;
+                tableBody.innerHTML += `<tr id="row-${gId}-${m}"><td>${(i+1).toString().padStart(2, '0')}</td><td style="text-align:left;padding-left:10px;">${m}</td><td class="d-1"></td><td class="d-2"></td><td class="d-3"></td><td class="d-4"></td><td class="d-5"></td><td class="d-6"></td></tr>`;
             });
         }
-
         groupCounters = { g1: 0, g2: 0, g3: 0 };
         startSpinning();
     }
 
     function startSpinning() {
-        if (masterList.length === 0) return;
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
-        document.getElementById('statusLabel').innerText = "កំពុងចាប់រកវេនបន្ទាប់...";
-
         spinInterval = setInterval(() => {
             const randomPick = masterList[Math.floor(Math.random() * masterList.length)];
             document.getElementById('displayBox').innerText = randomPick.name;
@@ -194,22 +168,20 @@
         clearInterval(spinInterval);
         const selectedName = document.getElementById('displayBox').innerText;
         const pickedObj = masterList.find(m => m.name === selectedName);
+        const monthOffset = parseInt(document.getElementById('monthPicker').value);
 
-        // Logic រំលង ៤ថ្ងៃ (Cycle ៥)
-        let startDay = groupCounters[pickedObj.groupId] + 1;
+        // Logic Offset: ថ្ងៃចាប់ផ្ដើម = (លំដាប់ក្នុងក្រុម + លេខខែ) % ៥
+        // វិធីនេះធ្វើឱ្យរាល់ពេលប្តូរខែ ថ្ងៃចាប់ផ្ដើមរបស់ម្នាក់ៗនឹងរំកិលទៅមុខជានិច្ច
+        let startDay = ((groupCounters[pickedObj.groupId] + monthOffset) % 5) + 1;
+        
         let dutyDays = [];
-        for (let d = startDay; d <= 30; d += 5) {
-            dutyDays.push(d.toString().padStart(2, '0'));
-        }
+        for (let d = startDay; d <= 30; d += 5) dutyDays.push(d.toString().padStart(2, '0'));
 
         const targetRow = document.getElementById(`row-${pickedObj.groupId}-${selectedName}`);
         if (targetRow) {
             dutyDays.forEach((day, i) => {
                 const cell = targetRow.querySelector(`.d-${i+1}`);
-                if (cell) {
-                    cell.innerText = day;
-                    cell.classList.add('filled');
-                }
+                if (cell) { cell.innerText = day; cell.classList.add('filled'); }
             });
         }
 
@@ -222,11 +194,9 @@
             document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
             document.getElementById('stopBtn').disabled = true;
             document.getElementById('startBtn').disabled = false;
-            document.getElementById('statusLabel').innerText = "រៀបចំកាលវិភាគចប់សព្វគ្រប់";
         }
     }
 
-    // បង្ហាញបញ្ជីឈ្មោះពេលបើក Web ដំបូង
     renderManagement();
 </script>
 
