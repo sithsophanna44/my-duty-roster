@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Mobile Optimized</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Stable Version</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -12,76 +12,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        :root {
-            --primary: #004d40;
-            --accent: #ff6f00;
-            --bg-body: #eceff1;
-        }
-
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); margin: 0; padding: 10px; }
+        :root { --primary: #004d40; --accent: #ff6f00; --bg: #eceff1; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 10px; }
         
-        /* Container ឱ្យរត់ស្មើអេក្រង់ជានិច្ច */
-        .container { 
-            background: white; 
-            max-width: 1200px; 
-            margin: auto; 
-            padding: 15px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            box-sizing: border-box; 
-            display: none; 
-        }
+        .container { background: white; max-width: 1200px; margin: auto; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: none; }
         
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; gap: 5px; }
-        .calendar-header h2 { margin: 0; font-size: 1.2rem; text-align: center; flex: 1; }
-
-        .spin-box { text-align: center; border: 2px solid var(--primary); padding: 20px; border-radius: 10px; background: #f1f8e9; margin-bottom: 20px; }
-        #displayBox { font-size: 2.5rem; font-weight: 700; color: var(--primary); min-height: 60px; word-break: break-all; }
-
-        /* --- កែសម្រួលតារាងឱ្យសមនឹងទូរស័ព្ទ --- */
-        .table-responsive { 
-            width: 100%; 
-            overflow-x: auto; /* អនុញ្ញាតឱ្យ Slide បើអេក្រង់តូចខ្លាំង */
-            border: 1.5px solid #000; 
-            border-radius: 4px;
-        }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
         
-        .duty-table { 
-            width: 100%; /* តារាងត្រូវរត់ពេញកុងទីន័រ */
-            border-collapse: collapse; 
-            background: white;
-            table-layout: auto; /* ឱ្យវាលៃទំហំក្រឡាអូតូ */
-        }
-
-        .duty-table th, .duty-table td { 
-            border: 1px solid #000; 
-            padding: 8px 4px; /* បន្ថយ padding ឱ្យសល់កន្លែងច្រើន */
-            text-align: center; 
-            font-size: 0.85rem; /* អក្សរតូចល្មមលើទូរស័ព្ទ */
-            font-weight: 600; 
-        }
-
-        .duty-table th { background: #37474f; color: white; font-size: 0.8rem; }
-        .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 10px; font-weight: 700; font-size: 0.9rem; }
-        .name-cell { text-align: left !important; padding-left: 8px; color: var(--primary); min-width: 100px; }
-        .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: 700; }
-
-        /* ប៊ូតុងរៀបជួរគ្នាស្អាតលើទូរស័ព្ទ */
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 700; font-family: inherit; width: 100%; box-sizing: border-box; }
+        /* Manage Area */
+        .manage-box { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c8e6c9; }
+        .input-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 150px; font-family: inherit; }
         
-        /* បើលើកុំព្យូទ័រ ឱ្យប៊ូតុងរៀបជួរដេកវិញ */
-        @media (min-width: 768px) {
-            .btn-group { flex-direction: row; justify-content: center; }
-            .btn { width: auto; padding: 12px 25px; }
-            .duty-table th, .duty-table td { font-size: 1rem; padding: 12px; }
-            .calendar-header h2 { font-size: 1.6rem; }
-        }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag { background: white; padding: 5px 10px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; display: flex; align-items: center; gap: 5px; }
 
-        /* ស្ទីល Login */
+        /* Table */
+        .table-responsive { width: 100%; overflow-x: auto; border: 1.5px solid #000; background: #fff; padding: 10px; box-sizing: border-box; } /* បន្ថែម padding ឱ្យមានគែមពេលថតរូប */
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 16px; }
+        th { background: #37474f; color: white; }
+        .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 10px; font-weight: bold; }
+        .filled { background: #fff9c4 !important; color: #b71c1c; font-weight: bold; }
+
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; justify-content: center; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: inherit; }
+        .btn-img { background: #f39c12; color: white; }
+        .btn-excel { background: #2e7d32; color: white; }
+        .btn-logout { background: #555; color: white; }
+        
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .login-box { background: white; padding: 30px; border-radius: 10px; width: 85%; max-width: 350px; text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -91,37 +52,47 @@
         <h2>ចូលប្រព័ន្ធ</h2>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button class="btn" style="background:var(--primary); color:white" onclick="checkLogin()">LOGIN</button>
+        <button class="btn" style="background:var(--primary); color:white; width:100%; margin-top:10px;" onclick="checkLogin()">LOGIN</button>
     </div>
 </div>
 
 <div class="container" id="mainApp">
     <div class="calendar-header">
-        <button class="btn-nav" onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">◀</button>
+        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; cursor:pointer;">◀</button>
         <h2 id="monthTitle">---</h2>
-        <button class="btn-nav" onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">▶</button>
+        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; cursor:pointer;">▶</button>
     </div>
 
-    <div id="adminArea" style="display:none;">
-        <div class="spin-box">
-            <div id="displayBox">READY</div>
-            <button id="startBtn" class="btn" style="background:var(--primary); color:white; margin-top:10px;" onclick="startStepByStep()">🎲 ចាប់ផ្ដើមរៀបចំ</button>
+    <div id="adminPanel" class="manage-box" style="display:none;">
+        <div class="input-group">
+            <input type="text" id="nameIn" placeholder="ឈ្មោះសមាជិក...">
+            <select id="groupIn">
+                <option value="0">ប្រចាំបញ្ជា</option>
+                <option value="1">ប្រចាំការ</option>
+                <option value="2">ប្រចាំថ្ងៃ</option>
+            </select>
+            <button class="btn" style="background:var(--accent); color:white;" onclick="addMember()">+ បន្ថែម</button>
+        </div>
+        <div id="memberTags" class="tag-list"></div>
+        <hr>
+        <div style="text-align:center;">
+            <div id="displayBox" style="font-size:2rem; font-weight:bold; color:var(--primary); margin:10px 0;">READY</div>
+            <button class="btn" style="background:var(--primary); color:white;" onclick="startAuto()">🚀 ចាប់ផ្ដើមរៀបចំអូតូ</button>
+            <button class="btn" style="background:#78909c; color:white;" onclick="resetData()">♻️ Reset Data</button>
         </div>
     </div>
 
     <div class="btn-group">
-        <button class="btn" style="background:#f39c12; color:white" onclick="exportToImage()">🖼️ Download IMAGE</button>
-        <button id="excelBtn" class="btn" style="background:#2e7d32; color:white; display:none;" onclick="exportToExcel()">📊 Download Excel</button>
-        <button class="btn" style="background:#555; color:white" onclick="location.reload()">🔄 Refresh</button>
-        <button class="btn" style="background:#78909c; color:white" onclick="location.reload()">🚪 Logout</button>
+        <button class="btn btn-img" onclick="exportToImage()">🖼️ Download IMAGE</button>
+        <button id="excelBtn" class="btn btn-excel" style="display:none;" onclick="exportToExcel()">📊 Download Excel</button>
+        <button class="btn btn-logout" onclick="logout()">🚪 Logout</button>
     </div>
 
-    <div class="table-responsive">
-        <table class="duty-table" id="dutyTable">
+    <div id="captureArea" class="table-responsive"> <table id="dutyTable">
             <thead>
                 <tr>
                     <th width="10%">ល.រ</th>
-                    <th width="35%">ឈ្មោះ</th>
+                    <th>នាម និង គោត្តនាម</th>
                     <th colspan="7">ថ្ងៃយាម</th>
                 </tr>
             </thead>
@@ -131,105 +102,133 @@
 </div>
 
 <script>
-    // --- ដាក់ Config Firebase របស់អ្នកនៅទីនេះ ---
+    // --- Config Firebase ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYEk9HCOL8ClUffxKsA1M2WEKCBSc4zlU",
-        authDomain: "my-duty-system.firebaseapp.com",
         databaseURL: "https://my-duty-system-default-rtdb.asia-southeast1.firebasedatabase.app",
         projectId: "my-duty-system",
-        storageBucket: "my-duty-system.firebasestorage.app",
-        messagingSenderId: "430122553040",
-        appId: "1:430122553040:web:897c088b3d6a0b46f458d5",
-        measurementId: "G-SBTR1R7Q6Z"
+        appId: "1:430122553040:web:897c088b3d6a0b46f458d5"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
+    let membersGroups = JSON.parse(localStorage.getItem('m_list')) || [
+        ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
+        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
+        ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
+    ];
     let currentDate = new Date();
-    let currentUser = null;
+
+    // បញ្ជាក់សិទ្ធិពេល Refresh
+    window.onload = () => {
+        const loggedInUser = sessionStorage.getItem('userRole');
+        if (loggedInUser) {
+            showApp(loggedInUser);
+        }
+    };
 
     function checkLogin() {
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
-        if(u === 'admin' && p === '123') currentUser = 'ADMIN';
-        else if(u === 'user' && p === '123') currentUser = 'USER';
-        
-        if(currentUser) {
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            if(currentUser === 'ADMIN') {
-                document.getElementById('adminArea').style.display = 'block';
-                document.getElementById('excelBtn').style.display = 'block';
-            }
-            loadData();
-        } else { alert("Login មិនត្រឹមត្រូវ!"); }
+        let role = (u === 'admin' && p === '123') ? 'ADMIN' : (u === 'user' && p === '123' ? 'USER' : null);
+        if (role) {
+            sessionStorage.setItem('userRole', role); // ចងចាំសិទ្ធិ
+            showApp(role);
+        } else { alert("ខុស Username/Password!"); }
     }
 
-    function getMonthKey() { return "duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth(); }
+    function showApp(role) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        if (role === 'ADMIN') {
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('excelBtn').style.display = 'block';
+        }
+        loadData();
+    }
+
+    function logout() { sessionStorage.clear(); location.reload(); }
 
     function loadData() {
-        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្ខដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
-        db.ref(getMonthKey()).on('value', snap => renderTable(snap.val() || {}));
+        renderMembers();
+        db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).on('value', snap => renderTable(snap.val() || {}));
     }
+
+    function renderMembers() {
+        const box = document.getElementById('memberTags');
+        box.innerHTML = '';
+        membersGroups.forEach((g, gi) => g.forEach((n, ni) => {
+            box.innerHTML += `<div class="tag">${n} <b onclick="delM(${gi},${ni})" style="color:red; cursor:pointer;">×</b></div>`;
+        }));
+        localStorage.setItem('m_list', JSON.stringify(membersGroups));
+    }
+
+    function addMember() {
+        const n = document.getElementById('nameIn').value.trim();
+        const gi = document.getElementById('groupIn').value;
+        if(n) { membersGroups[gi].push(n); document.getElementById('nameIn').value=''; loadData(); }
+    }
+
+    function delM(gi, ni) { if(confirm("លុប?")) { membersGroups[gi].splice(ni, 1); loadData(); } }
 
     function renderTable(data) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         const titles = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
-        for(let gi=0; gi<3; gi++) {
+        membersGroups.forEach((g, gi) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1} (${titles[gi]})</td></tr>`;
-            for(let ni=0; ni<5; ni++) {
-                const name = members[gi*5 + ni];
-                const days = data[name] || ["","","","","","",""];
-                tbody.innerHTML += `<tr><td>${ni+1}</td><td class="name-cell">${name}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
-            }
-        }
+            g.forEach((n, ni) => {
+                const days = data[n] || ["","","","","","",""];
+                tbody.innerHTML += `<tr><td>${ni+1}</td><td style="text-align:left;">${n}</td>${days.map(d=>`<td class="${d?'filled':''}">${d}</td>`).join('')}</tr>`;
+            });
+        });
     }
 
-    async function startStepByStep() {
-        if(currentUser !== 'ADMIN') return;
-        document.getElementById('startBtn').disabled = true;
-        let spinList = [...members].sort(() => Math.random() - 0.5);
-        let monthData = {};
+    async function startAuto() {
+        let flat = []; membersGroups.forEach((g, gi) => g.forEach(n => flat.push({n, gi})));
+        let spinList = [...flat].sort(() => Math.random() - 0.5);
+        let results = {};
         let groupUsed = {g0:[], g1:[], g2:[]};
 
-        for(let name of spinList) {
-            const gi = Math.floor(members.indexOf(name) / 5);
-            document.getElementById('displayBox').innerText = name;
-            
+        for(let item of spinList) {
+            document.getElementById('displayBox').innerText = item.n;
             let sDay = Math.floor(Math.random()*5)+1;
-            while(groupUsed['g'+gi].includes(sDay)) sDay = (sDay%5)+1;
-            groupUsed['g'+gi].push(sDay);
+            while(groupUsed['g'+item.gi].includes(sDay)) sDay = (sDay%5)+1;
+            groupUsed['g'+item.gi].push(sDay);
 
             let days = ["","","","","","",""];
             const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
             for(let d=sDay, c=0; d<=total && c<7; d+=5, c++) days[c] = d.toString().padStart(2, '0');
-            
-            monthData[name] = days;
-            db.ref(getMonthKey()).update({ [name]: days });
-            await new Promise(r => setTimeout(r, 600));
+            results[item.n] = days;
+            await new Promise(r => setTimeout(r, 400));
         }
+        db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).set(results);
         document.getElementById('displayBox').innerText = "រួចរាល់ ✨";
-        document.getElementById('startBtn').disabled = false;
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
-    function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty.xlsx"); }
+    function resetData() { if(confirm("Reset data?")) db.ref("duty_" + currentDate.getFullYear() + "_" + currentDate.getMonth()).remove(); }
+    
+    function exportToExcel() { 
+        XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), "Duty.xlsx"); 
+    }
 
     function exportToImage() {
-        const element = document.getElementById("dutyTable");
-        html2canvas(element, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
+        const area = document.getElementById("captureArea");
+        html2canvas(area, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+            useCORS: true
+        }).then(canvas => {
             const link = document.createElement('a');
             link.download = `Duty_${document.getElementById('monthTitle').innerText}.png`;
             link.href = canvas.toDataURL();
             link.click();
         });
     }
-
-    window.onload = () => {};
 </script>
 </body>
 </html>
