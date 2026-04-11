@@ -2,73 +2,98 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-    <title>Military Duty System - Complete Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>ប្រព័ន្ធប្រតិទិនយាម - ជំនាន់មាំមួនបំផុត</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root { --primary: #004d40; --accent: #ff6f00; --bg: #eceff1; }
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 5px; }
-        .container { background: white; width: 100%; max-width: 1000px; margin: auto; padding: 10px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: none; }
+        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg); margin: 0; padding: 5px; box-sizing: border-box; }
+        
+        .container { background: white; width: 100%; max-width: 1000px; margin: auto; padding: 10px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: none; box-sizing: border-box; }
         
         .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
-        .calendar-header h2 { font-size: 1.1rem; margin: 0; }
+        .calendar-header h2 { font-size: 1.2rem; margin: 0; font-weight: 700; }
 
-        /* Admin Management Panel */
+        /* Admin Section */
         .manage-box { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1.5px solid #c8e6c9; text-align: center; }
-        .input-group { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-family: inherit; font-size: 14px; min-width: 120px; }
+        .input-group { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-family: inherit; font-size: 16px; min-width: 140px; }
         
-        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; justify-content: center; }
-        .tag { background: white; padding: 5px 12px; border-radius: 20px; border: 1px solid #ddd; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; justify-content: center; }
+        .tag { background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-        #displayBox { font-size: 2rem; font-weight: 800; color: var(--primary); min-height: 55px; margin-bottom: 10px; background: #fff; border: 2px dashed var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        #displayBox { font-size: 2.2rem; font-weight: 800; color: var(--primary); min-height: 60px; margin-bottom: 10px; background: #fff; border: 2.5px dashed var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 
-        /* Table Style */
-        .table-responsive { width: 100%; overflow-x: auto; border: 1.5px solid #000; background: #fff; box-sizing: border-box; }
-        table { width: 100%; border-collapse: collapse; min-width: 650px; }
-        th, td { border: 1px solid #000; padding: 10px 5px; text-align: center; font-size: 0.8rem; font-weight: 700; }
-        th { background: #37474f; color: white; }
-        .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 10px; font-weight: 800; }
-        .filled { background: #fff9c4 !important; color: #b71c1c; font-size: 0.9rem; }
+        /* --- ការកំណត់តារាងឱ្យស្មើអេក្រង់ទូរស័ព្ទ ១០០% --- */
+        .table-responsive { 
+            width: 100%; 
+            overflow: hidden; /* បិទការអូសទៅឆ្វេងស្ដាំ */
+            border: 1.5px solid #000; 
+            background: #fff;
+            box-sizing: border-box;
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            table-layout: fixed; /* បង្ខំឱ្យតារាងរត់ស្មើក្នុងអេក្រង់ */
+        }
+
+        th, td { 
+            border: 1px solid #000; 
+            padding: 8px 2px; 
+            text-align: center; 
+            font-size: 0.9rem; /* ពង្រីកអក្សរឱ្យធំជាងមុន */
+            font-weight: 700; /* ដាក់អក្សរឱ្យដិត */
+            word-wrap: break-word;
+        }
+
+        /* លៃទំហំក្រឡាឱ្យសមនឹងអេក្រង់ទូរស័ព្ទ */
+        th:nth-child(1), td:nth-child(1) { width: 10%; } /* ល.រ */
+        th:nth-child(2), td:nth-child(2) { width: 32%; text-align: left; padding-left: 5px; font-size: 0.95rem; } /* ឈ្មោះ */
+        
+        th { background: #37474f; color: white; font-size: 0.85rem; }
+        .group-header { background: #cfd8dc !important; text-align: left !important; padding-left: 10px; font-weight: 800; font-size: 1rem; color: #000; }
+        .filled { background: #fff9c4 !important; color: #b71c1c; font-size: 1rem; font-weight: 800; }
 
         /* Buttons Control */
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; justify-content: center; }
-        .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: inherit; font-size: 13px; text-transform: uppercase; width: 48%; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-family: inherit; font-size: 15px; text-transform: uppercase; width: 48%; }
         .btn-img { background: #f39c12; color: white; }
         .btn-excel { background: #2e7d32; color: white; }
         .btn-logout { background: #555; color: white; }
-        .btn-start { background: var(--primary); color: white; width: 100%; margin-top: 5px; }
-        .btn-add { background: var(--accent); color: white; width: auto; flex: 0.5; }
+        .btn-start { background: var(--primary); color: white; width: 100%; margin-top: 10px; font-size: 1.1rem; }
+        .btn-add { background: var(--accent); color: white; width: auto; flex: 0.4; }
 
         #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .login-box { background: white; padding: 25px; border-radius: 12px; width: 85%; max-width: 320px; text-align: center; }
+        .login-box { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 350px; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1.5px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
         
-        .capture-padding { padding: 45px !important; } /* គែមធំពេលថតរូប */
+        .capture-padding { padding: 50px !important; } /* គែមធំទូលាយពេលថតរូប */
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="color:var(--primary)">MILITARY LOGIN</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button class="btn btn-start" onclick="checkLogin()">LOGIN</button>
+        <h2 style="color:var(--primary)">MILITARY SYSTEM</h2>
+        <input type="text" id="username" placeholder="ឈ្មោះអ្នកប្រើប្រាស់">
+        <input type="password" id="password" placeholder="លេខសម្ងាត់">
+        <button class="btn btn-start" onclick="checkLogin()">ចូលប្រើប្រាស់</button>
     </div>
 </div>
 
 <div class="container" id="mainApp">
     <div class="calendar-header">
-        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">◀</button>
+        <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:6px 12px; border-radius:4px; font-weight:bold;">◀</button>
         <h2 id="monthTitle">---</h2>
-        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:4px;">▶</button>
+        <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:6px 12px; border-radius:4px; font-weight:bold;">▶</button>
     </div>
 
     <div id="adminPanel" class="manage-box" style="display:none;">
@@ -84,7 +109,7 @@
         <div id="tagBox" class="tag-list"></div>
         <hr>
         <div id="displayBox">READY</div>
-        <button id="startBtn" class="btn btn-start" onclick="startAuto()">🎲 ចាប់ផ្ដើមរៀបចំ (START RANDOM)</button>
+        <button id="startBtn" class="btn btn-start" onclick="startAuto()">🎲 ចាប់ផ្ដើមរៀបចំ (START)</button>
         <button class="btn" style="background:#78909c; color:white; width:100%; margin-top:5px;" onclick="resetData()">♻️ RESET ទិន្នន័យខែនេះ</button>
     </div>
 
@@ -100,8 +125,8 @@
             <thead>
                 <tr>
                     <th width="10%">ល.រ</th>
-                    <th>នាម និង គោត្តនាម</th>
-                    <th colspan="7">កាលបរិច្ឆេទយាម</th>
+                    <th>ឈ្មោះ</th>
+                    <th colspan="7">ថ្ងៃយាម</th>
                 </tr>
             </thead>
             <tbody id="tableBody"></tbody>
@@ -110,7 +135,6 @@
 </div>
 
 <script>
-    // --- Config Firebase ---
     const firebaseConfig = {
         apiKey: "AIzaSyDYEk9HCOL8ClUffxKsA1M2WEKCBSc4zlU",
         databaseURL: "https://my-duty-system-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -120,7 +144,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v1')) || [
+    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v2')) || [
         ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
         ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
@@ -167,7 +191,7 @@
         membersGroups.forEach((g, gi) => g.forEach((n, ni) => {
             box.innerHTML += `<div class="tag">${n} ${role==='ADMIN' ? `<b onclick="delM(${gi},${ni})" style="color:red; cursor:pointer;">×</b>` : ''}</div>`;
         }));
-        localStorage.setItem('m_list_final_v1', JSON.stringify(membersGroups));
+        localStorage.setItem('m_list_final_v2', JSON.stringify(membersGroups));
     }
 
     function addM() {
@@ -219,13 +243,8 @@
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth()+s); loadData(); }
     function resetData() { if(confirm("Reset data?")) db.ref(getMonthKey()).remove(); }
-    
-    // មុខងារ Excel
-    function exportToExcel() { 
-        XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_${document.getElementById('monthTitle').innerText}.xlsx`); 
-    }
+    function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_${document.getElementById('monthTitle').innerText}.xlsx`); }
 
-    // មុខងារ Image
     function exportToImage() {
         const area = document.getElementById("captureArea");
         area.classList.add('capture-padding');
