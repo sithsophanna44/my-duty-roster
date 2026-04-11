@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Monthly Random & Print</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Fixed Version</title>
     <style>
-        /* --- ការកំណត់សម្រាប់មើលលើអេក្រង់ --- */
         body { font-family: 'Leelawadee UI', 'Kantumruy Pro', sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #003366; margin-bottom: 5px; }
-        .sub-title { text-align: center; color: #666; margin-bottom: 20px; font-size: 14px; }
+        .container { background: white; width: 100%; max-width: 950px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #003366; margin-bottom: 20px; }
         
-        .control-panel { background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-box label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; }
-        textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: none; box-sizing: border-box; }
+        .control-panel { background: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr; gap: 15px; }
+        textarea { width: 100%; height: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; resize: none; font-size: 14px; }
         
         .spin-section { text-align: center; background: #fff; padding: 20px; border-radius: 10px; border: 2px dashed #1a73e8; }
         #displayBox { font-size: 40px; font-weight: bold; color: #1a73e8; margin-bottom: 15px; min-height: 55px; }
         
         .btn-group { display: flex; gap: 10px; justify-content: center; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; }
+        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; }
         .btn-start { background: #34a853; }
         .btn-stop { background: #ea4335; }
         .btn-print { background: #555; }
@@ -29,15 +26,11 @@
         .duty-table th, .duty-table td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 14px; }
         .duty-table th { background: #f2f2f2; }
         .group-header { background: #e8f0fe !important; text-align: left !important; font-weight: bold; padding-left: 15px; }
-        
-        /* --- ការកំណត់សម្រាប់ពេលបោះពុម្ព (Print) --- */
+
         @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; }
-            .control-panel, .spin-section, .btn-print { display: none; }
-            .duty-table { font-size: 12px; }
-            .duty-table th, .duty-table td { padding: 5px; }
-            h2 { font-size: 18px; margin-bottom: 10px; }
+            .control-panel, .spin-section { display: none; }
+            body { padding: 0; }
+            .container { box-shadow: none; border: none; width: 100%; }
         }
     </style>
 </head>
@@ -45,18 +38,16 @@
 
 <div class="container">
     <h2>តារាងបែងចែក ប្រចាំបញ្ជា ប្រចាំការ និង ប្រចាំថ្ងៃ</h2>
-    <div class="sub-title">លក្ខខណ្ឌ៖ រំលង ៤ ថ្ងៃក្នុងម្នាក់ (ម្នាក់យាម ៦ ថ្ងៃក្នុងមួយខែ)</div>
     
     <div class="control-panel">
-        <div class="input-box">
-            <label>ឈ្មោះសមាជិក (ដកឃ្លាគ្នា)៖</label>
-            <textarea id="namesArea" oninput="saveData()">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា</textarea>
-        </div>
+        <label>បញ្ចូលឈ្មោះសមាជិក (ដកឃ្លាគ្នា)៖</label>
+        <textarea id="namesArea">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា</textarea>
+        
         <div class="spin-section">
             <div id="displayBox">---</div>
             <div class="btn-group">
-                <button id="startBtn" class="btn btn-start" onclick="prepareAndStart()">▶ វិលឈ្មោះ</button>
-                <button id="stopBtn" class="btn btn-stop" onclick="stopOneBy One()" disabled>🛑 បញ្ឈប់</button>
+                <button id="startBtn" class="btn btn-start" onclick="prepareAndStart()">▶ ចាប់ផ្តើមវិល</button>
+                <button id="stopBtn" class="btn btn-stop" onclick="stopNow()" disabled>🛑 បញ្ឈប់</button>
                 <button class="btn btn-print" onclick="window.print()">🖨 Print</button>
             </div>
         </div>
@@ -70,8 +61,7 @@
                 <th colspan="6">កាលបរិច្ឆេទអនុវត្តការងារ (រំលង ៤ ថ្ងៃ)</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
-            </tbody>
+        <tbody id="tableBody"></tbody>
     </table>
 </div>
 
@@ -80,50 +70,39 @@
     let spinInterval;
     let stopCount = 0;
 
-    // ១. រក្សាទុកទិន្នន័យឈ្មោះក្នុង Browser (LocalStorage)
-    function saveData() {
-        const names = document.getElementById('namesArea').value;
-        localStorage.setItem('dutyNames', names);
-    }
-
-    function loadData() {
-        const saved = localStorage.getItem('dutyNames');
-        if (saved) document.getElementById('namesArea').value = saved;
-    }
-
-    // ២. រៀបចំបញ្ជីឈ្មោះ និងតារាង
     function prepareAndStart() {
         const rawNames = document.getElementById('namesArea').value.trim().split(/\s+/).filter(n => n);
-        if (rawNames.length < 15) return alert("សូមបញ្ចូលឈ្មោះឱ្យបាន ១៥ នាក់ (៥នាក់ក្នុងមួយក្រុម)!");
+        if (rawNames.length < 1) return alert("សូមបញ្ចូលឈ្មោះសមាជិក!");
 
-        // ច្របល់ឈ្មោះសិន (Random Order)
+        // ច្របល់ឈ្មោះ (Random Order)
         masterList = rawNames.sort(() => Math.random() - 0.5);
 
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
         
+        // បង្កើតតារាងលំនាំដើម (សន្មតថាមាន ១៥ នាក់ បែងចែកជា ៣ ក្រុម)
         const groups = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
-        let nameIdx = 0;
-
+        let idCounter = 0;
         groups.forEach(groupTitle => {
             tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${groupTitle}</td></tr>`;
             for (let i = 1; i <= 5; i++) {
                 tableBody.innerHTML += `
-                    <tr id="row-${stopCount + nameIdx}">
+                    <tr id="row-${idCounter}">
                         <td>${i.toString().padStart(2, '0')}</td>
-                        <td id="name-${stopCount + nameIdx}" style="text-align:left; padding-left:10px;">......</td>
+                        <td id="name-${idCounter}" style="text-align:left; padding-left:10px;">......</td>
                         <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
                         <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
                     </tr>`;
-                nameIdx++;
+                idCounter++;
             }
         });
 
         stopCount = 0;
-        startSpin();
+        startSpinning();
     }
 
-    function startSpin() {
+    function startSpinning() {
+        if (masterList.length === 0) return;
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
         
@@ -133,42 +112,41 @@
         }, 50);
     }
 
-    // ៣. បញ្ឈប់ និងបំពេញក្នុងតារាងតាម Logic រំលង ៤ ថ្ងៃ
-    function stopOneByOne() {
+    function stopNow() {
         clearInterval(spinInterval);
         const selectedName = document.getElementById('displayBox').innerText;
 
-        // ដាក់ឈ្មោះក្នុងតារាង
-        document.getElementById(`name-${stopCount}`).innerText = selectedName;
+        // បំពេញឈ្មោះក្នុងតារាងតាមលំដាប់ Stop
+        const nameCell = document.getElementById(`name-${stopCount}`);
+        if (nameCell) {
+            nameCell.innerText = selectedName;
 
-        // គណនាថ្ងៃយាម (Cycle ៥ ថ្ងៃ)
-        // ក្នុងមួយក្រុមមាន ៥ នាក់ ដូចនេះម្នាក់ៗត្រូវមាន Offset ខុសគ្នា ១ ថ្ងៃ
-        let offset = stopCount % 5; 
-        let days = [];
-        for (let d = offset + 1; d <= 30; d += 5) {
-            days.push(d.toString().padStart(2, '0'));
-        }
+            // Logic រំលង ៤ ថ្ងៃ
+            let offset = stopCount % 5; 
+            let days = [];
+            for (let d = offset + 1; d <= 30; d += 5) {
+                days.push(d.toString().padStart(2, '0'));
+            }
 
-        // បំពេញថ្ងៃចូលក្នុងក្រឡា
-        const row = document.getElementById(`row-${stopCount}`);
-        days.forEach((day, i) => {
-            row.querySelector(`.d-${i+1}`).innerText = day;
-        });
+            const row = document.getElementById(`row-${stopCount}`);
+            days.forEach((day, i) => {
+                const cell = row.querySelector(`.d-${i+1}`);
+                if (cell) cell.innerText = day;
+            });
 
-        // ដកឈ្មោះដែលជាប់ហើយចេញពីបញ្ជីវិល
-        masterList = masterList.filter(n => n !== selectedName);
-        stopCount++;
+            // លុបឈ្មោះដែលជាប់ហើយ
+            masterList = masterList.filter(n => n !== selectedName);
+            stopCount++;
 
-        if (stopCount < 15) {
-            setTimeout(startSpin, 500);
-        } else {
-            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-            document.getElementById('stopBtn').disabled = true;
-            document.getElementById('startBtn').disabled = false;
+            if (stopCount < 15 && masterList.length > 0) {
+                setTimeout(startSpinning, 600); // សម្រាកបន្តិច រួចវិលរកអ្នកបន្ទាប់
+            } else {
+                document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('startBtn').disabled = false;
+            }
         }
     }
-
-    window.onload = loadData;
 </script>
 
 </body>
