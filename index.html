@@ -3,151 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>កម្មវិធីចាប់ឈ្មោះអ្នកប្រចាំការ</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ</title>
     <style>
-        body { font-family: 'Leelawadee UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #1a73e8; margin-top: 0; }
-        .input-group { display: flex; gap: 5px; margin-bottom: 15px; }
-        input[type="text"] { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-        .btn-add { background: #1a73e8; color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer; }
+        body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #eef2f3; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; width: 100%; max-width: 900px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-top: 5px solid #003366; }
+        h2 { text-align: center; color: #003366; text-transform: uppercase; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
-        .member-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
-        .member-actions button { margin-left: 5px; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 12px; }
-        .btn-edit { background: #ffc107; color: black; }
-        .btn-delete { background: #f44336; color: white; }
-
-        .spin-box { font-size: 32px; font-weight: bold; text-align: center; padding: 25px; background: #e8f0fe; color: #1967d2; border-radius: 12px; margin: 20px 0; border: 2px dashed #1a73e8; min-height: 40px; }
+        .setup-section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .input-box { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; color: #333; font-size: 14px; }
+        textarea { padding: 10px; border: 1px solid #ccc; border-radius: 5px; height: 80px; resize: none; font-family: inherit; }
         
-        .main-btn { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; color: white; margin-bottom: 10px; transition: 0.3s; }
-        .btn-start { background: #34a853; }
-        .btn-stop { background: #ea4335; }
-        .main-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .main-btn { grid-column: span 3; padding: 12px; background: #003366; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        .main-btn:hover { background: #0055aa; }
 
-        .result-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .result-table td { padding: 12px 5px; border-bottom: 1px solid #eee; }
-        .day-label { font-weight: bold; color: #555; width: 100px; }
-        .name-label { color: #1a73e8; font-weight: bold; }
+        .duty-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; }
+        .duty-table th { background: #f2f2f2; color: #003366; }
+        .group-header { background: #e8f0fe !important; font-weight: bold; text-align: left !important; padding-left: 15px; font-size: 16px; }
+        
+        .print-btn { background: #28a745; margin-top: 20px; width: 100px; padding: 8px; color: white; border: none; border-radius: 4px; cursor: pointer; float: right; }
+
+        @media print {
+            .setup-section, .print-btn { display: none; }
+            .container { box-shadow: none; border: none; width: 100%; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📅 ចាប់ឈ្មោះអ្នកប្រចាំការ</h2>
+    <h2>តារាងបែងចែក ប្រចាំបញ្ជា ប្រចាំការ និង ប្រចាំថ្ងៃ</h2>
     
-    <div class="input-group">
-        <input type="text" id="nameInput" placeholder="បញ្ចូលឈ្មោះថ្មី...">
-        <button class="btn-add" onclick="addMember()">បន្ថែម</button>
+    <div class="setup-section">
+        <div class="input-box">
+            <label>១. ក្រុមប្រចាំបញ្ជា (ឈ្មោះដកឃ្លាគ្នា)</label>
+            <textarea id="group1" placeholder="ឧទាហរណ៍៖ សុខា តារា បុប្ផា..."></textarea>
+        </div>
+        <div class="input-box">
+            <label>២. ក្រុមប្រចាំការ</label>
+            <textarea id="group2" placeholder="ឧទាហរណ៍៖ វិបុល ស្រីនាថ..."></textarea>
+        </div>
+        <div class="input-box">
+            <label>៣. ក្រុមប្រចាំថ្ងៃ</label>
+            <textarea id="group3" placeholder="ឧទាហរណ៍៖ មុន្នី ចិន្តា..."></textarea>
+        </div>
+        <button class="main-btn" onclick="generateSchedule()">រៀបចំតារាងប្រចាំការ</button>
     </div>
 
-    <div id="memberList" style="margin-bottom: 20px; max-height: 200px; overflow-y: auto;"></div>
-
-    <div class="spin-box" id="displayBox">---</div>
-
-    <button id="startBtn" class="main-btn btn-start" onclick="startSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
-    <button id="stopBtn" class="main-btn btn-stop" onclick="stopOneByOne()" disabled>🛑 បញ្ឈប់ម្តង១ៗ</button>
-
-    <table class="result-table">
-        <tbody id="resultBody"></tbody>
+    <table class="duty-table" id="rosterTable">
+        <thead>
+            <tr>
+                <th width="10%">ល.រ</th>
+                <th width="30%">នាម និង គោត្តនាម</th>
+                <th colspan="6">ថ្ងៃអនុវត្តការងារ (កាលបរិច្ឆេទ)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
     </table>
+    
+    <button class="print-btn" onclick="window.print()">បោះពុម្ព (Print)</button>
 </div>
 
 <script>
-    let allMembers = ["សុខា", "តារា", "បុប្ផា", "វិបុល", "ស្រីនាថ", "មុន្នី", "ចិន្តា"];
-    let remainingMembers = [];
-    let days = ["ច័ន្ទ", "អង្គារ", "ពុធ", "ព្រហស្បតិ៍", "សុក្រ", "សៅរ៍", "អាទិត្យ"];
-    let currentDayIndex = 0;
-    let spinInterval;
-
-    function renderMembers() {
-        const list = document.getElementById('memberList');
-        list.innerHTML = allMembers.map((m, i) => `
-            <div class="member-item">
-                <span><input type="checkbox" checked class="m-check" value="${m}"> ${m}</span>
-                <div class="member-actions">
-                    <button class="btn-edit" onclick="editMember(${i})">កែ</button>
-                    <button class="btn-delete" onclick="deleteMember(${i})">លុប</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function addMember() {
-        const input = document.getElementById('nameInput');
-        if (input.value.trim()) {
-            allMembers.push(input.value.trim());
-            input.value = '';
-            renderMembers();
-        }
-    }
-
-    function editMember(index) {
-        let newName = prompt("កែប្រែឈ្មោះ:", allMembers[index]);
-        if (newName && newName.trim()) {
-            allMembers[index] = newName.trim();
-            renderMembers();
-        }
-    }
-
-    function deleteMember(index) {
-        if (confirm("តើអ្នកចង់លុបឈ្មោះនេះមែនទេ?")) {
-            allMembers.splice(index, 1);
-            renderMembers();
-        }
-    }
-
-    function startSpin() {
-        // យកតែឈ្មោះណាដែលបាន Tick
-        remainingMembers = Array.from(document.querySelectorAll('.m-check:checked')).map(cb => cb.value);
+    function generateSchedule() {
+        const g1 = document.getElementById('group1').value.trim().split(/\s+/).filter(n => n);
+        const g2 = document.getElementById('group2').value.trim().split(/\s+/).filter(n => n);
+        const g3 = document.getElementById('group3').value.trim().split(/\s+/).filter(n => n);
         
-        if (remainingMembers.length < 1) return alert("សូមរើសសមាជិកយ៉ាងហោចម្នាក់!");
-        
-        currentDayIndex = 0;
-        document.getElementById('resultBody').innerHTML = '';
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
-        
-        runSpinLogic();
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+
+        if(g1.length > 0) addGroupToTable("ប្រចាំបញ្ជា", g1);
+        if(g2.length > 0) addGroupToTable("ប្រចាំការ", g2);
+        if(g3.length > 0) addGroupToTable("ប្រចាំថ្ងៃ", g3);
     }
 
-    function runSpinLogic() {
-        if (remainingMembers.length === 0) {
-            // បើអស់ឈ្មោះ តែមិនទាន់គ្រប់ថ្ងៃ ឱ្យប្រើបញ្ជីដើមឡើងវិញ
-            remainingMembers = Array.from(document.querySelectorAll('.m-check:checked')).map(cb => cb.value);
-        }
+    function addGroupToTable(title, members) {
+        const tableBody = document.getElementById('tableBody');
+        
+        // បន្ថែមចំណងជើងក្រុម (Header)
+        let headerRow = `<tr><td colspan="8" class="group-header">${title}</td></tr>`;
+        tableBody.innerHTML += headerRow;
 
-        spinInterval = setInterval(() => {
-            const tempName = remainingMembers[Math.floor(Math.random() * remainingMembers.length)];
-            document.getElementById('displayBox').innerText = tempName;
-        }, 50);
+        // ចំនួនថ្ងៃក្នុងមួយខែ (ឧទាហរណ៍ ៣០ ថ្ងៃ)
+        const totalDays = 30;
+
+        members.forEach((name, index) => {
+            let row = `<tr>`;
+            row += `<td>${(index + 1).toString().padStart(2, '0')}</td>`;
+            row += `<td style="text-align: left; padding-left: 10px;">${name}</td>`;
+            
+            // គណនាថ្ងៃប្រចាំការ (បែងចែកថ្ងៃទី ១ ដល់ ៣០ ឱ្យសមាជិកក្នុងក្រុម)
+            let dutyDays = [];
+            for (let d = 1; d <= totalDays; d++) {
+                if ((d - 1) % members.length === index) {
+                    dutyDays.push(d.toString().padStart(2, '0'));
+                }
+            }
+
+            // បង្ហាញថ្ងៃប្រចាំការក្នុងប្រអប់តារាង
+            for (let i = 0; i < 6; i++) {
+                row += `<td>${dutyDays[i] || ''}</td>`;
+            }
+            
+            row += `</tr>`;
+            tableBody.innerHTML += row;
+        });
     }
 
-    function stopOneByOne() {
-        clearInterval(spinInterval);
-        const selectedName = document.getElementById('displayBox').innerText;
-        
-        // បង្ហាញលទ្ធផល
-        const resultBody = document.getElementById('resultBody');
-        resultBody.innerHTML += `<tr><td class="day-label">ថ្ងៃ${days[currentDayIndex]}:</td><td class="name-label">${selectedName}</td></tr>`;
-        
-        // លុបឈ្មោះដែលជាប់ហើយ ចេញពីបញ្ជីដែលត្រូវវិលបន្ត (ដើម្បីកុំឱ្យជាន់គ្នា)
-        const index = remainingMembers.indexOf(selectedName);
-        if (index > -1) {
-            remainingMembers.splice(index, 1);
-        }
-
-        currentDayIndex++;
-
-        if (currentDayIndex < 7) {
-            runSpinLogic(); // វិលបន្តសម្រាប់ថ្ងៃបន្ទាប់
-        } else {
-            document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-        }
+    // បង្ហាញទិន្នន័យគំរូពេលបើកដំបូង
+    window.onload = function() {
+        document.getElementById('group1').value = "សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច";
+        document.getElementById('group2').value = "ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត";
+        document.getElementById('group3').value = "សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា";
+        generateSchedule();
     }
-
-    renderMembers();
 </script>
 
 </body>
