@@ -3,13 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>កម្មវិធីចាប់ឈ្មោះ - គ្មានថ្ងៃស្ទួន</title>
+    <title>ប្រព័ន្ធគ្រប់គ្រងការប្រចាំការ - Full Features</title>
     <style>
         body { font-family: 'Leelawadee UI', Arial, sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 950px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { background: white; width: 100%; max-width: 1000px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #003366; margin-bottom: 20px; }
-        .setup-section { background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        textarea { width: 100%; height: 60px; padding: 8px; border: 1px solid #ccc; border-radius: 5px; resize: none; box-sizing: border-box; }
+
+        /* ផ្នែកគ្រប់គ្រងឈ្មោះ */
+        .management-section { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        input[type="text"], select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; min-width: 150px; }
+        .btn-add { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        .member-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .tag { background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 20px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .btn-edit-small { color: #f39c12; cursor: pointer; border: none; background: none; font-size: 16px; }
+        .btn-del-small { color: #d32f2f; cursor: pointer; border: none; background: none; font-size: 16px; }
+
+        /* ផ្នែកវិលឈ្មោះ */
         .spin-area { background: #e8f0fe; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; border: 2px dashed #1a73e8; }
         #displayBox { font-size: 35px; font-weight: bold; color: #1a73e8; min-height: 50px; margin-bottom: 10px; }
         .btn-group { display: flex; gap: 10px; }
@@ -17,6 +28,8 @@
         .btn-start { background: #34a853; }
         .btn-stop { background: #ea4335; }
         .btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* តារាង */
         .duty-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
         .duty-table th, .duty-table td { border: 1px solid #333; padding: 10px; text-align: center; font-size: 14px; }
         .duty-table th { background: #f2f2f2; }
@@ -27,16 +40,25 @@
 <body>
 
 <div class="container">
-    <h2>📅 បែងចែកកាលវិភាគយាម (បំបាត់ថ្ងៃស្ទួន)</h2>
+    <h2>📅 ប្រព័ន្ធគ្រប់គ្រង និងបែងចែកកាលវិភាគយាម</h2>
     
-    <div class="setup-section">
-        <div><label>១. ក្រុមប្រចាំបញ្ជា</label><textarea id="g1">សោម-ទិ អ៊ុយ-សុផល ស្វាយ-ប៊ុននី ទិត-សិទ្ធា សៀង-ប៉ាច</textarea></div>
-        <div><label>២. ក្រុមប្រចាំការ</label><textarea id="g2">ជូ-ច័ន្ទថុល វិះ-អរុណ គឹម-សែនសេរី ឃឹម-លុច អ៊ុន-ដារ៉េត</textarea></div>
-        <div><label>៣. ក្រុមប្រចាំថ្ងៃ</label><textarea id="g3">សួន-ពៅ ហែម-ហាន នឿន-វណ្ណេត អ៊ុំ-វិច្ឆិ អ៊ុន-មករា</textarea></div>
+    <div class="management-section">
+        <div class="input-group">
+            <input type="text" id="newName" placeholder="បញ្ចូលឈ្មោះថ្មី...">
+            <select id="groupSelect">
+                <option value="g1">ក្រុមប្រចាំបញ្ជា</option>
+                <option value="g2">ក្រុមប្រចាំការ</option>
+                <option value="g3">ក្រុមប្រចាំថ្ងៃ</option>
+            </select>
+            <button class="btn-add" onclick="addNewMember()">+ បន្ថែមសមាជិក</button>
+        </div>
+        
+        <div id="membersDisplay">
+            </div>
     </div>
 
     <div class="spin-area">
-        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">ត្រៀមខ្លួន...</div>
+        <div id="statusLabel" style="font-size: 14px; color: #666; margin-bottom: 5px;">រៀបចំបញ្ជីឈ្មោះ រួចចុចវិល...</div>
         <div id="displayBox">---</div>
         <div class="btn-group">
             <button id="startBtn" class="btn btn-start" onclick="prepareSpin()">▶ ចាប់ផ្តើមវិលឈ្មោះ</button>
@@ -47,7 +69,7 @@
     <table class="duty-table">
         <thead>
             <tr>
-                <th>ល.រ</th>
+                <th width="8%">ល.រ</th>
                 <th width="25%">នាម និង គោត្តនាម</th>
                 <th colspan="6">កាលបរិច្ឆេទយាម (រំលង ៤ថ្ងៃ)</th>
             </tr>
@@ -57,38 +79,100 @@
 </div>
 
 <script>
+    // ទិន្នន័យលំនាំដើម
+    let groups = {
+        g1: ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
+        g2: ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
+        g3: ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
+    };
+
     let masterList = [];
     let spinInterval;
-    // កត់ត្រាថា តើក្រុមនីមួយៗ ចាប់បានប៉ុន្មាននាក់ហើយ
     let groupCounters = { g1: 0, g2: 0, g3: 0 };
 
+    // --- មុខងារគ្រប់គ្រងបញ្ជីឈ្មោះ ---
+
+    function renderManagement() {
+        const container = document.getElementById('membersDisplay');
+        container.innerHTML = '';
+        const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
+
+        for (let gId in groups) {
+            let groupDiv = document.createElement('div');
+            groupDiv.innerHTML = `<strong style="font-size:13px;">${titles[gId]}: </strong>`;
+            let tagsWrapper = document.createElement('div');
+            tagsWrapper.className = 'member-tags';
+
+            groups[gId].forEach((name, index) => {
+                tagsWrapper.innerHTML += `
+                    <div class="tag">
+                        ${name}
+                        <button class="btn-edit-small" onclick="editMember('${gId}', ${index})">✎</button>
+                        <button class="btn-del-small" onclick="deleteMember('${gId}', ${index})">✖</button>
+                    </div>`;
+            });
+            groupDiv.appendChild(tagsWrapper);
+            container.appendChild(groupDiv);
+            container.appendChild(document.createElement('hr'));
+        }
+    }
+
+    function addNewMember() {
+        const nameInput = document.getElementById('newName');
+        const gId = document.getElementById('groupSelect').value;
+        if (nameInput.value.trim()) {
+            groups[gId].push(nameInput.value.trim());
+            nameInput.value = '';
+            renderManagement();
+        }
+    }
+
+    function editMember(gId, index) {
+        let oldName = groups[gId][index];
+        let newName = prompt("កែប្រែឈ្មោះ:", oldName);
+        if (newName && newName.trim()) {
+            groups[gId][index] = newName.trim();
+            renderManagement();
+        }
+    }
+
+    function deleteMember(gId, index) {
+        if (confirm("តើអ្នកប្រាកដថាចង់លុបឈ្មោះនេះ?")) {
+            groups[gId].splice(index, 1);
+            renderManagement();
+        }
+    }
+
+    // --- មុខងារវិលឈ្មោះ និងបំពេញតារាង ---
+
     function prepareSpin() {
-        const getNames = (id) => document.getElementById(id).value.trim().split(/\s+/).filter(n => n);
-        const g1 = getNames('g1'), g2 = getNames('g2'), g3 = getNames('g3');
+        // បង្កើតបញ្ជីមេសម្រាប់វិល
+        masterList = [];
+        for (let gId in groups) {
+            groups[gId].forEach(name => {
+                masterList.push({ name: name, groupId: gId });
+            });
+        }
 
-        masterList = [
-            ...g1.map(n => ({name: n, groupId: 'g1'})),
-            ...g2.map(n => ({name: n, groupId: 'g2'})),
-            ...g3.map(n => ({name: n, groupId: 'g3'}))
-        ];
+        if (masterList.length === 0) return alert("សូមបន្ថែមសមាជិកជាមុនសិន!");
 
+        // រៀបចំតារាងស្អាត
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = '';
-        const groups = [{id:'g1', title:'ប្រចាំបញ្ជា'}, {id:'g2', title:'ប្រចាំការ'}, {id:'g3', title:'ប្រចាំថ្ងៃ'}];
-        
-        groups.forEach(g => {
-            tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${g.title}</td></tr>`;
-            const members = g.id === 'g1' ? g1 : (g.id === 'g2' ? g2 : g3);
-            members.forEach((m, i) => {
+        const titles = { g1: "ប្រចាំបញ្ជា", g2: "ប្រចាំការ", g3: "ប្រចាំថ្ងៃ" };
+
+        for (let gId in groups) {
+            tableBody.innerHTML += `<tr><td colspan="8" class="group-header">${titles[gId]}</td></tr>`;
+            groups[gId].forEach((m, i) => {
                 tableBody.innerHTML += `
-                    <tr id="row-${g.id}-${m}">
+                    <tr id="row-${gId}-${m}">
                         <td>${(i+1).toString().padStart(2, '0')}</td>
                         <td style="text-align:left; padding-left:10px;">${m}</td>
                         <td class="d-1"></td><td class="d-2"></td><td class="d-3"></td>
                         <td class="d-4"></td><td class="d-5"></td><td class="d-6"></td>
                     </tr>`;
             });
-        });
+        }
 
         groupCounters = { g1: 0, g2: 0, g3: 0 };
         startSpinning();
@@ -98,7 +182,7 @@
         if (masterList.length === 0) return;
         document.getElementById('startBtn').disabled = true;
         document.getElementById('stopBtn').disabled = false;
-        document.getElementById('statusLabel').innerText = "កំពុងចាប់រកវេន...";
+        document.getElementById('statusLabel').innerText = "កំពុងចាប់រកវេនបន្ទាប់...";
 
         spinInterval = setInterval(() => {
             const randomPick = masterList[Math.floor(Math.random() * masterList.length)];
@@ -111,8 +195,7 @@
         const selectedName = document.getElementById('displayBox').innerText;
         const pickedObj = masterList.find(m => m.name === selectedName);
 
-        // Logic ថ្មី៖ កំណត់ថ្ងៃយាមដោយផ្អែកលើ "ចំនួនមនុស្សដែលបានចាប់រួចក្នុងក្រុមនោះ"
-        // ម្នាក់ទី១ ក្នុងក្រុម យកថ្ងៃទី១, ម្នាក់ទី២ ក្នុងក្រុម យកថ្ងៃទី២...
+        // Logic រំលង ៤ថ្ងៃ (Cycle ៥)
         let startDay = groupCounters[pickedObj.groupId] + 1;
         let dutyDays = [];
         for (let d = startDay; d <= 30; d += 5) {
@@ -130,9 +213,7 @@
             });
         }
 
-        // បូកចំនួនមនុស្សក្នុងក្រុមនោះចូល ១
         groupCounters[pickedObj.groupId]++;
-        // លុបឈ្មោះចេញពីបញ្ជីវិល
         masterList = masterList.filter(m => m.name !== selectedName);
 
         if (masterList.length > 0) {
@@ -144,6 +225,9 @@
             document.getElementById('statusLabel').innerText = "រៀបចំកាលវិភាគចប់សព្វគ្រប់";
         }
     }
+
+    // បង្ហាញបញ្ជីឈ្មោះពេលបើក Web ដំបូង
+    renderManagement();
 </script>
 
 </body>
