@@ -3,46 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Excel Fixed</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Military Camo Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #004d40;
-            --accent: #ff6f00;
-            --bg-body: #eceff1;
+            --primary: #2a3a25; /* បៃតងយោធាចាស់ */
+            --accent: #f1c40f; /* ពណ៌លឿង Hazard */
+            --bg-body: #34495e; /* ប្រផេះក្រមៅ */
             --bg-container: #ffffff;
             --text-main: #212121;
             --border-color: #000000;
         }
 
-        body { font-family: 'Kantumruy Pro', sans-serif; background: var(--bg-body); color: var(--text-main); margin: 0; padding: 20px; font-size: 18px; }
-        .container { background: var(--bg-container); max-width: 1200px; margin: auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #cfd8dc; }
-        
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 20px; border-radius: 6px; margin-bottom: 25px; }
-        .calendar-header h2 { margin: 0; font-size: 26px; }
+        body { 
+            font-family: 'Kantumruy Pro', sans-serif; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px; 
+            font-size: 18px;
+        }
 
-        .spin-box { text-align: center; border: 2px solid var(--primary); padding: 30px; border-radius: 10px; background: #f1f8e9; margin-bottom: 30px; }
-        #displayBox { font-size: 50px; font-weight: 700; color: var(--primary); min-height: 70px; margin-bottom: 10px; }
-        #statusMsg { font-size: 18px; color: #555; font-weight: 600; margin-bottom: 20px; }
+        .container { 
+            background: var(--bg-container); 
+            max-width: 1200px; 
+            margin: auto; 
+            padding: 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            border: 1px solid #cfd8dc;
+        }
 
-        .duty-table { width: 100%; border-collapse: collapse; background: white; border: 2px solid var(--border-color); }
-        .duty-table th, .duty-table td { border: 1.5px solid var(--border-color); padding: 15px; text-align: center; font-size: 18px; font-weight: 600; }
-        .duty-table th { background: #37474f; color: white; font-size: 19px; }
-        .group-header { background: #cfd8dc !important; color: #000 !important; text-align: left !important; padding-left: 20px; font-size: 20px; font-weight: 700; }
-        .name-cell { text-align: left !important; padding-left: 20px; font-size: 20px; color: #004d40; }
-        .filled { background: #fff9c4 !important; color: #b71c1c; font-size: 22px; font-weight: 700; }
+        /* Header */
+        .calendar-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--primary); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 6px; 
+            margin-bottom: 25px;
+            border-bottom: 4px solid #1e2a1a;
+        }
+        .calendar-header h2 { margin: 0; font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
 
+        /* --- ផ្នែកវិលឈ្មោះ បែបប៉ារ៉ា (Camo Box) --- */
+        .spin-box { 
+            text-align: center; 
+            border: 4px solid var(--primary); 
+            padding: 30px; 
+            border-radius: 12px; 
+            /* បន្ថែមលំនាំអាវប៉ារ៉ាជា Background */
+            background-color: #3a5035; 
+            background-image: 
+                linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%), 
+                linear-gradient(-45deg, rgba(0,0,0,0.1) 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.1) 75%), 
+                linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.1) 75%),
+                linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.05) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.05) 75%);
+            background-size: 50px 50px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+        #displayBox { 
+            font-size: 55px; /* អក្សរធំជាងមុន */
+            font-weight: 700; 
+            /* ពណ៌ Neon ដើម្បីឱ្យលេចធ្លោលើ Background ងងឹត */
+            color: #ccff00; 
+            min-height: 80px; 
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(204,255,0,0.8);
+            text-transform: uppercase;
+        }
+        #statusMsg { font-size: 18px; color: #fff; font-weight: 600; margin-bottom: 20px; text-transform: uppercase; }
+
+        /* Table Style - ច្បាស់ៗ */
+        .duty-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: white; 
+            border: 2px solid var(--border-color); 
+        }
+        .duty-table th, .duty-table td { 
+            border: 1.5px solid var(--border-color); 
+            padding: 15px; 
+            text-align: center; 
+            font-size: 18px; 
+            font-weight: 600;
+        }
+        .duty-table th { 
+            background: #212121; 
+            color: white; 
+            font-size: 19px;
+            text-transform: uppercase;
+        }
+        .group-header { 
+            background: #dcdcdc !important; 
+            color: #000 !important; 
+            text-align: left !important; 
+            padding-left: 20px; 
+            font-size: 20px; 
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .name-cell { 
+            text-align: left !important; 
+            padding-left: 20px; 
+            font-size: 20px; 
+            color: #1a1a1a;
+        }
+        .filled { 
+            background: #a3c19e !important; /* បៃតងយោធាខ្ចី */
+            color: #1a1a1a; 
+            font-size: 22px; 
+            font-weight: 700;
+            border: 2px solid #1e2a1a !important;
+        }
+
+        /* Buttons - ពង្រីកឱ្យធំ */
         .btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 15px 35px; border: none; border-radius: 6px; cursor: pointer; font-size: 18px; font-weight: 700; transition: 0.2s; }
-        .btn-start { background: var(--primary); color: white; }
-        .btn-excel { background: #2e7d32; color: white; }
-        .btn-reset { background: #78909c; color: white; }
+        .btn { 
+            padding: 18px 45px; /* ពង្រីកទំហំប៊ូតុង */
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 20px; /* ពង្រីកអក្សរលើប៊ូតុង */
+            font-weight: 700; 
+            text-transform: uppercase;
+            transition: 0.3s;
+            color: white;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+        }
+        .btn-start { background: var(--accent); color: #000; }
+        .btn-start:hover { background: #d6ac0c; }
+        .btn-excel { background: #2e7d32; }
+        .btn-reset { background: #5a6e75; }
         .btn-nav { background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 10px; cursor: pointer; border-radius: 4px; font-weight: bold; }
 
         @media print {
             .spin-box, .btn-group, .calendar-header button { display: none; }
             .duty-table { font-size: 16px; }
+            .container { padding: 0; box-shadow: none; border: none; }
+            .filled { background: #eee !important; color: #b71c1c; border: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -50,18 +157,18 @@
 
 <div class="container">
     <div class="calendar-header">
-        <button class="btn-nav" onclick="changeMonth(-1)">◀ ខែមុន</button>
+        <button class="btn-nav" onclick="changeMonth(-1)">◀ PREV MONTH</button>
         <h2 id="monthTitle">---</h2>
-        <button class="btn-nav" onclick="changeMonth(1)">ខែបន្ទាប់ ▶</button>
+        <button class="btn-nav" onclick="changeMonth(1)">NEXT MONTH ▶</button>
     </div>
 
     <div class="spin-box">
         <div id="displayBox">DEPLOYMENT</div>
         <div id="statusMsg">ត្រៀមខ្លួន...</div>
         <div class="btn-group">
-            <button id="startBtn" class="btn btn-start" onclick="startFreshRandom()">🎲 ចាប់ផ្ដើមរៀបចំអូតូ</button>
-            <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
-            <button class="btn btn-reset" onclick="resetAll()">♻️ Reset Memory</button>
+            <button id="startBtn" class="btn btn-start" onclick="startFreshRandom()">🎲 ចាប់ផ្ដើមរៀបចំ (AUTO)</button>
+            <button class="btn btn-excel" onclick="exportToExcel()">📊 Download EXCEL</button>
+            <button class="btn btn-reset" onclick="resetAll()">♻️ សម្អាតចោល</button>
         </div>
     </div>
 
@@ -86,11 +193,11 @@
 
     function init() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
-        document.getElementById('monthTitle').innerText = "ខែ" + months[currentDate.getMonth()] + " ឆ្នាំ " + currentDate.getFullYear();
+        document.getElementById('monthTitle').innerText = months[currentDate.getMonth()].toUpperCase() + " " + currentDate.getFullYear();
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         const savedData = JSON.parse(localStorage.getItem(getMonthKey(currentDate))) || {};
-        const groups = ["ក្រុមទី ១ (ប្រចាំបញ្ជា)", "ក្រុមទី ២ (ប្រចាំការ)", "ក្រុមទី ៣ (ប្រចាំថ្ងៃ)"];
+        const groups = ["ក្រុមទី ១ (UNIT 1)", "ក្រុមទី ២ (UNIT 2)", "ក្រុមទី ៣ (UNIT 3)"];
         groups.forEach((g, idx) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">${g}</td></tr>`;
             for (let i = 0; i < 5; i++) {
@@ -100,6 +207,7 @@
             }
         });
         document.getElementById('startBtn').disabled = Object.keys(savedData).length > 0;
+        document.getElementById('statusMsg').innerText = Object.keys(savedData).length > 0 ? "ស្ថានភាព៖ រៀបចំរួចរាល់" : "ស្ថានភាព៖ ត្រៀមរៀបចំ";
     }
 
     async function startFreshRandom() {
@@ -134,23 +242,13 @@
     }
 
     function changeMonth(s) { currentDate.setMonth(currentDate.getMonth() + s); init(); }
-    function resetAll() { if(confirm("Reset Memory?")) { localStorage.removeItem(getMonthKey(currentDate)); init(); } }
+    function resetAll() { if(confirm("តើអ្នកចង់សម្អាតទិន្នន័យខែនេះមែនទេ?")) { localStorage.removeItem(getMonthKey(currentDate)); init(); } }
 
-    // --- មុខងារ Export Excel ដែលបានកែសម្រួលឱ្យស្អាត ---
     function exportToExcel() {
-        const table = document.getElementById("dutyTable");
-        const wb = XLSX.utils.table_to_book(table, { sheet: "កាលវិភាគយាម" });
-        const ws = wb.Sheets["កាលវិភាគយាម"];
-
-        // កំណត់ទំហំ Column (Width) ឱ្យធំល្មមមើលឃើញអក្សរ
-        ws['!cols'] = [
-            { wch: 6 },  // ល.រ
-            { wch: 25 }, // នាម និង គោត្តនាម
-            { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 } // ថ្ងៃទី
-        ];
-
-        const fileName = `Schedule_${document.getElementById('monthTitle').innerText.replace(/\s/g, '_')}.xlsx`;
-        XLSX.writeFile(wb, fileName);
+        const wb = XLSX.utils.table_to_book(document.getElementById("dutyTable"), { sheet: "Duty" });
+        const ws = wb.Sheets["Duty"];
+        ws['!cols'] = [{ wch: 6 }, { wch: 25 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }];
+        XLSX.writeFile(wb, `Duty_${document.getElementById('monthTitle').innerText}.xlsx`);
     }
 
     window.onload = init;
