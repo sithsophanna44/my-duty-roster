@@ -3,43 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ប្រព័ន្ធប្រតិទិនយាម - Random ថ្មីរាល់ខែ</title>
+    <title>ប្រព័ន្ធប្រតិទិនយាម - Military Modern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Leelawadee UI', 'Kantumruy Pro', sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 1100px; padding: 25px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #003366; color: white; padding: 15px; border-radius: 10px; }
-        .calendar-header h2 { margin: 0; font-size: 22px; }
-        .spin-box { text-align: center; border: 3px dashed #1a73e8; padding: 25px; border-radius: 12px; background: #fff; margin-bottom: 25px; }
-        #displayBox { font-size: 45px; font-weight: bold; color: #1a73e8; min-height: 65px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-        #statusMsg { font-size: 15px; color: #28a745; font-weight: bold; margin-bottom: 15px; height: 20px; }
-        .duty-table { width: 100%; border-collapse: collapse; background: white; }
-        .duty-table th, .duty-table td { border: 1px solid #000; padding: 12px; text-align: center; font-size: 14px; }
-        .group-header { background: #003366 !important; color: white; text-align: left !important; padding-left: 20px; font-weight: bold; }
-        .filled { background: #fffde7; font-weight: bold; color: #d32f2f; }
-        .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-start { background: #28a745; }
-        .btn-excel { background: #1d6f42; }
+        :root {
+            --primary-bg: #1a1a1a; /* ខ្មៅ Tactical */
+            --secondary-bg: #2a2a2a; /* ខ្មៅខ្ចី */
+            --mil-green: #3a5035; /* បៃតងយោធា */
+            --mil-green-hover: #4a6642;
+            --text-color: #e0e0e0;
+            --highlight: #f39c12; /* ទឹកក្រូច Hazard */
+            --highlight-hover: #e67e22;
+            --border: #444;
+            --table-header: #333;
+            --filled-bg: #4a6642; /* បៃតងយោធាខ្ចី */
+            --font-family: 'Kantumruy Pro', sans-serif;
+        }
+
+        body { font-family: var(--font-family); background: var(--primary-bg); color: var(--text-color); margin: 0; padding: 15px; }
+        .container { background: var(--secondary-bg); max-width: 1100px; margin: auto; padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+
+        /* ផ្នែកក្បាល OPERATIONAL CALENDAR */
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--mil-green); color: white; padding: 10px 15px; border-radius: 6px; border-bottom: 3px solid #2a3a25; }
+        .calendar-header h2 { margin: 0; font-weight: 700; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-nav { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; font-size: 13px; }
+        .btn-nav:hover { background: rgba(0,0,0,0.5); }
+
+        /* ផ្នែកបញ្ជា OPERATIONAL CONSOLE */
+        .spin-box { text-align: center; border: 2px solid var(--mil-green); padding: 20px; border-radius: 8px; background: #222; margin-bottom: 25px; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
+        #displayBox { font-size: 40px; font-weight: 700; color: var(--highlight); min-height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; text-transform: uppercase; text-shadow: 0 0 10px rgba(243,156,18,0.5); }
+        #statusMsg { font-size: 14px; color: #888; font-weight: 600; margin-bottom: 15px; height: 18px; text-transform: uppercase; }
+
+        /* តារាង OPERATIONAL TABLE */
+        .duty-table { width: 100%; border-collapse: collapse; background: #fff; color: #000; border: 2px solid #000; }
+        .duty-table th, .duty-table td { border: 1px solid #000; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; }
+        .duty-table th { background: var(--table-header); color: white; text-transform: uppercase; }
+        .group-header { background: #555 !important; color: white; text-align: left !important; padding-left: 15px; font-weight: 700; text-transform: uppercase; }
+        .filled { background: var(--filled-bg) !important; color: white; font-weight: 700; border: 2px solid #2a3a25 !important; box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+
+        /* ផ្នែកប៊ូតុង ACTION BUTTONS */
+        .btn-group { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 700; text-transform: uppercase; transition: 0.3s; color: white; }
+        .btn-start { background: var(--highlight); color: #000; }
+        .btn-start:hover { background: var(--highlight-hover); }
+        .btn-excel { background: var(--mil-green); }
+        .btn-excel:hover { background: var(--mil-green-hover); }
         .btn-reset { background: #6c757d; }
-        @media print { .spin-box, .btn-group, .calendar-header button { display: none; } }
+        .btn-reset:hover { background: #5a6268; }
+        .btn:disabled { background: #444; color: #777; cursor: not-allowed; opacity: 0.5; }
+
+        /* Print Style */
+        @media print { .spin-box, .btn-group, .calendar-header button { display: none; } body { background: white; color: black; padding: 0; } .container { border: none; box-shadow: none; width: 100%; padding: 0; } .duty-table { width: 100%; font-size: 12px; } .duty-table th { background: #f2f2f2; color: black; } .group-header { background: #ddd !important; color: black; } .filled { background: #fdfae6 !important; color: #b71c1c; border: 1px solid #000 !important; } .calendar-header { background: #eee; color: black; border-bottom: 2px solid black; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="calendar-header">
-        <button onclick="changeMonth(-1)" style="cursor:pointer; color:white; background:none; border:1px solid white; padding:5px 10px; border-radius:5px;">◀ ខែមុន</button>
-        <h2 id="monthTitle">---</h2>
-        <button onclick="changeMonth(1)" style="cursor:pointer; color:white; background:none; border:1px solid white; padding:5px 10px; border-radius:5px;">ខែបន្ទាប់ ▶</button>
+        <button class="btn-nav" onclick="changeMonth(-1)">◀ PREV</button>
+        <h2 id="monthTitle">OPERATIONAL MONTH: ---</h2>
+        <button class="btn-nav" onclick="changeMonth(1)">NEXT ▶</button>
     </div>
 
     <div class="spin-box">
-        <div id="displayBox">---</div>
-        <div id="statusMsg"></div>
+        <div id="displayBox">DEPLOYMENT</div>
+        <div id="statusMsg">ត្រៀមខ្លួន...</div>
         <div class="btn-group">
-            <button id="startBtn" class="btn btn-start" onclick="startFreshRandom()">🎲 ចាប់ផ្ដើម Random ថ្មីសម្រាប់ខែនេះ</button>
-            <button class="btn btn-excel" onclick="exportToExcel()">📊 Download Excel</button>
+            <button id="startBtn" class="btn btn-start" onclick="startFreshRandom()">🎲 ចាប់ផ្ដើមរៀបចំ (FRESH RANDOM)</button>
+            <button class="btn btn-excel" onclick="exportToExcel()">📊 ទាញយក Excel</button>
             <button class="btn btn-reset" onclick="resetAll()">♻️ សម្អាតចោល</button>
         </div>
     </div>
@@ -49,7 +81,7 @@
             <tr>
                 <th>ល.រ</th>
                 <th width="30%">នាម និង គោត្តនាម</th>
-                <th colspan="7">កាលបរិច្ឆេទយាម (រំលង ៤ថ្ងៃ)</th>
+                <th colspan="7">កាលបរិច្ឆេទយាម (TACTICAL DATES)</th>
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -60,19 +92,19 @@
     const members = ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច", "ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត", "សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"];
     let currentDate = new Date();
     let spinList = [];
-    let groupUsedOffsets = { g1: [], g2: [], g3: [] };
+    let usedOffsets = { g1: [], g2: [], g3: [] };
 
     function getMonthKey(date) { return "duty_" + date.getFullYear() + "_" + date.getMonth(); }
 
     function init() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
-        document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
+        document.getElementById('monthTitle').innerText = months[currentDate.getMonth()].toUpperCase() + " " + currentDate.getFullYear();
         
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         
         const savedData = JSON.parse(localStorage.getItem(getMonthKey(currentDate))) || {};
-        const groups = ["ប្រចាំបញ្ជា", "ប្រចាំការ", "ប្រចាំថ្ងៃ"];
+        const groups = ["ក្រុមទី ១ (UNIT 1)", "ក្រុមទី ២ (UNIT 2)", "ក្រុមទី ៣ (UNIT 3)"];
         
         groups.forEach((g, idx) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">${g}</td></tr>`;
@@ -82,32 +114,31 @@
                 tbody.innerHTML += `
                     <tr id="row-${name}">
                         <td>${(i+1).toString().padStart(2, '0')}</td>
-                        <td style="text-align:left;padding-left:15px;">${name}</td>
+                        <td style="text-align:left;padding-left:15px; font-weight:700;">${name}</td>
                         ${days.map(d => `<td class="${d ? 'filled' : ''}">${d}</td>`).join('')}
                     </tr>`;
             }
         });
 
         document.getElementById('startBtn').disabled = Object.keys(savedData).length > 0;
-        document.getElementById('statusMsg').innerText = Object.keys(savedData).length > 0 ? "ទិន្នន័យត្រូវបានរក្សាទុក" : "ខែថ្មី៖ សូមចុចប៊ូតុងពណ៌បៃតងដើម្បី Random ឈ្មោះ";
+        document.getElementById('statusMsg').innerText = Object.keys(savedData).length > 0 ? "STATUS: គ្រប់គ្រងរួចរាល់" : "STATUS: ត្រៀមសម្រាប់ការរៀបចំ";
     }
 
     async function startFreshRandom() {
         document.getElementById('startBtn').disabled = true;
-        groupUsedOffsets = { g1: [], g2: [], g3: [] };
-        
-        // ច្របល់ឈ្មោះទាំង ១៥ នាក់ថ្មីស្រឡាង (មិនខ្វល់ពីលំដាប់ចាស់)
+        document.getElementById('statusMsg').innerText = "កំពុងរៀបចំ... (DEPLOYING)";
+        usedOffsets = { g1: [], g2: [], g3: [] };
         spinList = [...members].sort(() => Math.random() - 0.5);
-        
         let monthData = {};
+
         for (let i = 0; i < members.length; i++) {
             const finalName = await runOnePerson();
             monthData[finalName] = fillData(finalName);
         }
 
         localStorage.setItem(getMonthKey(currentDate), JSON.stringify(monthData));
-        document.getElementById('displayBox').innerText = "រួចរាល់! ✨";
-        document.getElementById('statusMsg').innerText = "រៀបចំកាលវិភាគថ្មីស្រឡាងរួចរាល់។";
+        document.getElementById('displayBox').innerText = "រួចរាល់ (COMPLETE)";
+        document.getElementById('statusMsg').innerText = "STATUS: រៀបចំកាលវិភាគរួចរាល់";
     }
 
     function runOnePerson() {
@@ -117,11 +148,11 @@
                 const tempPick = spinList[Math.floor(Math.random() * spinList.length)];
                 document.getElementById('displayBox').innerText = tempPick;
                 timer += 50;
-                if (timer > 500) {
+                if (timer > 500) { // វិល ០.៥ វិនាទី
                     clearInterval(spinInterval);
                     const finalName = document.getElementById('displayBox').innerText;
                     spinList = spinList.filter(n => n !== finalName);
-                    setTimeout(() => resolve(finalName), 100);
+                    setTimeout(() => resolve(finalName), 80); // សម្រាក ០.០៨ វិនាទី
                 }
             }, 50);
         });
@@ -131,11 +162,9 @@
         const nameIdx = members.indexOf(name);
         const gKey = nameIdx < 5 ? 'g1' : (nameIdx < 10 ? 'g2' : 'g3');
 
-        // រកថ្ងៃចាប់ផ្ដើមថ្មី (១ ដល់ ៥) ដែលមិនទាន់មានអ្នកយកក្នុងក្រុមជាមួយគ្នា
+        // Fresh Start: រាប់ថ្មីចាប់ពី ១ ដល់ ៥
         let startDay = Math.floor(Math.random() * 5) + 1;
-        while (groupUsedOffsets[gKey].includes(startDay)) {
-            startDay = (startDay % 5) + 1;
-        }
+        while (groupUsedOffsets[gKey].includes(startDay)) { startDay = (startDay % 5) + 1; }
         groupUsedOffsets[gKey].push(startDay);
 
         const currentMonthTotalDays = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -154,7 +183,7 @@
     }
 
     function changeMonth(step) { currentDate.setMonth(currentDate.getMonth() + step); init(); }
-    function resetAll() { if(confirm("សម្អាតទិន្នន័យខែនេះចោល?")) { localStorage.removeItem(getMonthKey(currentDate)); init(); } }
+    function resetAll() { if(confirm("តើអ្នកប្រាកដថាចង់សម្អាតទិន្នន័យខែនេះចោល?")) { localStorage.removeItem(getMonthKey(currentDate)); init(); } }
     function exportToExcel() { XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_${document.getElementById('monthTitle').innerText}.xlsx`); }
     window.onload = init;
 </script>
