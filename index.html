@@ -457,7 +457,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL (ExcelJS): លៃទំហំក្រឡា និងកម្ពស់ជួរដេកឱ្យពេញស្អាតលើ A4
+       មុខងារ EXCEL (ExcelJS): ប្រើប្រាស់ទម្រង់ និង Layout ពី template.xlsx ដើម ១០០%
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -482,63 +482,31 @@
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
 
-            // ៤. លៃសមាមាត្រទទឹងជួរឈរ (Columns)
-            worksheet.getColumn(1).width = 4.5;   // A: ល.រ
-            worksheet.getColumn(2).width = 17.5;  // B: ឈ្មោះ
-            for (let col = 3; col <= 9; col++) {
-                worksheet.getColumn(col).width = 6.8; // C ដល់ I: ថ្ងៃយាម
-            }
-            worksheet.getColumn(10).width = 18.5; // J: សេចក្តីផ្សេងៗ
-
-            // ៤.១. លៃកម្ពស់ជួរដេក (Rows Height) ដើម្បីបំបាត់ Space សល់ច្រើនខាងក្រោម
-            if (worksheet.getRow(9)) worksheet.getRow(9).height = 28;
-            if (worksheet.getRow(10)) worksheet.getRow(10).height = 26;
-
-            for (let r = 11; r <= 27; r++) {
-                const row = worksheet.getRow(r);
-                if (r === 11 || r === 16 || r === 22) {
-                    row.height = 28; // ក្បាលក្រុមនីមួយៗ
-                } else {
-                    row.height = 25; // ជួរឈ្មោះនីមួយៗ (ពង្រីកឱ្យធំទូលាយសមរម្យ)
-                }
-            }
-
-            // ៥. កំណត់ការបោះពុម្ពឱ្យចំកណ្តាលក្រដាស A4 ស្មើគែមសងខាង
-            worksheet.pageSetup = {
-                orientation: 'portrait',
-                paperSize: 9, // A4
-                fitToPage: true,
-                fitToWidth: 1,
-                fitToHeight: 1,
-                horizontalCentered: true,
-                margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 }
-            };
-
             const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             const currentMonthName = months[currentDate.getMonth()];
             const khmerYear = toKhmerNum(currentDate.getFullYear());
 
-            // ៦. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
+            // ៤. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
             const lunarInput = document.getElementById('lunarDateInput');
             if (lunarInput && lunarInput.value.trim() !== "") {
                 const cellD5 = worksheet.getCell('D5');
                 if (cellD5) cellD5.value = lunarInput.value.trim();
             }
 
-            // ៧. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
+            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
             const solarInput = document.getElementById('solarDateInput');
             const cellD6 = worksheet.getCell('D6');
             if (cellD6 && solarInput && solarInput.value.trim() !== "") {
                 cellD6.value = solarInput.value.trim();
             }
 
-            // ៨. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
+            // ៦. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
             const cellA8 = worksheet.getCell('A8');
             if (cellA8) {
                 cellA8.value = `តារាងវេន ប្រចាំបញ្ជា ប្រចាំការ និងប្រចាំថ្ងៃ ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
             }
 
-            // ៩. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង
+            // ៧. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង
             const rowMap = [
                 [11, 12, 13, 14, 15], // ក្រុមទី ១
                 [17, 18, 19, 20, 21], // ក្រុមទី ២
@@ -550,8 +518,7 @@
                     const targetRow = rowMap[gi][ni];
                     
                     // បំពេញឈ្មោះចូល Column B
-                    const cellName = worksheet.getCell(`B${targetRow}`);
-                    cellName.value = name;
+                    worksheet.getCell(`B${targetRow}`).value = name;
 
                     // ស្វែងរកថ្ងៃយាមរបស់ឈ្មោះនេះក្នុង dutyData
                     let days = dutyData[name];
@@ -573,7 +540,7 @@
                 });
             });
 
-            // ១០. ទាញយកឯកសារ Excel
+            // ៨. ទាញយកឯកសារ Excel
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             const fileName = `Duty_${document.getElementById('monthTitle').innerText}.xlsx`;
