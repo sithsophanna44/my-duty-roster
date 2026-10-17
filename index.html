@@ -8,7 +8,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <!-- ប្រើ ExcelJS ដើម្បីរក្សា Logo, Border, និងទម្រង់ A4 ឱ្យនៅដដែល ១០០% -->
+    <!-- ប្រើ ExcelJS និង FileSaver ដើម្បីរក្សា Logo, Border, និងទម្រង់ A4 ឱ្យនៅដដែល ១០០% -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -132,10 +132,18 @@
         </div>
         <div id="tagBox" class="tag-list"></div>
         <hr style="border:none; border-top:1px dashed #c8e6c9; margin:12px 0;">
-        <div style="text-align: left; font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 4px;">
-            🗓️ កាលបរិច្ឆេទចន្ទគតិខ្មែរ (សម្រាប់ Excel ជួរ D5):
+        
+        <!-- កាលបរិច្ឆេទសម្រាប់ Export ចូល Excel -->
+        <div style="display:flex; flex-direction:column; gap:8px; text-align:left;">
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold; color:var(--primary);">🗓️ កាលបរិច្ឆេទចន្ទគតិខ្មែរ (Excel D5):</label>
+                <input type="text" id="lunarDateInput" style="width:100%; box-sizing:border-box; font-weight:bold; color:#333;" value="ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០">
+            </div>
+            <div>
+                <label style="font-size:0.85rem; font-weight:bold; color:var(--primary);">📍 ទីកន្លែង និងកាលបរិច្ឆេទសូរិយគតិ (Excel D6):</label>
+                <input type="text" id="solarDateInput" style="width:100%; box-sizing:border-box; font-weight:bold; color:#333;" value="">
+            </div>
         </div>
-        <input type="text" id="lunarDateInput" style="width: 100%; box-sizing: border-box; font-weight: bold; color: #333;" value="ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស. ២៥៧០">
     </div>
 
     <!-- ៣. ប៊ូតុងទាញយក និងចាកចេញ -->
@@ -178,7 +186,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // បញ្ជីឈ្មោះស្របតាម Template Excel
+    // បញ្ជីឈ្មោះស្របតាម Template Excel ជាក់ស្តែង
     let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v2')) || [
         ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ហែម ហែន", "អ៊ុន-ដារ៉េត"],
@@ -189,6 +197,15 @@
     function toKhmerNum(num) {
         const khmerNums = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
         return num.toString().replace(/[0-9]/g, n => khmerNums[n]);
+    }
+
+    // មុខងារសម្អាតឈ្មោះ និងបត់បែនរកឈ្មោះដូចគ្នា (Alias Normalizer)
+    function normalizeKhmerName(name) {
+        if (!name) return '';
+        let s = name.toString().replace(/[-\s]/g, '').trim();
+        // បើឈ្មោះ សួនពៅ ឬ ស្ងួនពៅ គឺចាត់ទុកថាជាមនុស្សតែមួយ
+        if (s === 'សួនពៅ' || s === 'ស្ងួនពៅ') return 'ស្ងួនពៅ';
+        return s;
     }
 
     window.onload = () => {
@@ -257,6 +274,17 @@
     function loadData() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
+        
+        // កំណត់ថ្ងៃទីសូរិយគតិ Auto តាមថ្ងៃបច្ចុប្បន្ន (ឧ. ធ្វើនៅសៀមរាប ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦)
+        const solarInput = document.getElementById('solarDateInput');
+        if (solarInput && !solarInput.value) {
+            const today = new Date();
+            const curDayKh = toKhmerNum(today.getDate().toString().padStart(2, '0'));
+            const curMonthKh = months[currentDate.getMonth()];
+            const curYearKh = toKhmerNum(currentDate.getFullYear());
+            solarInput.value = `ធ្វើនៅសៀមរាប ថ្ងៃទី${curDayKh} ខែ${curMonthKh} ឆ្នាំ${curYearKh}`;
+        }
+
         renderTags();
         db.ref(getMonthKey()).on('value', snap => renderTable(snap.val() || {}));
     }
@@ -322,7 +350,18 @@
         membersGroups.forEach((g, gi) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1} (${titles[gi]})</td></tr>`;
             g.forEach((n, ni) => {
-                const days = data[n] || ["","","","","","",""];
+                // ស្វែងរកទិន្នន័យថ្ងៃយាមដោយឆ្លាតវៃ ទោះជា សួន-ពៅ ឬ ស្ងួន-ពៅ
+                let days = data[n];
+                if (!days) {
+                    for (let key in data) {
+                        if (normalizeKhmerName(key) === normalizeKhmerName(n)) {
+                            days = data[key];
+                            break;
+                        }
+                    }
+                }
+                days = days || ["","","","","","",""];
+
                 let cellsHtml = days.map((d, cIndex) => 
                     `<td id="cell_${encodeURIComponent(n)}_${cIndex}" class="${d ? 'filled' : ''}">${d}</td>`
                 ).join('');
@@ -402,6 +441,14 @@
 
     function changeMonth(s) {
         currentDate.setMonth(currentDate.getMonth()+s);
+        // Update ថ្ងៃខែសូរិយគតិពេលប្តូរខែ
+        const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+        const solarInput = document.getElementById('solarDateInput');
+        if (solarInput) {
+            const today = new Date();
+            const curDayKh = toKhmerNum(today.getDate().toString().padStart(2, '0'));
+            solarInput.value = `ធ្វើនៅសៀមរាប ថ្ងៃទី${curDayKh} ខែ${months[currentDate.getMonth()]} ឆ្នាំ${toKhmerNum(currentDate.getFullYear())}`;
+        }
         loadData();
     }
 
@@ -412,7 +459,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL ថ្មី (ExcelJS): រក្សា Logo, Border, និងទម្រង់ A4 ឱ្យនៅដដែល ១០០%
+       មុខងារ EXCEL (ExcelJS): បំពេញគ្រប់ទិន្នន័យ និងកាលបរិច្ឆេទពេញលេញ ១០០%
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -437,32 +484,28 @@
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
 
-            const cleanStr = str => (str ? str.toString().replace(/[-\s]/g, '').trim() : '');
-
-            // ៤. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5 (ប្រសិនបើមាន)
+            // ៤. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
             const lunarInput = document.getElementById('lunarDateInput');
             if (lunarInput && lunarInput.value.trim() !== "") {
                 const cellD5 = worksheet.getCell('D5');
                 if (cellD5) cellD5.value = lunarInput.value.trim();
             }
 
-            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
-            const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
-            const currentMonthName = months[currentDate.getMonth()];
-            const khmerYear = toKhmerNum(currentDate.getFullYear());
+            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6 (មានទាំងថ្ងៃទី ខែ និងឆ្នាំ ពេញលេញ)
+            const solarInput = document.getElementById('solarDateInput');
             const cellD6 = worksheet.getCell('D6');
-            if (cellD6) {
-                cellD6.value = `ធ្វើនៅសៀមរាប ថ្ងៃទី........... ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
+            if (cellD6 && solarInput && solarInput.value.trim() !== "") {
+                cellD6.value = solarInput.value.trim();
             }
 
             // ៦. ដើររកឈ្មោះនៅ Column B រួចបំពេញលេខថ្ងៃយាមចូល Column C ដល់ I
             for (let r = 10; r <= 26; r++) {
                 const nameCell = worksheet.getCell(`B${r}`);
                 if (nameCell && nameCell.value) {
-                    const excelNameClean = cleanStr(nameCell.value);
+                    const excelNameClean = normalizeKhmerName(nameCell.value);
 
                     for (let memberName in dutyData) {
-                        if (cleanStr(memberName) === excelNameClean) {
+                        if (normalizeKhmerName(memberName) === excelNameClean) {
                             const days = dutyData[memberName] || [];
                             // Column 3 = C, 4 = D, 5 = E, 6 = F, 7 = G, 8 = H, 9 = I
                             for (let c = 0; c < 7; c++) {
