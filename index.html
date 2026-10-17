@@ -185,7 +185,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // បញ្ជីឈ្មោះថ្មីទាំង ១៥ នាក់
     let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v5')) || [
         ["សោម-ទិ", "អ៊ុយ-សុពល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិរៈ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហេន", "អ៊ុន-ដាវ៉េត"],
@@ -458,7 +457,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL (ExcelJS): ពង្រីកឈ្មោះ និងតម្រឹមកណ្តាលក្រដាស A4 ស្មើស្អាត
+       មុខងារ EXCEL (ExcelJS): លៃទំហំក្រឡា និងកម្ពស់ជួរដេកឱ្យពេញស្អាតលើ A4
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -483,22 +482,35 @@
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
 
-            // ៤. លៃសមាមាត្រទទឹងជួរឈរឱ្យស្អាតសមល្មមក្រដាស A4
-            worksheet.getColumn(1).width = 4.0;   // A: ល.រ
-            worksheet.getColumn(2).width = 16.5;  // B: ឈ្មោះ (ធំទូលាយ មិនកៀកឈ្មោះ សិដ្ឋ សុផាន់ណា)
+            // ៤. លៃសមាមាត្រទទឹងជួរឈរ (Columns)
+            worksheet.getColumn(1).width = 4.5;   // A: ល.រ
+            worksheet.getColumn(2).width = 17.5;  // B: ឈ្មោះ
             for (let col = 3; col <= 9; col++) {
-                worksheet.getColumn(col).width = 6.5; // C ដល់ I: ថ្ងៃយាម (ធំល្មមស្អាត)
+                worksheet.getColumn(col).width = 6.8; // C ដល់ I: ថ្ងៃយាម
             }
-            worksheet.getColumn(10).width = 17.5; // J: សេចក្តីផ្សេងៗ
+            worksheet.getColumn(10).width = 18.5; // J: សេចក្តីផ្សេងៗ
 
-            // ៥. កំណត់ការបោះពុម្ពឱ្យចំកណ្តាលក្រដាស A4 ស្មើគែមសងខាង (Center Horizontally)
+            // ៤.១. លៃកម្ពស់ជួរដេក (Rows Height) ដើម្បីបំបាត់ Space សល់ច្រើនខាងក្រោម
+            if (worksheet.getRow(9)) worksheet.getRow(9).height = 28;
+            if (worksheet.getRow(10)) worksheet.getRow(10).height = 26;
+
+            for (let r = 11; r <= 27; r++) {
+                const row = worksheet.getRow(r);
+                if (r === 11 || r === 16 || r === 22) {
+                    row.height = 28; // ក្បាលក្រុមនីមួយៗ
+                } else {
+                    row.height = 25; // ជួរឈ្មោះនីមួយៗ (ពង្រីកឱ្យធំទូលាយសមរម្យ)
+                }
+            }
+
+            // ៥. កំណត់ការបោះពុម្ពឱ្យចំកណ្តាលក្រដាស A4 ស្មើគែមសងខាង
             worksheet.pageSetup = {
                 orientation: 'portrait',
                 paperSize: 9, // A4
                 fitToPage: true,
                 fitToWidth: 1,
                 fitToHeight: 1,
-                horizontalCentered: true, // តម្រឹមកណ្តាលក្រដាស លែងសល់គែមស្តាំធំ
+                horizontalCentered: true,
                 margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 }
             };
 
@@ -526,7 +538,7 @@
                 cellA8.value = `តារាងវេន ប្រចាំបញ្ជា ប្រចាំការ និងប្រចាំថ្ងៃ ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
             }
 
-            // ៩. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង (Row 11-15, 17-21, 23-27)
+            // ៩. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង
             const rowMap = [
                 [11, 12, 13, 14, 15], // ក្រុមទី ១
                 [17, 18, 19, 20, 21], // ក្រុមទី ២
@@ -538,7 +550,8 @@
                     const targetRow = rowMap[gi][ni];
                     
                     // បំពេញឈ្មោះចូល Column B
-                    worksheet.getCell(`B${targetRow}`).value = name;
+                    const cellName = worksheet.getCell(`B${targetRow}`);
+                    cellName.value = name;
 
                     // ស្វែងរកថ្ងៃយាមរបស់ឈ្មោះនេះក្នុង dutyData
                     let days = dutyData[name];
