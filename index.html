@@ -25,7 +25,7 @@
         .input-group { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
         input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; flex: 1; font-family: inherit; font-size: 16px; min-width: 140px; }
         
-        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; justify-content: center; }
+        .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 5px; justify-content: center; }
         .tag { background: white; padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
         #displayBox { font-size: 2.2rem; font-weight: 800; color: var(--primary); min-height: 60px; margin-bottom: 10px; background: #fff; border: 2.5px dashed var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
@@ -71,15 +71,15 @@
             background-color: #fff59d !important;
             color: #d84315 !important;
             font-weight: 700 !important;
-            animation: pulse 0.2s infinite alternate;
+            animation: pulse 0.15s infinite alternate;
         }
         @keyframes pulse {
             from { transform: scale(1); }
-            to { transform: scale(1.06); }
+            to { transform: scale(1.05); }
         }
 
         /* Buttons Control */
-        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; justify-content: center; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; justify-content: center; }
         .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-family: inherit; font-size: 15px; text-transform: uppercase; width: 48%; }
         .btn-img { background: #f39c12; color: white; }
         .btn-excel { background: #2e7d32; color: white; }
@@ -110,12 +110,14 @@
 </div>
 
 <div class="container" id="mainApp">
+    <!-- ១. Header កាលបរិច្ឆេទ -->
     <div class="calendar-header">
         <button onclick="changeMonth(-1)" style="background:none; border:1px solid white; color:white; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">◀</button>
         <h2 id="monthTitle">---</h2>
         <button onclick="changeMonth(1)" style="background:none; border:1px solid white; color:white; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">▶</button>
     </div>
 
+    <!-- ២. ផ្នែកគ្រប់គ្រងឈ្មោះសមាជិក (Admin Section) -->
     <div id="adminPanel" class="manage-box" style="display:none;">
         <div class="input-group">
             <input type="text" id="nameIn" placeholder="បញ្ចូលឈ្មោះថ្មី...">
@@ -127,12 +129,9 @@
             <button class="btn btn-add" onclick="addM()">+ បន្ថែម</button>
         </div>
         <div id="tagBox" class="tag-list"></div>
-        <hr style="border:none; border-top:1px dashed #ccc; margin:12px 0;">
-        <div id="displayBox">READY</div>
-        <button id="startBtn" class="btn btn-start" onclick="startAuto()">🎲 ចាប់ផ្ដើមរៀបចំ (START)</button>
-        <button class="btn" style="background:#78909c; color:white; width:100%; margin-top:5px;" onclick="resetData()">♻️ RESET ទិន្នន័យខែនេះ</button>
     </div>
 
+    <!-- ៣. ប៊ូតុងទាញយក និងចាកចេញ -->
     <div class="btn-group">
         <button class="btn btn-img" onclick="exportToImage()">🖼️ DOWNLOAD IMAGE</button>
         <button id="excelBtn" class="btn btn-excel" style="display:none;" onclick="exportToExcel()">📊 DOWNLOAD EXCEL</button>
@@ -140,6 +139,14 @@
         <button class="btn" style="background:#444; color:white; width:100%" onclick="location.reload()">🔄 REFRESH SYSTEM</button>
     </div>
 
+    <!-- ៤. ផ្នែកឈ្មោះរត់ផ្សងសំណាង និងប៊ូតុង START / RESET (នៅពីលើតារាងឈ្មោះ) -->
+    <div id="lotteryControl" class="manage-box" style="display:none; margin-bottom: 12px;">
+        <div id="displayBox">READY</div>
+        <button id="startBtn" class="btn btn-start" onclick="startAuto()">🎲 ចាប់ផ្ដើមរៀបចំ (START)</button>
+        <button class="btn" style="background:#78909c; color:white; width:100%; margin-top:5px;" onclick="resetData()">♻️ RESET ទិន្នន័យខែនេះ</button>
+    </div>
+
+    <!-- ៥. តារាងឈ្មោះ និងកាលវិភាគ -->
     <div class="table-responsive" id="captureArea" style="background: #fff;">
         <table id="dutyTable">
             <thead>
@@ -164,6 +171,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // បញ្ជីឈ្មោះថ្មីដែលបានកែសម្រួលរួចរាល់
     let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v2')) || [
         ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហែន", "អ៊ុន-ដារ៉េត"],
@@ -215,9 +223,11 @@
         document.getElementById('mainApp').style.display = 'block';
         if (role === 'ADMIN') {
             document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('lotteryControl').style.display = 'block';
             document.getElementById('excelBtn').style.display = 'inline-block';
         } else {
             document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('lotteryControl').style.display = 'none';
             document.getElementById('excelBtn').style.display = 'none';
         }
         loadData();
@@ -301,7 +311,6 @@
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1} (${titles[gi]})</td></tr>`;
             g.forEach((n, ni) => {
                 const days = data[n] || ["","","","","","",""];
-                // ដាក់ data-name និង data-cell index ដើម្បីងាយស្រួល Update ម្ដងមួយក្រឡោនពេល Random
                 let cellsHtml = days.map((d, cIndex) => 
                     `<td id="cell_${encodeURIComponent(n)}_${cIndex}" class="${d ? 'filled' : ''}">${d}</td>`
                 ).join('');
@@ -318,7 +327,7 @@
         });
     }
 
-/* មុខងារ Random បែបស្លុតលឿនរហ័ស (Fast Staggered Slot Machine) */
+    /* មុខងារ Random បែបស្លុតលឿនរហ័ស (Fast Staggered Slot Machine) */
     async function startAuto() {
         const btn = document.getElementById('startBtn');
         btn.disabled = true;
@@ -330,7 +339,7 @@
         const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
 
         for(let item of spinList) {
-            // ១. វិលឈ្មោះយ៉ាងលឿនក្នុងប្រអប់ធំ (ចំណាយពេលត្រឹមតែ 120ms)
+            // ១. វិលឈ្មោះក្នុង Display Box លឿនរហ័ស
             for(let t = 0; t < 3; t++) {
                 document.getElementById('displayBox').innerText = flat[Math.floor(Math.random()*flat.length)].n;
                 await new Promise(r => setTimeout(r, 40));
@@ -347,7 +356,7 @@
                 days[c] = d.toString().padStart(2, '0');
             }
 
-            // ៣. បែបផែនផ្សងសំណាង (វិលគ្រប់ក្រឡោនព្រមគ្នា ហើយឈប់បន្តបន្ទាប់គ្នាពីឆ្វេងទៅស្តាំយ៉ាងរហ័ស)
+            // ៣. រត់ផ្សងសំណាងក្នុងក្រឡោន
             let validCols = [];
             for(let c = 0; c < 7; c++) {
                 const el = document.getElementById(`cell_${encodeURIComponent(item.n)}_${c}`);
@@ -360,7 +369,6 @@
                 }
             }
 
-            // ឱ្យក្រឡោនទាំងអស់រត់វិលកន្ត្រាក់លេខចៃដន្យ 2 ដងលឿនៗ
             for(let spin = 0; spin < 2; spin++) {
                 validCols.forEach(col => {
                     col.el.innerText = (Math.floor(Math.random() * total) + 1).toString().padStart(2, '0');
@@ -368,15 +376,13 @@
                 await new Promise(r => setTimeout(r, 35));
             }
 
-            // កន្ត្រាក់ឈប់ម្ដងមួយក្រឡោនពីឆ្វេងទៅស្ដាំ (Staggered Stop)
             for(let col of validCols) {
                 col.el.innerText = col.target;
                 col.el.classList.remove('slot-spinning');
                 col.el.classList.add('filled');
-                await new Promise(r => setTimeout(r, 40)); // ចន្លោះពេលឈប់នីមួយៗត្រឹមតែ 40ms លឿនហើយស្អាត
+                await new Promise(r => setTimeout(r, 40));
             }
 
-            // រក្សាទុកចូល Firebase
             db.ref(getMonthKey()).update({[item.n]: days});
             await new Promise(r => setTimeout(r, 60)); 
         }
@@ -412,10 +418,4 @@
             editBtns.forEach(el => el.style.display = 'inline');
             const link = document.createElement('a');
             link.download = `Duty_${document.getElementById('monthTitle').innerText}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-        });
-    }
-</script>
-</body>
-</html>
+            link.
