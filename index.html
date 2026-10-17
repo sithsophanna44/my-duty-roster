@@ -186,7 +186,7 @@
     const db = firebase.database();
 
     // បញ្ជីឈ្មោះថ្មីទាំង ១៥ នាក់
-    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v4')) || [
+    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v5')) || [
         ["សោម-ទិ", "អ៊ុយ-សុពល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិរៈ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហេន", "អ៊ុន-ដាវ៉េត"],
         ["ស្ងួន-ពៅ", "អ៊ុំ-រិទ្ធី", "នឿន-វណ្ណេត", "ថំ-ធឿង", "សិដ្ឋ-សុផាន់ណា"]
@@ -303,7 +303,7 @@
                 ` : ''}
             </div>`;
         }));
-        localStorage.setItem('m_list_final_v4', JSON.stringify(membersGroups));
+        localStorage.setItem('m_list_final_v5', JSON.stringify(membersGroups));
     }
 
     function addM() {
@@ -330,7 +330,7 @@
                 }
             });
             membersGroups[gi][ni] = trimmedName;
-            localStorage.setItem('m_list_final_v4', JSON.stringify(membersGroups));
+            localStorage.setItem('m_list_final_v5', JSON.stringify(membersGroups));
             loadData();
         }
     }
@@ -458,7 +458,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL (ExcelJS): កែសម្រួលលែងស៊ីគែម និងបំពេញគ្រប់ ១៥នាក់ ១០០%
+       មុខងារ EXCEL (ExcelJS): ពង្រីកឈ្មោះ និងតម្រឹមកណ្តាលក្រដាស A4 ស្មើស្អាត
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -483,45 +483,50 @@
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
 
-            // ៤. កែសម្រួលទទឹងជួរឈរ C ដល់ I កុំឱ្យធំពេក (បង្រួញមក 5.5) ដើម្បីកុំឱ្យស៊ីគែម
+            // ៤. លៃសមាមាត្រទទឹងជួរឈរឱ្យស្អាតសមល្មមក្រដាស A4
+            worksheet.getColumn(1).width = 4.0;   // A: ល.រ
+            worksheet.getColumn(2).width = 16.5;  // B: ឈ្មោះ (ធំទូលាយ មិនកៀកឈ្មោះ សិដ្ឋ សុផាន់ណា)
             for (let col = 3; col <= 9; col++) {
-                worksheet.getColumn(col).width = 5.5;
+                worksheet.getColumn(col).width = 6.5; // C ដល់ I: ថ្ងៃយាម (ធំល្មមស្អាត)
             }
-            // កំណត់ការបោះពុម្ពឱ្យ Fit ស្អាតក្នុង ១ទំព័រ A4
+            worksheet.getColumn(10).width = 17.5; // J: សេចក្តីផ្សេងៗ
+
+            // ៥. កំណត់ការបោះពុម្ពឱ្យចំកណ្តាលក្រដាស A4 ស្មើគែមសងខាង (Center Horizontally)
             worksheet.pageSetup = {
                 orientation: 'portrait',
                 paperSize: 9, // A4
                 fitToPage: true,
                 fitToWidth: 1,
                 fitToHeight: 1,
-                margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 }
+                horizontalCentered: true, // តម្រឹមកណ្តាលក្រដាស លែងសល់គែមស្តាំធំ
+                margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 }
             };
 
             const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             const currentMonthName = months[currentDate.getMonth()];
             const khmerYear = toKhmerNum(currentDate.getFullYear());
 
-            // ៥. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
+            // ៦. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
             const lunarInput = document.getElementById('lunarDateInput');
             if (lunarInput && lunarInput.value.trim() !== "") {
                 const cellD5 = worksheet.getCell('D5');
                 if (cellD5) cellD5.value = lunarInput.value.trim();
             }
 
-            // ៦. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
+            // ៧. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
             const solarInput = document.getElementById('solarDateInput');
             const cellD6 = worksheet.getCell('D6');
             if (cellD6 && solarInput && solarInput.value.trim() !== "") {
                 cellD6.value = solarInput.value.trim();
             }
 
-            // ៧. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
+            // ៨. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
             const cellA8 = worksheet.getCell('A8');
             if (cellA8) {
                 cellA8.value = `តារាងវេន ប្រចាំបញ្ជា ប្រចាំការ និងប្រចាំថ្ងៃ ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
             }
 
-            // ៨. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង (Row 11-15, 17-21, 23-27)
+            // ៩. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង (Row 11-15, 17-21, 23-27)
             const rowMap = [
                 [11, 12, 13, 14, 15], // ក្រុមទី ១
                 [17, 18, 19, 20, 21], // ក្រុមទី ២
@@ -532,10 +537,10 @@
                 group.forEach((name, ni) => {
                     const targetRow = rowMap[gi][ni];
                     
-                    // កែសម្រួលឈ្មោះក្នុង Column B ឱ្យត្រឹមត្រូវ ១០០%
+                    // បំពេញឈ្មោះចូល Column B
                     worksheet.getCell(`B${targetRow}`).value = name;
 
-                    // ស្វែងរកថ្ងៃយាមរបស់ឈ្មោះនេះក្នុងទិន្នន័យ dutyData
+                    // ស្វែងរកថ្ងៃយាមរបស់ឈ្មោះនេះក្នុង dutyData
                     let days = dutyData[name];
                     if (!days) {
                         for (let key in dutyData) {
@@ -547,7 +552,7 @@
                     }
                     days = days || [];
 
-                    // បំពេញលេខថ្ងៃយាមចូល Column C ដល់ I (Cols 3 ដល់ 9)
+                    // បំពេញលេខថ្ងៃយាមចូល Column C ដល់ I
                     for (let c = 0; c < 7; c++) {
                         const targetCell = worksheet.getRow(targetRow).getCell(3 + c);
                         targetCell.value = days[c] || "";
@@ -555,7 +560,7 @@
                 });
             });
 
-            // ៩. ទាញយកឯកសារ Excel ចេញមកក្រៅ
+            // ១០. ទាញយកឯកសារ Excel
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             const fileName = `Duty_${document.getElementById('monthTitle').innerText}.xlsx`;
