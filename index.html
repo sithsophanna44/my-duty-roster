@@ -8,7 +8,6 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <!-- ប្រើ ExcelJS និង FileSaver ដើម្បីរក្សា Logo, Border, និងទម្រង់ A4 ឱ្យនៅដដែល ១០០% -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -186,8 +185,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // បញ្ជីឈ្មោះថ្មីទាំង ១៥ នាក់ស្របតាម Template Excel ថ្មី
-    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v3')) || [
+    // បញ្ជីឈ្មោះថ្មីទាំង ១៥ នាក់
+    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v4')) || [
         ["សោម-ទិ", "អ៊ុយ-សុពល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
         ["ជូ-ច័ន្ទថុល", "វិរៈ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហេន", "អ៊ុន-ដាវ៉េត"],
         ["ស្ងួន-ពៅ", "អ៊ុំ-រិទ្ធី", "នឿន-វណ្ណេត", "ថំ-ធឿង", "សិដ្ឋ-សុផាន់ណា"]
@@ -199,7 +198,6 @@
         return num.toString().replace(/[0-9]/g, n => khmerNums[n]);
     }
 
-    // មុខងារសម្អាតឈ្មោះ និងបត់បែនផ្គូផ្គងឆ្លាតវៃ
     function normalizeKhmerName(name) {
         if (!name) return '';
         let s = name.toString().replace(/[-\s]/g, '').trim();
@@ -208,6 +206,7 @@
         if (s === 'ហែមហែន' || s === 'ហែមហេន') return 'ហែមហេន';
         if (s === 'អ៊ុនដារ៉េត' || s === 'អ៊ុនដាវ៉េត') return 'អ៊ុនដាវ៉េត';
         if (s === 'អ៊ុយសុផល' || s === 'អ៊ុយសុពល') return 'អ៊ុយសុពល';
+        if (s === 'ថំថឿង' || s === 'ថំធឿង') return 'ថំធឿង';
         return s;
     }
 
@@ -304,7 +303,7 @@
                 ` : ''}
             </div>`;
         }));
-        localStorage.setItem('m_list_final_v3', JSON.stringify(membersGroups));
+        localStorage.setItem('m_list_final_v4', JSON.stringify(membersGroups));
     }
 
     function addM() {
@@ -331,7 +330,7 @@
                 }
             });
             membersGroups[gi][ni] = trimmedName;
-            localStorage.setItem('m_list_final_v3', JSON.stringify(membersGroups));
+            localStorage.setItem('m_list_final_v4', JSON.stringify(membersGroups));
             loadData();
         }
     }
@@ -459,7 +458,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL (ExcelJS): សម្រួលឱ្យស៊ីគ្នាជាមួយ Template ថ្មី ១០០%
+       មុខងារ EXCEL (ExcelJS): កែសម្រួលលែងស៊ីគែម និងបំពេញគ្រប់ ១៥នាក់ ១០០%
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -484,51 +483,79 @@
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
 
+            // ៤. កែសម្រួលទទឹងជួរឈរ C ដល់ I កុំឱ្យធំពេក (បង្រួញមក 5.5) ដើម្បីកុំឱ្យស៊ីគែម
+            for (let col = 3; col <= 9; col++) {
+                worksheet.getColumn(col).width = 5.5;
+            }
+            // កំណត់ការបោះពុម្ពឱ្យ Fit ស្អាតក្នុង ១ទំព័រ A4
+            worksheet.pageSetup = {
+                orientation: 'portrait',
+                paperSize: 9, // A4
+                fitToPage: true,
+                fitToWidth: 1,
+                fitToHeight: 1,
+                margins: { left: 0.4, right: 0.4, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 }
+            };
+
             const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             const currentMonthName = months[currentDate.getMonth()];
             const khmerYear = toKhmerNum(currentDate.getFullYear());
 
-            // ៤. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
+            // ៥. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
             const lunarInput = document.getElementById('lunarDateInput');
             if (lunarInput && lunarInput.value.trim() !== "") {
                 const cellD5 = worksheet.getCell('D5');
                 if (cellD5) cellD5.value = lunarInput.value.trim();
             }
 
-            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
+            // ៦. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
             const solarInput = document.getElementById('solarDateInput');
             const cellD6 = worksheet.getCell('D6');
             if (cellD6 && solarInput && solarInput.value.trim() !== "") {
                 cellD6.value = solarInput.value.trim();
             }
 
-            // ៦. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
+            // ៧. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
             const cellA8 = worksheet.getCell('A8');
             if (cellA8) {
                 cellA8.value = `តារាងវេន ប្រចាំបញ្ជា ប្រចាំការ និងប្រចាំថ្ងៃ ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
             }
 
-            // ៧. ដើររកឈ្មោះនៅ Column B (Rows 11 ដល់ 28) រួចបំពេញលេខថ្ងៃយាមចូល Column C ដល់ I
-            for (let r = 11; r <= 28; r++) {
-                const nameCell = worksheet.getCell(`B${r}`);
-                if (nameCell && nameCell.value) {
-                    const excelNameClean = normalizeKhmerName(nameCell.value);
+            // ៨. បំពេញឈ្មោះ និងថ្ងៃយាមតាមជួរដេកជាក់ស្តែង (Row 11-15, 17-21, 23-27)
+            const rowMap = [
+                [11, 12, 13, 14, 15], // ក្រុមទី ១
+                [17, 18, 19, 20, 21], // ក្រុមទី ២
+                [23, 24, 25, 26, 27]  // ក្រុមទី ៣
+            ];
 
-                    for (let memberName in dutyData) {
-                        if (normalizeKhmerName(memberName) === excelNameClean) {
-                            const days = dutyData[memberName] || [];
-                            // Column 3 = C, 4 = D, 5 = E, 6 = F, 7 = G, 8 = H, 9 = I
-                            for (let c = 0; c < 7; c++) {
-                                const targetCell = worksheet.getRow(r).getCell(3 + c);
-                                targetCell.value = days[c] || "";
+            membersGroups.forEach((group, gi) => {
+                group.forEach((name, ni) => {
+                    const targetRow = rowMap[gi][ni];
+                    
+                    // កែសម្រួលឈ្មោះក្នុង Column B ឱ្យត្រឹមត្រូវ ១០០%
+                    worksheet.getCell(`B${targetRow}`).value = name;
+
+                    // ស្វែងរកថ្ងៃយាមរបស់ឈ្មោះនេះក្នុងទិន្នន័យ dutyData
+                    let days = dutyData[name];
+                    if (!days) {
+                        for (let key in dutyData) {
+                            if (normalizeKhmerName(key) === normalizeKhmerName(name)) {
+                                days = dutyData[key];
+                                break;
                             }
-                            break;
                         }
                     }
-                }
-            }
+                    days = days || [];
 
-            // ៨. ទាញយកឯកសារ Excel ចេញមកក្រៅ
+                    // បំពេញលេខថ្ងៃយាមចូល Column C ដល់ I (Cols 3 ដល់ 9)
+                    for (let c = 0; c < 7; c++) {
+                        const targetCell = worksheet.getRow(targetRow).getCell(3 + c);
+                        targetCell.value = days[c] || "";
+                    }
+                });
+            });
+
+            // ៩. ទាញយកឯកសារ Excel ចេញមកក្រៅ
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             const fileName = `Duty_${document.getElementById('monthTitle').innerText}.xlsx`;
