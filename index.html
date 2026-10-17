@@ -418,4 +418,10 @@
             editBtns.forEach(el => el.style.display = 'inline');
             const link = document.createElement('a');
             link.download = `Duty_${document.getElementById('monthTitle').innerText}.png`;
-            link.
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>
