@@ -186,11 +186,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // បញ្ជីឈ្មោះស្របតាម Template Excel ជាក់ស្តែង
-    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v2')) || [
-        ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
-        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ហែម ហែន", "អ៊ុន-ដារ៉េត"],
-        ["ស្ងួន-ពៅ", "សិដ្ឋ-សុផាន់ណា", "នឿន-វណ្ណេត", "អ៊ុំ-រិទ្ធី", "ថំ-ថឿង"]
+    // បញ្ជីឈ្មោះថ្មីទាំង ១៥ នាក់ស្របតាម Template Excel ថ្មី
+    let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v3')) || [
+        ["សោម-ទិ", "អ៊ុយ-សុពល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
+        ["ជូ-ច័ន្ទថុល", "វិរៈ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហេន", "អ៊ុន-ដាវ៉េត"],
+        ["ស្ងួន-ពៅ", "អ៊ុំ-រិទ្ធី", "នឿន-វណ្ណេត", "ថំ-ធឿង", "សិដ្ឋ-សុផាន់ណា"]
     ];
     let currentDate = new Date();
 
@@ -199,12 +199,15 @@
         return num.toString().replace(/[0-9]/g, n => khmerNums[n]);
     }
 
-    // មុខងារសម្អាតឈ្មោះ និងបត់បែនរកឈ្មោះដូចគ្នា (Alias Normalizer)
+    // មុខងារសម្អាតឈ្មោះ និងបត់បែនផ្គូផ្គងឆ្លាតវៃ
     function normalizeKhmerName(name) {
         if (!name) return '';
         let s = name.toString().replace(/[-\s]/g, '').trim();
-        // បើឈ្មោះ សួនពៅ ឬ ស្ងួនពៅ គឺចាត់ទុកថាជាមនុស្សតែមួយ
         if (s === 'សួនពៅ' || s === 'ស្ងួនពៅ') return 'ស្ងួនពៅ';
+        if (s === 'វិះអរុណ' || s === 'វិរៈអរុណ') return 'វិរៈអរុណ';
+        if (s === 'ហែមហែន' || s === 'ហែមហេន') return 'ហែមហេន';
+        if (s === 'អ៊ុនដារ៉េត' || s === 'អ៊ុនដាវ៉េត') return 'អ៊ុនដាវ៉េត';
+        if (s === 'អ៊ុយសុផល' || s === 'អ៊ុយសុពល') return 'អ៊ុយសុពល';
         return s;
     }
 
@@ -275,7 +278,6 @@
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
         
-        // កំណត់ថ្ងៃទីសូរិយគតិ Auto តាមថ្ងៃបច្ចុប្បន្ន (ឧ. ធ្វើនៅសៀមរាប ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦)
         const solarInput = document.getElementById('solarDateInput');
         if (solarInput && !solarInput.value) {
             const today = new Date();
@@ -302,7 +304,7 @@
                 ` : ''}
             </div>`;
         }));
-        localStorage.setItem('m_list_final_v2', JSON.stringify(membersGroups));
+        localStorage.setItem('m_list_final_v3', JSON.stringify(membersGroups));
     }
 
     function addM() {
@@ -329,7 +331,7 @@
                 }
             });
             membersGroups[gi][ni] = trimmedName;
-            localStorage.setItem('m_list_final_v2', JSON.stringify(membersGroups));
+            localStorage.setItem('m_list_final_v3', JSON.stringify(membersGroups));
             loadData();
         }
     }
@@ -350,7 +352,6 @@
         membersGroups.forEach((g, gi) => {
             tbody.innerHTML += `<tr><td colspan="9" class="group-header">ក្រុមទី ${gi+1} (${titles[gi]})</td></tr>`;
             g.forEach((n, ni) => {
-                // ស្វែងរកទិន្នន័យថ្ងៃយាមដោយឆ្លាតវៃ ទោះជា សួន-ពៅ ឬ ស្ងួន-ពៅ
                 let days = data[n];
                 if (!days) {
                     for (let key in data) {
@@ -441,7 +442,6 @@
 
     function changeMonth(s) {
         currentDate.setMonth(currentDate.getMonth()+s);
-        // Update ថ្ងៃខែសូរិយគតិពេលប្តូរខែ
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         const solarInput = document.getElementById('solarDateInput');
         if (solarInput) {
@@ -459,7 +459,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL (ExcelJS): បំពេញគ្រប់ទិន្នន័យ និងកាលបរិច្ឆេទពេញលេញ ១០០%
+       មុខងារ EXCEL (ExcelJS): សម្រួលឱ្យស៊ីគ្នាជាមួយ Template ថ្មី ១០០%
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -484,6 +484,10 @@
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
 
+            const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            const currentMonthName = months[currentDate.getMonth()];
+            const khmerYear = toKhmerNum(currentDate.getFullYear());
+
             // ៤. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
             const lunarInput = document.getElementById('lunarDateInput');
             if (lunarInput && lunarInput.value.trim() !== "") {
@@ -491,15 +495,21 @@
                 if (cellD5) cellD5.value = lunarInput.value.trim();
             }
 
-            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6 (មានទាំងថ្ងៃទី ខែ និងឆ្នាំ ពេញលេញ)
+            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
             const solarInput = document.getElementById('solarDateInput');
             const cellD6 = worksheet.getCell('D6');
             if (cellD6 && solarInput && solarInput.value.trim() !== "") {
                 cellD6.value = solarInput.value.trim();
             }
 
-            // ៦. ដើររកឈ្មោះនៅ Column B រួចបំពេញលេខថ្ងៃយាមចូល Column C ដល់ I
-            for (let r = 10; r <= 26; r++) {
+            // ៦. ធ្វើបច្ចុប្បន្នភាពចំណងជើងតារាងត្រង់ A8
+            const cellA8 = worksheet.getCell('A8');
+            if (cellA8) {
+                cellA8.value = `តារាងវេន ប្រចាំបញ្ជា ប្រចាំការ និងប្រចាំថ្ងៃ ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
+            }
+
+            // ៧. ដើររកឈ្មោះនៅ Column B (Rows 11 ដល់ 28) រួចបំពេញលេខថ្ងៃយាមចូល Column C ដល់ I
+            for (let r = 11; r <= 28; r++) {
                 const nameCell = worksheet.getCell(`B${r}`);
                 if (nameCell && nameCell.value) {
                     const excelNameClean = normalizeKhmerName(nameCell.value);
@@ -518,7 +528,7 @@
                 }
             }
 
-            // ៧. ទាញយកឯកសារ Excel ចេញមកក្រៅ
+            // ៨. ទាញយកឯកសារ Excel ចេញមកក្រៅ
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
             const fileName = `Duty_${document.getElementById('monthTitle').innerText}.xlsx`;
