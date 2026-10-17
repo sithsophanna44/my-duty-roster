@@ -166,8 +166,8 @@
 
     let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v2')) || [
         ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
-        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ឃឹម-លុច", "អ៊ុន-ដារ៉េត"],
-        ["សួន-ពៅ", "ហែម-ហាន", "នឿន-វណ្ណេត", "អ៊ុំ-វិច្ឆិ", "អ៊ុន-មករា"]
+        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហែន", "អ៊ុន-ដារ៉េត"],
+        ["សួន-ពៅ", "សិដ្ឋ-សុផាន់ណា", "នឿន-វណ្ណេត", "អ៊ុំ-រិទ្ធី", "ថំ-ធឿង"]
     ];
     let currentDate = new Date();
 
@@ -351,4 +351,73 @@
             }
 
             // ជំហានទី ២៖ រត់វិលលេខកន្ត្រាក់ៗ ម្ដងមួយក្រឡោន (Cell by Cell Lucky Draw)
-            for(
+            for(let c = 0; c < 7; c++) {
+                const targetDay = days[c];
+                const cellElement = document.getElementById(`cell_${encodeURIComponent(item.n)}_${c}`);
+                
+                if (targetDay !== "") {
+                    if (cellElement) {
+                        cellElement.classList.add('slot-spinning');
+                        // វិលលេខចៃដន្យក្នុងក្រឡោននេះ ៤ ទៅ ៥ ដង
+                        for(let step = 0; step < 5; step++) {
+                            const randomFakeNum = (Math.floor(Math.random() * total) + 1).toString().padStart(2, '0');
+                            cellElement.innerText = randomFakeNum;
+                            await new Promise(r => setTimeout(r, 45));
+                        }
+                        // ឈប់លើលេខជាក់លាក់ពិតប្រាកដ
+                        cellElement.innerText = targetDay;
+                        cellElement.classList.remove('slot-spinning');
+                        cellElement.classList.add('filled');
+                    }
+                    await new Promise(r => setTimeout(r, 120)); // រង់ចាំបន្តិចមុនរត់ទៅក្រឡោនបន្ទាប់
+                } else {
+                    if (cellElement) {
+                        cellElement.innerText = "";
+                        cellElement.classList.remove('filled', 'slot-spinning');
+                    }
+                }
+            }
+
+            // រក្សាទុកចូល Firebase សម្រាប់សមាជិកនោះ
+            await db.ref(getMonthKey()).update({[item.n]: days});
+            await new Promise(r => setTimeout(r, 200));
+        }
+
+        document.getElementById('displayBox').innerText = "🎉 ចាប់ឆ្នោតរួចរាល់ ✨";
+        btn.disabled = false;
+    }
+
+    function changeMonth(s) {
+        currentDate.setMonth(currentDate.getMonth()+s);
+        loadData();
+    }
+
+    function resetData() {
+        if(confirm("តើអ្នកពិតជាចង់លុបទិន្នន័យខែនេះទាំងអស់ឡើងវិញមែនទេ?")) {
+            db.ref(getMonthKey()).remove();
+        }
+    }
+
+    function exportToExcel() {
+        XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_${document.getElementById('monthTitle').innerText}.xlsx`);
+    }
+
+    function exportToImage() {
+        const area = document.getElementById("captureArea");
+        area.classList.add('capture-padding');
+        
+        const editBtns = document.querySelectorAll('.btn-action-edit');
+        editBtns.forEach(el => el.style.display = 'none');
+
+        html2canvas(area, { scale: 3, backgroundColor: "#ffffff" }).then(canvas => {
+            area.classList.remove('capture-padding');
+            editBtns.forEach(el => el.style.display = 'inline');
+            const link = document.createElement('a');
+            link.download = `Duty_${document.getElementById('monthTitle').innerText}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>
