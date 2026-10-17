@@ -10,6 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- បណ្ណាល័យគណនាប្រតិទិនចន្ទគតិខ្មែរស្វ័យប្រវត្តិ -->
+    <script src="https://cdn.jsdelivr.net/gh/ThyrithSor/momentkh@3.0.3/momentkh.js"></script>
 
     <style>
         :root { --primary: #004d40; --accent: #ff6f00; --bg: #eceff1; }
@@ -129,6 +131,12 @@
             <button class="btn btn-add" onclick="addM()">+ បន្ថែម</button>
         </div>
         <div id="tagBox" class="tag-list"></div>
+        <hr style="border:none; border-top:1px dashed #c8e6c9; margin:12px 0;">
+        <!-- ប្រអប់កាលបរិច្ឆេទចន្ទគតិ Auto (Admin អាចកែសម្រួលបានប្រសិនបើចង់) -->
+        <div style="text-align: left; font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 4px;">
+            🗓️ កាលបរិច្ឆេទចន្ទគតិខ្មែរ (សម្រាប់ Excel):
+        </div>
+        <input type="text" id="lunarDateInput" style="width: 100%; box-sizing: border-box; font-weight: bold; color: #333;" placeholder="កំពុងគណនាកាលបរិច្ឆេទខ្មែរ...">
     </div>
 
     <!-- ៣. ប៊ូតុងទាញយក និងចាកចេញ -->
@@ -171,13 +179,35 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // បញ្ជីឈ្មោះថ្មីដែលបានកែសម្រួលរួចរាល់
+    // បញ្ជីឈ្មោះថ្មីស្របតាម Template Excel
     let membersGroups = JSON.parse(localStorage.getItem('m_list_final_v2')) || [
         ["សោម-ទិ", "អ៊ុយ-សុផល", "ស្វាយ-ប៊ុននី", "ទិត-សិទ្ធា", "សៀង-ប៉ាច"],
-        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ហែម-ហែន", "អ៊ុន-ដារ៉េត"],
-        ["សួន-ពៅ", "សិដ្ឋ-សុផាន់ណា", "នឿន-វណ្ណេត", "អ៊ុំ-រិទ្ធី", "ថំ-ធឿង"]
+        ["ជូ-ច័ន្ទថុល", "វិះ-អរុណ", "គឹម-សែនសេរី", "ហែម ហែន", "អ៊ុន-ដារ៉េត"],
+        ["ស្ងួន-ពៅ", "សិដ្ឋ-សុផាន់ណា", "នឿន-វណ្ណេត", "អ៊ុំ-រិទ្ធី", "ថំ-ថឿង"]
     ];
     let currentDate = new Date();
+
+    /* អនុគមន៍បំលែងលេខអារ៉ាប់ទៅលេខខ្មែរ */
+    function toKhmerNum(num) {
+        const khmerNums = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+        return num.toString().replace(/[0-9]/g, n => khmerNums[n]);
+    }
+
+    /* អនុគមន៍គណនាកាលបរិច្ឆេទចន្ទគតិខ្មែរស្វ័យប្រវត្តិ */
+    function getAutoKhmerLunarDate(targetDate) {
+        try {
+            if (typeof momentkh !== 'undefined') {
+                const kh = momentkh.fromDate(targetDate);
+                // ទម្រង់: ថ្ងៃ{weekday} {day}{moonPhase} ខែ{month} ឆ្នាំ{animalYear} {sak} ព.ស. {beYear}
+                return momentkh.format(kh, "ថ្ងៃ{weekday} {day}{moonPhase} ខែ{month} ឆ្នាំ{animalYear} {sak} ព.ស. {beYear}");
+            }
+        } catch (e) {
+            console.warn("MomentKH Calculation error, using default pattern", e);
+        }
+        // Fallback ប្រសិនបើបណ្ណាល័យអត់ដំណើរការ
+        const beYear = toKhmerNum(targetDate.getFullYear() + 544);
+        return `ថ្ងៃ...................ខែ..............ឆ្នាំមមី អដ្ឋស័ក ព.ស. ${beYear}`;
+    }
 
     window.onload = () => {
         const pInput = document.getElementById('password');
@@ -245,6 +275,13 @@
     function loadData() {
         const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
         document.getElementById('monthTitle').innerText = months[currentDate.getMonth()] + " " + currentDate.getFullYear();
+        
+        // គណនាកាលបរិច្ឆេទចន្ទគតិខ្មែរដាក់ចូល Input
+        const lunarInput = document.getElementById('lunarDateInput');
+        if (lunarInput) {
+            lunarInput.value = getAutoKhmerLunarDate(new Date());
+        }
+
         renderTags();
         db.ref(getMonthKey()).on('value', snap => renderTable(snap.val() || {}));
     }
@@ -327,7 +364,7 @@
         });
     }
 
-    /* មុខងារ Random បែបស្លុតលឿនរហ័ស (Fast Staggered Slot Machine) */
+    /* មុខងារ Random បែបស្លុតលឿនរហ័ស */
     async function startAuto() {
         const btn = document.getElementById('startBtn');
         btn.disabled = true;
@@ -339,14 +376,12 @@
         const total = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 0).getDate();
 
         for(let item of spinList) {
-            // ១. វិលឈ្មោះក្នុង Display Box លឿនរហ័ស
             for(let t = 0; t < 3; t++) {
                 document.getElementById('displayBox').innerText = flat[Math.floor(Math.random()*flat.length)].n;
                 await new Promise(r => setTimeout(r, 40));
             }
             document.getElementById('displayBox').innerText = "👉 " + item.n;
 
-            // ២. គណនាថ្ងៃយាម
             let sDay = Math.floor(Math.random()*5)+1;
             while(groupUsed['g'+item.gi].includes(sDay)) sDay = (sDay%5)+1;
             groupUsed['g'+item.gi].push(sDay);
@@ -356,7 +391,6 @@
                 days[c] = d.toString().padStart(2, '0');
             }
 
-            // ៣. រត់ផ្សងសំណាងក្នុងក្រឡោន
             let validCols = [];
             for(let c = 0; c < 7; c++) {
                 const el = document.getElementById(`cell_${encodeURIComponent(item.n)}_${c}`);
@@ -402,8 +436,84 @@
         }
     }
 
-    function exportToExcel() {
-        XLSX.writeFile(XLSX.utils.table_to_book(document.getElementById("dutyTable")), `Duty_${document.getElementById('monthTitle').innerText}.xlsx`);
+    /* =========================================================================
+       មុខងារ EXCEL: បំពេញចូល Template ដោយស្វ័យប្រវត្តិតាម Column C ដល់ I
+       ========================================================================= */
+    async function exportToExcel() {
+        const excelBtn = document.getElementById('excelBtn');
+        const oldText = excelBtn.innerText;
+        excelBtn.innerText = "⏳ កំពុងដំណើរការ...";
+        excelBtn.disabled = true;
+
+        try {
+            // ១. ទាញយកទិន្នន័យពី Firebase
+            const snap = await db.ref(getMonthKey()).once('value');
+            const dutyData = snap.val() || {};
+
+            // ២. ទាញយក file template.xlsx
+            const response = await fetch('template.xlsx');
+            if (!response.ok) {
+                throw new Error("រកមិនឃើញ file template.xlsx ទេ! សូមប្រាកដថាបាន upload ដាក់ក្នុង GitHub រួចរាល់។");
+            }
+            const arrayBuffer = await response.arrayBuffer();
+
+            // ៣. អាន Excel
+            const workbook = XLSX.read(arrayBuffer, { type: 'array', cellStyles: true });
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+            const cleanStr = str => (str ? str.toString().replace(/[-\s]/g, '').trim() : '');
+
+            // ៤. បំពេញកាលបរិច្ឆេទចន្ទគតិខ្មែរចូល D5
+            const lunarVal = document.getElementById('lunarDateInput') ? document.getElementById('lunarDateInput').value : getAutoKhmerLunarDate(new Date());
+            if (worksheet['D5'] && lunarVal) {
+                worksheet['D5'].v = lunarVal;
+            }
+
+            // ៥. បំពេញកាលបរិច្ឆេទសូរិយគតិចូល D6
+            const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
+            const currentMonthName = months[currentDate.getMonth()];
+            const khmerYear = toKhmerNum(currentDate.getFullYear());
+            if (worksheet['D6']) {
+                worksheet['D6'].v = `ធ្វើនៅសៀមរាប ថ្ងៃទី........... ខែ${currentMonthName} ឆ្នាំ${khmerYear}`;
+            }
+
+            // ៦. ដើររកឈ្មោះនៅ Column B រួចបំពេញថ្ងៃចូល Column C ដល់ I
+            for (let r = 10; r <= 26; r++) {
+                const nameCell = worksheet['B' + r];
+                if (nameCell && nameCell.v) {
+                    const excelNameClean = cleanStr(nameCell.v);
+
+                    for (let memberName in dutyData) {
+                        if (cleanStr(memberName) === excelNameClean) {
+                            const days = dutyData[memberName] || [];
+                            for (let c = 0; c < 7; c++) {
+                                const targetCol = XLSX.utils.encode_col(2 + c); // Column C ដល់ I
+                                const targetCell = targetCol + r;
+                                const dayVal = days[c] || "";
+
+                                if (!worksheet[targetCell]) {
+                                    worksheet[targetCell] = { t: 's', v: '' };
+                                }
+                                worksheet[targetCell].v = dayVal;
+                                worksheet[targetCell].t = 's';
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // ៧. ទាញយកឯកសារ Excel
+            const fileName = `Duty_${document.getElementById('monthTitle').innerText}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+
+        } catch (error) {
+            console.error(error);
+            alert("បញ្ហា Excel: " + error.message);
+        } finally {
+            excelBtn.innerText = oldText;
+            excelBtn.disabled = false;
+        }
     }
 
     function exportToImage() {
