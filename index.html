@@ -280,9 +280,7 @@
         if (solarInput && !solarInput.value) {
             const today = new Date();
             const curDayKh = toKhmerNum(today.getDate().toString().padStart(2, '0'));
-            const curMonthKh = months[currentDate.getMonth()];
-            const curYearKh = toKhmerNum(currentDate.getFullYear());
-            solarInput.value = `ធ្វើនៅសៀមរាប ថ្ងៃទី${curDayKh} ខែ${curMonthKh} ឆ្នាំ${curYearKh}`;
+            solarInput.value = `ធ្វើនៅសៀមរាប ថ្ងៃទី${curDayKh} ខែ${months[currentDate.getMonth()]} ឆ្នាំ${toKhmerNum(currentDate.getFullYear())}`;
         }
 
         renderTags();
@@ -457,7 +455,7 @@
     }
 
     /* =========================================================================
-       មុខងារ EXCEL (ExcelJS): ប្រើប្រាស់ទម្រង់ និង Layout ពី template.xlsx ដើម ១០០%
+       មុខងារ EXCEL (ExcelJS): រក្សាទម្រង់ដើម + តម្រឹមកណ្តាលក្រដាស A4 (បំបាត់សល់ខាងស្តាំ)
        ========================================================================= */
     async function exportToExcel() {
         const excelBtn = document.getElementById('excelBtn');
@@ -481,6 +479,12 @@
             const workbook = new ExcelJS.Workbook();
             await workbook.xlsx.load(arrayBuffer);
             const worksheet = workbook.worksheets[0];
+
+            // 💡 កំណត់ឱ្យតម្រឹមកណ្តាលក្រដាសផ្ដេក (Center Horizontally) លែងសល់ស្តាំធំ
+            worksheet.pageSetup = {
+                ...worksheet.pageSetup,
+                horizontalCentered: true
+            };
 
             const months = ["មករា", "កុម្ភៈ", "មីនា", "មេសា", "ឧសភា", "មិថុនា", "កក្កដា", "សីហា", "កញ្ញា", "តុលា", "វិច្ឆិកា", "ធ្នូ"];
             const currentMonthName = months[currentDate.getMonth()];
